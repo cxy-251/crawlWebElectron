@@ -1,0 +1,12 @@
+# Ignore everything by default.
+*
+
+# Keep directories so nested Markdown files can be discovered.
+!*/
+
+# Track project docs only.
+!*.md
+!.gitignore
+
+# macOS metadata should stay untracked.
+.DS_Store
