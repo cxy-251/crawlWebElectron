@@ -1,12 +1,35 @@
-# Ignore everything by default.
-*
+# Dependencies
+node_modules/
 
-# Keep directories so nested Markdown files can be discovered.
-!*/
+# Build output
+dist/
+build/
+out/
+release/
 
-# Track project docs only.
-!*.md
-!.gitignore
+# Local runtime data and secrets
+.env
+.env.*
+!.env.example
+.local/
+local/
+runtime/
+user-data/
+downloads/
+cache/
+tmp/
+temp/
 
-# macOS metadata should stay untracked.
+# Logs and diagnostics
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS/editor noise
 .DS_Store
+.idea/
+.vscode/
+

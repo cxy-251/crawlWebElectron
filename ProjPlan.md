@@ -1,7 +1,7 @@
 <!--
 Project: CrawlWebElectron
 Document: 当前任务计划书（Current Task Plan）
-Version: 0.3
+Version: 0.1
 Date: 2026-06-03
 Purpose: 本文件只描述“本次要让 Codex 完成的一次工程任务”。一次 ProjPlan.md 更新，就是一次新的任务输入。
 Usage:
@@ -20,7 +20,7 @@ Usage:
 
 ## 1. 当前任务状态
 
-**Status**: DOING
+**Status**: DONE
 
 **当前任务**：第一阶段最小可运行原型
 
@@ -171,25 +171,74 @@ Codex 完成后必须说明：哪些内容允许进 Git，哪些内容必须留�
 
 ## 12. 当前问题
 
-- 需要 Codex 先检查当前项目结构、构建工具、Electron / React / TypeScript 配置情况。
-- 需要 Codex 根据当前 Electron 版本判断使用 BrowserView、WebContentsView 或其他可行方案。
-- 需要 Codex 判断现有项目是否已有 README 或工程说明文档，并补充必要启动和验证说明。
+- 已完成项目结构检查：执行前项目只有 `ProjPlan.md` 和 `.gitignore`，本次新增了最小 Electron + React + TypeScript 工程骨架。
+- 当前安装到的 Electron 版本为 39.8.10。本次采用 `BrowserView` 承载左侧真实网页；它在本机烟测可运行。Electron 39 已提供 `WebContentsView` 作为更新方向，但第一阶段为保证最小原型稳定落地，暂未切换到该 API。
+- 已补充 `README.md`，包含启动方式、验证方式、模块职责和安全边界。
+- 登录态持久化使用 Electron 持久化 partition：`persist:crawl-web-electron`。本次已完成应用启动和默认网页加载烟测；具体第三方网站登录态是否保持，需要用户用真实账号在本机手动验证。
+- 初次 `npm install` 时 Electron 默认下载源较慢，本次实际使用 `ELECTRON_MIRROR=https://npmmirror.com/mirrors/electron/ npm install` 完成依赖安装。后续如遇同类下载卡住，可继续使用该环境变量。
 
 ## 13. 完成说明
 
-待 Codex 执行后填写。
+已完成第一阶段最小可运行原型。
 
-Codex 完成后至少需要写清楚：
-
-1. 修改了哪些文件。
-2. 每个主要模块负责什么。
-3. 如何启动项目。
-4. 如何验证左侧网页区。
-5. 如何验证右侧控制面板。
-6. 日志在哪里看。
-7. 哪些内容被 `.gitignore` 保护。
-8. 当前还有什么问题。
-9. 是否建议进入下一次任务。
+1. 修改/新增文件：
+   - `.gitignore`
+   - `package.json`
+   - `package-lock.json`
+   - `index.html`
+   - `vite.config.ts`
+   - `tsconfig.electron.json`
+   - `tsconfig.renderer.json`
+   - `README.md`
+   - `src/main/*`
+   - `src/preload/*`
+   - `src/renderer/*`
+   - `src/shared/*`
+   - `ProjPlan.md`
+2. 主要模块职责：
+   - `src/main/main.ts`：Electron 生命周期入口。
+   - `src/main/appWindow.ts`：创建承载 React 的主窗口。
+   - `src/main/webViewController.ts`：创建和控制左侧 `BrowserView`，负责导航、页面状态、持久化 session partition 和链接提取。
+   - `src/main/ipc.ts`：注册主进程 IPC。
+   - `src/main/navigation.ts`：限制并规范化导航 URL，仅允许 `http/https`。
+   - `src/main/logger.ts`：提供 info/warn/error 控制台日志和敏感字段脱敏。
+   - `src/preload/index.ts`：通过 `contextBridge` 暴露小而清晰的浏览器/调试 API。
+   - `src/renderer/App.tsx`：左右分栏 UI、地址栏、导航按钮、右侧工具面板、结果区和渲染进程日志。
+   - `src/shared/*`：共享 IPC channel 和类型。
+3. 启动方式：
+   - 首次安装：`npm install`
+   - 开发启动：`npm run dev`
+   - 构建后启动：`npm run start`
+4. 左侧网页区验证：
+   - 在地址栏输入 `https://example.com` 或其他 `http/https` 页面并打开。
+   - 验证后退、前进、刷新。
+   - 在真实网站登录后关闭并重启应用，检查登录态是否尽量保留。
+5. 右侧控制面板验证：
+   - 点击 `URL` 获取当前页面 URL。
+   - 点击 `Title` 获取页面标题。
+   - 点击 `Links` 提取页面链接。
+   - 点击 `Ping` 测试 preload/IPC/主进程链路。
+6. 日志位置：
+   - 主进程日志输出在启动命令所在终端。
+   - 右侧 `Logs` 区显示渲染进程操作日志。
+   - 已覆盖应用启动、窗口创建、BrowserView 创建、网页加载、IPC 调用、脚本执行失败等关键路径。
+7. `.gitignore` 保护内容：
+   - `node_modules/`
+   - `dist/`、`build/`、`out/`、`release/`
+   - `.env*` 真实配置
+   - `.local/`、`runtime/`、`user-data/`、`downloads/`、`cache/`、`tmp/`、`temp/`
+   - `*.log`、`logs/`
+   - 编辑器和系统噪音文件
+8. 已验证：
+   - `npm run typecheck` 通过。
+   - `npm run build` 通过。
+   - `npm run start` 烟测通过：窗口创建、BrowserView 创建、`https://example.com/` 加载成功、IPC handler 注册成功。
+9. 当前问题：
+   - 第三方网站登录态需要用户用真实账号手动验收。
+   - Electron 39 推荐的新方向是 `WebContentsView`，后续如需要更长期 API 稳定性，可以在下一次任务中评估替换。
+10. 下一步建议：
+   - 建议用户人工运行 `npm run dev`，完成网页登录态和右侧工具按钮验收。
+   - 验收通过后再由用户决定是否提交本次原型。
 
 ## 14. 给 Codex 的执行提示
 
