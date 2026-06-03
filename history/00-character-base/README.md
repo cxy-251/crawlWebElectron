@@ -3,11 +3,15 @@
 Purpose:
 - This folder is the identity anchor for the protagonist used across the whole poster series.
 - All city posters should be generated from this same character base.
+- This folder also stores the base prompts for vertical phone wallpapers.
 
 Folder usage:
 - `reference-images/`: raw generated portraits for identity locking
 - `approved/`: selected official character references
 - `notes/`: extra notes about wardrobe, expression, and continuity
+- `wallpapers-v1/`: first-round 9:16 wallpaper outputs
+- `selects/`: approved wallpaper candidates for downstream city adaptations
+- `iterations/`: prompt history and revision notes
 
 Character concept:
 - A stylish young woman who feels intelligent, calm, curious, and emotionally self-possessed
@@ -33,6 +37,7 @@ Visual tone:
 - Sophisticated styling
 - No exaggerated makeup
 - No overly sexualized posing
+- Expensive phone-wallpaper finish with clean visual breathing room
 
 Master character prompt:
 `same young East Asian woman, 25 years old, oval face, expressive almond-shaped eyes, clear natural skin texture, long dark brown hair, slim build, elegant posture, calm confident expression, luxury fashion editorial portrait, cinematic photography, subtle natural makeup, premium styling, realistic lighting, highly detailed, believable face identity`
@@ -52,3 +57,9 @@ Suggested negative prompt:
 Poster text guidance:
 - The character images in this folder should not contain text
 - Text should be added later on the city posters
+
+Wallpaper guidance:
+- Default output target is vertical `9:16`
+- Keep the face in the upper-middle area, not too close to the top edge
+- Leave calmer negative space for phone icons and lock-screen clock
+- Avoid busy textures behind the head
