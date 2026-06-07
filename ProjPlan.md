@@ -20,7 +20,7 @@ Usage:
 
 ## 1. 当前任务状态
 
-**Status**: TODO
+**Status**: DONE
 
 **当前任务**：第二阶段视频采集工作台原型
 
@@ -322,22 +322,75 @@ Codex 必须把任务落到工程代码里，不要只改文档。
 
 ## 15. 完成说明
 
-待 Codex 执行第二阶段任务后填写。
+已完成第二阶段视频采集工作台原型。
 
-Codex 完成后至少需要写清楚：
-
-1. 修改了哪些文件。
-2. 每个主要模块负责什么。
-3. 如何启动项目。
-4. 如何验证智能导航。
-5. 如何验证视频候选扫描。
-6. 如何验证自动下滑扫描。
-7. 如何验证勾选和模拟队列。
-8. 如何验证 robot/captcha/登录验证暂停与继续。
-9. 日志在哪里看。
-10. 哪些内容被 `.gitignore` 保护。
-11. 当前还有什么问题。
-12. 是否建议进入下一次任务。
+1. 修改/新增文件：
+   - `ProjPlan.md`
+   - `README.md`
+   - `src/shared/ipcChannels.ts`
+   - `src/shared/types.ts`
+   - `src/main/navigation.ts`
+   - `src/main/mediaScanner.ts`
+   - `src/main/webViewController.ts`
+   - `src/main/ipc.ts`
+   - `src/preload/index.ts`
+   - `src/renderer/vite-env.d.ts`
+   - `src/renderer/App.tsx`
+   - `src/renderer/styles.css`
+2. 主要模块职责：
+   - `src/main/navigation.ts`：实现智能地址输入，支持短词站点映射、域名补全、Google 搜索和高风险协议拒绝。
+   - `src/main/mediaScanner.ts`：受控执行页面脚本，提取 `video`、`source`、常见视频卡片链接、标题、缩略图和时长文本，并检测疑似人工处理需求。
+   - `src/main/webViewController.ts`：控制 `BrowserView`、session 摘要、当前页扫描、自动下滑扫描、暂停/停止/继续状态。
+   - `src/main/ipc.ts` 与 `src/preload/index.ts`：扩展安全 IPC，不向 React 暴露任意脚本执行能力。
+   - `src/renderer/App.tsx`：右侧视频采集控制台、状态统计、候选列表、勾选、模拟队列和日志。
+   - `src/shared/*`：新增候选视频、扫描状态、队列项、session 摘要等共享类型。
+3. 启动方式：
+   - 首次安装：`npm install`
+   - 开发启动：`npm run dev`
+   - 构建后启动：`npm run start`
+4. 智能导航验证：
+   - 输入 `google` 应打开 `https://www.google.com`。
+   - 输入 `youtube` 应打开 `https://www.youtube.com`。
+   - 输入 `example.com` 应补全为 `https://example.com`。
+   - 输入包含空格的查询词应打开 Google 搜索。
+   - 输入 `file:`、`javascript:`、`data:` 等高风险协议应被拒绝，并在日志中显示错误。
+5. 视频候选扫描验证：
+   - 打开包含 `video`、`source` 或常见视频卡片链接的页面。
+   - 点击右侧 `Scan`，候选列表应显示标题、来源、链接、提取方式、置信度和状态。
+6. 自动下滑扫描验证：
+   - 点击右侧 `Auto`，左侧页面自动下滑。
+   - 每轮扫描会合并候选并记录日志。
+   - 点击 `Stop` 可以停止扫描。
+7. 勾选和模拟队列验证：
+   - 勾选候选后点击 `Queue`。
+   - 候选进入右侧队列，状态变为 `queued`。
+   - 本阶段不会生成真实下载文件，不调用下载器，不写下载目录。
+8. robot/captcha/登录验证暂停与继续验证：
+   - 当页面文本疑似包含 robot、captcha、human verification、sign-in verification 等人工处理需求时，扫描状态进入 paused。
+   - 用户在左侧浏览器完成操作后，可点击 `Resume` 继续扫描。
+   - 本阶段不绕过验证。
+9. 日志位置：
+   - 主进程日志输出在启动命令所在终端。
+   - 右侧 `Logs` 区显示渲染进程操作日志、扫描轮次、候选数量、去重数量、队列变化和暂停原因。
+10. `.gitignore` 保护内容：
+   - `node_modules/`
+   - `dist/`、`build/`、`out/`、`release/`
+   - `.env*` 真实配置
+   - `.local/`、`runtime/`、`user-data/`、`downloads/`、`cache/`、`tmp/`、`temp/`
+   - `*.log`、`logs/`
+   - 编辑器和系统噪音文件
+11. 已验证：
+   - `npm run typecheck` 通过。
+   - `npm run build` 通过。
+   - `npm run start` 烟测通过：窗口创建、BrowserView 创建、默认页加载、IPC handler 注册成功。
+12. 当前问题：
+   - 视频候选提取是通用 DOM 启发式，不保证覆盖每个网站的动态媒体资源。
+   - YouTube 等站点只做页面可见信息发现，不做下载、不绕过验证。
+   - 队列是 React 内存状态，关闭应用后不会保留。
+   - 第三方网站登录态仍取决于网站自身 session 策略。
+13. 下一步建议：
+   - 下一次任务可以选择一条真实下载路线：yt-dlp、浏览器下载、或特定站点 adapter/直链研究。
+   - 建议先用真实目标页面人工验收候选提取质量，再决定是否做站点专项 adapter。
 
 ## 16. 给 Codex 的执行提示
 

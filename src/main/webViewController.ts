@@ -1,10 +1,24 @@
 import { BrowserView, BrowserWindow } from "electron";
-import type { BrowserBounds, LinkInfo, PageState } from "../shared/types";
+import type {
+  BrowserBounds,
+  LinkInfo,
+  PageState,
+  ScrollScanOptions,
+  ScrollScanState,
+  SessionSummary,
+  VideoScanResult
+} from "../shared/types";
+import { IPC_CHANNELS } from "../shared/ipcChannels";
 import { logger, safeUrl } from "./logger";
+import { getScrollMetrics, scanVideoCandidates, scrollPage } from "./mediaScanner";
 import { normalizeNavigationUrl } from "./navigation";
 
 const DEFAULT_URL = "https://example.com";
 const SESSION_PARTITION = "persist:crawl-web-electron";
+const DEFAULT_SCROLL_OPTIONS = {
+  intervalMs: 1200,
+  maxRounds: 12
+};
 
 function clampBounds(bounds: BrowserBounds): BrowserBounds {
   return {
@@ -26,6 +40,14 @@ function linkLimit(limit: unknown): number {
 export class WebViewController {
   private readonly view: BrowserView;
   private isLoading = false;
+  private scanState: ScrollScanState = {
+    status: "idle",
+    round: 0,
+    maxRounds: 0,
+    reason: "Ready"
+  };
+  private scanRunId = 0;
+  private lastScrollOptions: Required<ScrollScanOptions> = DEFAULT_SCROLL_OPTIONS;
 
   constructor(private readonly window: BrowserWindow) {
     this.view = new BrowserView({
@@ -63,6 +85,15 @@ export class WebViewController {
       canGoBack: webContents.navigationHistory.canGoBack(),
       canGoForward: webContents.navigationHistory.canGoForward(),
       isLoading: this.isLoading
+    };
+  }
+
+  getSessionSummary(): SessionSummary {
+    return {
+      partition: SESSION_PARTITION,
+      persistent: true,
+      storage: "Chromium/Electron profile data: cookies, localStorage, IndexedDB and cache.",
+      locationHint: "System application data directory; not stored in this Git repository."
     };
   }
 
@@ -139,7 +170,96 @@ export class WebViewController {
     }
   }
 
+  async scanCurrentPage(): Promise<VideoScanResult> {
+    logger.info("media", "scan current page", { url: this.getUrl() });
+
+    try {
+      const result = await scanVideoCandidates(this.view.webContents);
+      logger.info("media", "scan completed", {
+        url: result.sourcePageUrl,
+        candidates: result.candidates.length,
+        duplicates: result.duplicateHintCount,
+        manualActionDetected: result.manualActionDetected
+      });
+
+      return result;
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      logger.error("media", "scan failed", { error: message, url: this.getUrl() });
+      throw error;
+    }
+  }
+
+  getScrollScanState(): ScrollScanState {
+    return this.scanState;
+  }
+
+  startScrollScan(options?: ScrollScanOptions): ScrollScanState {
+    if (this.scanState.status === "scanning") {
+      logger.warn("media", "scroll scan already running");
+      return this.scanState;
+    }
+
+    const safeOptions = this.normalizeScrollOptions(options);
+    this.lastScrollOptions = safeOptions;
+    this.scanRunId += 1;
+    this.scanState = {
+      status: "scanning",
+      round: 0,
+      maxRounds: safeOptions.maxRounds,
+      reason: "Scanning"
+    };
+
+    logger.info("media", "scroll scan started", safeOptions);
+    this.emitScanState();
+    void this.runScrollScan(this.scanRunId, safeOptions);
+    return this.scanState;
+  }
+
+  stopScrollScan(reason = "Stopped by user"): ScrollScanState {
+    if (this.scanState.status === "idle" || this.scanState.status === "stopped") {
+      return this.scanState;
+    }
+
+    this.scanRunId += 1;
+    this.scanState = {
+      ...this.scanState,
+      status: "stopped",
+      reason
+    };
+    logger.info("media", "scroll scan stopped", { reason });
+    this.emitScanState();
+    return this.scanState;
+  }
+
+  pauseScrollScan(reason = "Paused for manual action"): ScrollScanState {
+    if (this.scanState.status !== "scanning") {
+      return this.scanState;
+    }
+
+    this.scanRunId += 1;
+    this.scanState = {
+      ...this.scanState,
+      status: "paused",
+      reason
+    };
+    logger.warn("media", "scroll scan paused", { reason });
+    this.emitScanState();
+    return this.scanState;
+  }
+
+  resumeScrollScan(): ScrollScanState {
+    if (this.scanState.status !== "paused" && this.scanState.status !== "stopped") {
+      return this.scanState;
+    }
+
+    logger.info("media", "scroll scan resumed");
+    return this.startScrollScan(this.lastScrollOptions);
+  }
+
   destroy(): void {
+    this.stopScrollScan("Window closed");
+
     if (!this.window.isDestroyed()) {
       this.window.removeBrowserView(this.view);
     }
@@ -206,9 +326,104 @@ export class WebViewController {
     });
   }
 
+  private normalizeScrollOptions(options?: ScrollScanOptions): Required<ScrollScanOptions> {
+    return {
+      intervalMs: Math.max(400, Math.min(5000, Math.round(options?.intervalMs || DEFAULT_SCROLL_OPTIONS.intervalMs))),
+      maxRounds: Math.max(1, Math.min(50, Math.round(options?.maxRounds || DEFAULT_SCROLL_OPTIONS.maxRounds)))
+    };
+  }
+
+  private async runScrollScan(runId: number, options: Required<ScrollScanOptions>): Promise<void> {
+    let previous = await this.safeScrollMetrics();
+    let stableRounds = 0;
+
+    for (let round = 1; round <= options.maxRounds; round += 1) {
+      if (runId !== this.scanRunId || this.scanState.status !== "scanning") {
+        return;
+      }
+
+      this.scanState = {
+        ...this.scanState,
+        round,
+        reason: `Scanning round ${round} of ${options.maxRounds}`
+      };
+      this.emitScanState();
+
+      try {
+        await scrollPage(this.view.webContents);
+        await this.sleep(options.intervalMs);
+        const result = await this.scanCurrentPage();
+
+        if (!this.window.isDestroyed()) {
+          this.window.webContents.send(IPC_CHANNELS.mediaScrollScanUpdate, {
+            round,
+            state: this.scanState,
+            result
+          });
+        }
+
+        if (result.manualActionDetected) {
+          this.pauseScrollScan(result.manualActionReason || "Manual action required");
+          return;
+        }
+
+        const current = await this.safeScrollMetrics();
+
+        if (previous && current && current.scrollHeight === previous.scrollHeight && current.scrollY === previous.scrollY) {
+          stableRounds += 1;
+        } else {
+          stableRounds = 0;
+        }
+
+        previous = current || previous;
+
+        if (stableRounds >= 2) {
+          this.stopScrollScan("Page height stopped changing");
+          return;
+        }
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        this.scanState = {
+          ...this.scanState,
+          status: "error",
+          reason: message
+        };
+        logger.error("media", "scroll scan failed", { error: message });
+        this.emitScanState();
+        return;
+      }
+    }
+
+    if (runId === this.scanRunId && this.scanState.status === "scanning") {
+      this.stopScrollScan("Reached maximum scroll rounds");
+    }
+  }
+
+  private async safeScrollMetrics(): Promise<{ scrollY: number; innerHeight: number; scrollHeight: number } | null> {
+    try {
+      return await getScrollMetrics(this.view.webContents);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      logger.warn("media", "failed to read scroll metrics", { error: message });
+      return null;
+    }
+  }
+
+  private sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+  }
+
   private emitState(): void {
     if (!this.window.isDestroyed()) {
       this.window.webContents.send("browser:state-changed", this.getState());
+    }
+  }
+
+  private emitScanState(): void {
+    if (!this.window.isDestroyed()) {
+      this.window.webContents.send(IPC_CHANNELS.mediaScanStateChanged, this.scanState);
     }
   }
 }

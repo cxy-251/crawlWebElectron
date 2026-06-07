@@ -1,6 +1,6 @@
 import { ipcMain } from "electron";
 import { IPC_CHANNELS } from "../shared/ipcChannels";
-import type { BrowserBounds, PageState, PingResult } from "../shared/types";
+import type { BrowserBounds, PingResult, ScrollScanOptions } from "../shared/types";
 import { logger } from "./logger";
 import type { WebViewController } from "./webViewController";
 
@@ -36,6 +36,12 @@ export function registerIpc(controller: WebViewController): void {
   register(IPC_CHANNELS.browserGetUrl, () => controller.getUrl());
   register(IPC_CHANNELS.browserGetTitle, () => controller.getTitle());
   register(IPC_CHANNELS.browserExtractLinks, (limit) => controller.extractLinks(Number(limit)));
+  register(IPC_CHANNELS.browserGetSessionSummary, () => controller.getSessionSummary());
+  register(IPC_CHANNELS.mediaScanCurrentPage, () => controller.scanCurrentPage());
+  register(IPC_CHANNELS.mediaStartScrollScan, (options) => controller.startScrollScan(options as ScrollScanOptions));
+  register(IPC_CHANNELS.mediaStopScrollScan, () => controller.stopScrollScan());
+  register(IPC_CHANNELS.mediaPauseScrollScan, () => controller.pauseScrollScan("Paused by user"));
+  register(IPC_CHANNELS.mediaResumeScrollScan, () => controller.resumeScrollScan());
   register(IPC_CHANNELS.browserSetBounds, (bounds) => {
     if (!isBounds(bounds)) {
       throw new Error("Invalid BrowserView bounds.");
@@ -51,4 +57,3 @@ export function registerIpc(controller: WebViewController): void {
 
   logger.info("ipc", "registered browser IPC handlers");
 }
-

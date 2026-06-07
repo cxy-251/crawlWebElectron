@@ -8,7 +8,14 @@ export const IPC_CHANNELS = {
   browserGetUrl: "browser:get-url",
   browserGetTitle: "browser:get-title",
   browserExtractLinks: "browser:extract-links",
+  browserGetSessionSummary: "browser:get-session-summary",
+  mediaScanCurrentPage: "media:scan-current-page",
+  mediaStartScrollScan: "media:start-scroll-scan",
+  mediaStopScrollScan: "media:stop-scroll-scan",
+  mediaPauseScrollScan: "media:pause-scroll-scan",
+  mediaResumeScrollScan: "media:resume-scroll-scan",
+  mediaScrollScanUpdate: "media:scroll-scan-update",
+  mediaScanStateChanged: "media:scan-state-changed",
   browserStateChanged: "browser:state-changed",
   debugPing: "debug:ping"
 } as const;
-

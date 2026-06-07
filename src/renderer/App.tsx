@@ -2,25 +2,34 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowLeft,
   ArrowRight,
-  Bug,
-  FileText,
+  CheckCircle2,
+  Circle,
+  ClipboardList,
   Globe,
+  Info,
   Link2,
+  ListPlus,
   Loader2,
+  Pause,
+  Play,
   RefreshCw,
+  Search,
   Send,
-  Terminal
+  ShieldAlert,
+  Square,
+  Terminal,
+  Trash2
 } from "lucide-react";
 import type { ReactElement } from "react";
-import type { LinkInfo, PageState, PingResult } from "../shared/types";
-
-type ToolResult =
-  | { kind: "empty" }
-  | { kind: "url"; url: string }
-  | { kind: "title"; title: string }
-  | { kind: "links"; links: LinkInfo[] }
-  | { kind: "ping"; ping: PingResult }
-  | { kind: "error"; message: string };
+import type {
+  PageState,
+  QueueItem,
+  ScrollScanState,
+  SessionSummary,
+  VideoCandidate,
+  VideoCandidateStatus,
+  VideoScanResult
+} from "../shared/types";
 
 type Activity = {
   id: number;
@@ -37,7 +46,14 @@ const EMPTY_STATE: PageState = {
   isLoading: false
 };
 
-const MAX_LOGS = 40;
+const EMPTY_SCAN_STATE: ScrollScanState = {
+  status: "idle",
+  round: 0,
+  maxRounds: 0,
+  reason: "Ready"
+};
+
+const MAX_LOGS = 60;
 
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
@@ -51,14 +67,62 @@ function hostLabel(url: string): string {
   }
 }
 
+function shortUrl(url: string): string {
+  if (!url) {
+    return "none";
+  }
+
+  try {
+    const parsed = new URL(url);
+    return `${parsed.host}${parsed.pathname}`.slice(0, 96);
+  } catch {
+    return url.slice(0, 96);
+  }
+}
+
+function statusLabel(status: VideoCandidateStatus): string {
+  return status.replace(/_/g, " ");
+}
+
+function mergeCandidates(
+  current: VideoCandidate[],
+  incoming: VideoCandidate[],
+  selectedIds: Set<string>,
+  queuedIds: Set<string>
+): VideoCandidate[] {
+  const byId = new Map(current.map((candidate) => [candidate.id, candidate]));
+
+  for (const candidate of incoming) {
+    const existing = byId.get(candidate.id);
+    const status = queuedIds.has(candidate.id) ? "queued" : selectedIds.has(candidate.id) ? "selected" : existing?.status || candidate.status;
+
+    byId.set(candidate.id, {
+      ...existing,
+      ...candidate,
+      status
+    });
+  }
+
+  return Array.from(byId.values());
+}
+
 export function App(): ReactElement {
   const browserSlotRef = useRef<HTMLDivElement | null>(null);
   const logIdRef = useRef(0);
   const [pageState, setPageState] = useState<PageState>(EMPTY_STATE);
   const [urlInput, setUrlInput] = useState("https://example.com");
-  const [result, setResult] = useState<ToolResult>({ kind: "empty" });
+  const [sessionSummary, setSessionSummary] = useState<SessionSummary | null>(null);
+  const [scanState, setScanState] = useState<ScrollScanState>(EMPTY_SCAN_STATE);
+  const [candidates, setCandidates] = useState<VideoCandidate[]>([]);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [queue, setQueue] = useState<QueueItem[]>([]);
   const [activity, setActivity] = useState<Activity[]>([]);
-  const [busyTool, setBusyTool] = useState<string | null>(null);
+  const [busyAction, setBusyAction] = useState<string | null>(null);
+
+  const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds]);
+  const queuedSet = useMemo(() => new Set(queue.map((item) => item.id)), [queue]);
+  const selectedCount = selectedIds.length;
+  const scanBusy = scanState.status === "scanning";
 
   const pushLog = useCallback((level: Activity["level"], message: string) => {
     const next: Activity = {
@@ -87,6 +151,28 @@ export function App(): ReactElement {
     });
   }, []);
 
+  const applyScanResult = useCallback(
+    (result: VideoScanResult) => {
+      setCandidates((current) => mergeCandidates(current, result.candidates, selectedSet, queuedSet));
+
+      if (result.manualActionDetected) {
+        setScanState({
+          status: "paused",
+          round: scanState.round,
+          maxRounds: scanState.maxRounds,
+          reason: result.manualActionReason || "Manual action required"
+        });
+        pushLog("warn", `Paused for manual action: ${result.manualActionReason || "manual action required"}`);
+      }
+
+      pushLog(
+        "info",
+        `Scan found ${result.candidates.length} candidates on ${result.provider}; ${result.duplicateHintCount} duplicates ignored`
+      );
+    },
+    [pushLog, queuedSet, scanState.maxRounds, scanState.round, selectedSet]
+  );
+
   useEffect(() => {
     let disposed = false;
 
@@ -101,24 +187,46 @@ export function App(): ReactElement {
         if (state.url) {
           setUrlInput(state.url);
         }
-        pushLog("info", "Renderer connected to browser state");
+        pushLog("info", "Browser state connected");
       })
       .catch((error: unknown) => {
         pushLog("error", `Initial browser state failed: ${errorMessage(error)}`);
       });
 
-    const unsubscribe = window.crawlWeb.browser.onStateChange((state) => {
+    window.crawlWeb.browser
+      .getSessionSummary()
+      .then((summary) => {
+        if (!disposed) {
+          setSessionSummary(summary);
+        }
+      })
+      .catch((error: unknown) => {
+        pushLog("warn", `Session summary unavailable: ${errorMessage(error)}`);
+      });
+
+    const unsubscribeBrowser = window.crawlWeb.browser.onStateChange((state) => {
       setPageState(state);
       if (state.url) {
         setUrlInput(state.url);
       }
     });
+    const unsubscribeScanState = window.crawlWeb.media.onScanStateChange((state) => {
+      setScanState(state);
+      pushLog(state.status === "error" ? "error" : state.status === "paused" ? "warn" : "info", `Scan ${state.status}: ${state.reason}`);
+    });
+    const unsubscribeScanUpdate = window.crawlWeb.media.onScrollScanUpdate((update) => {
+      setScanState(update.state);
+      applyScanResult(update.result);
+      pushLog("info", `Scroll round ${update.round} merged`);
+    });
 
     return () => {
       disposed = true;
-      unsubscribe();
+      unsubscribeBrowser();
+      unsubscribeScanState();
+      unsubscribeScanUpdate();
     };
-  }, [pushLog]);
+  }, [applyScanResult, pushLog]);
 
   useEffect(() => {
     const element = browserSlotRef.current;
@@ -138,32 +246,29 @@ export function App(): ReactElement {
     };
   }, [syncBounds]);
 
-  const runTool = useCallback(
-    async (tool: string, action: () => Promise<ToolResult>) => {
-      setBusyTool(tool);
+  const runAction = useCallback(
+    async (label: string, action: () => Promise<void>) => {
+      setBusyAction(label);
 
       try {
-        const nextResult = await action();
-        setResult(nextResult);
-        pushLog("info", `${tool} completed`);
+        await action();
       } catch (error) {
-        const message = errorMessage(error);
-        setResult({ kind: "error", message });
-        pushLog("error", `${tool} failed: ${message}`);
+        pushLog("error", `${label} failed: ${errorMessage(error)}`);
       } finally {
-        setBusyTool(null);
+        setBusyAction(null);
       }
     },
     [pushLog]
   );
 
   const navigate = useCallback(async () => {
-    await runTool("Navigate", async () => {
+    await runAction("Navigate", async () => {
       const state = await window.crawlWeb.browser.navigate(urlInput);
       setPageState(state);
-      return { kind: "url", url: state.url };
+      setUrlInput(state.url);
+      pushLog("info", `Navigated to ${shortUrl(state.url)}`);
     });
-  }, [runTool, urlInput]);
+  }, [pushLog, runAction, urlInput]);
 
   const navActions = useMemo(
     () => ({
@@ -185,6 +290,105 @@ export function App(): ReactElement {
     }),
     [pushLog]
   );
+
+  const scanCurrentPage = useCallback(async () => {
+    await runAction("Scan viewport", async () => {
+      const result = await window.crawlWeb.media.scanCurrentPage();
+      applyScanResult(result);
+    });
+  }, [applyScanResult, runAction]);
+
+  const startAutoScan = useCallback(async () => {
+    await runAction("Auto scroll", async () => {
+      const state = await window.crawlWeb.media.startScrollScan({ intervalMs: 1200, maxRounds: 12 });
+      setScanState(state);
+      pushLog("info", "Auto scroll scan started");
+    });
+  }, [pushLog, runAction]);
+
+  const stopAutoScan = useCallback(async () => {
+    await runAction("Stop scan", async () => {
+      const state = await window.crawlWeb.media.stopScrollScan();
+      setScanState(state);
+      pushLog("warn", "Auto scroll scan stopped");
+    });
+  }, [pushLog, runAction]);
+
+  const pauseAutoScan = useCallback(async () => {
+    await runAction("Pause scan", async () => {
+      const state = await window.crawlWeb.media.pauseScrollScan();
+      setScanState(state);
+      pushLog("warn", "Scan paused by user");
+    });
+  }, [pushLog, runAction]);
+
+  const resumeAutoScan = useCallback(async () => {
+    await runAction("Resume scan", async () => {
+      const state = await window.crawlWeb.media.resumeScrollScan();
+      setScanState(state);
+      pushLog("info", "Scan resumed");
+    });
+  }, [pushLog, runAction]);
+
+  const clearCandidates = useCallback(() => {
+    setCandidates([]);
+    setSelectedIds([]);
+    pushLog("warn", "Candidates cleared");
+  }, [pushLog]);
+
+  const toggleCandidate = useCallback(
+    (candidate: VideoCandidate) => {
+      if (queuedSet.has(candidate.id)) {
+        pushLog("warn", "Queued candidates cannot be toggled");
+        return;
+      }
+
+      setSelectedIds((current) => {
+        const exists = current.includes(candidate.id);
+        return exists ? current.filter((id) => id !== candidate.id) : [...current, candidate.id];
+      });
+      setCandidates((current) =>
+        current.map((item) => {
+          if (item.id !== candidate.id) {
+            return item;
+          }
+
+          return {
+            ...item,
+            status: item.status === "selected" ? "discovered" : "selected"
+          };
+        })
+      );
+    },
+    [pushLog, queuedSet]
+  );
+
+  const addSelectedToQueue = useCallback(() => {
+    const selected = candidates.filter((candidate) => selectedSet.has(candidate.id) && !queuedSet.has(candidate.id));
+
+    if (selected.length === 0) {
+      pushLog("warn", "No selected candidates to queue");
+      return;
+    }
+
+    const addedAt = new Date().toISOString();
+    const queueItems = selected.map((candidate): QueueItem => ({
+      id: candidate.id,
+      candidate: {
+        ...candidate,
+        status: "queued"
+      },
+      status: "queued",
+      addedAt
+    }));
+
+    setQueue((current) => [...current, ...queueItems]);
+    setCandidates((current) =>
+      current.map((candidate) => (selectedSet.has(candidate.id) ? { ...candidate, status: "queued" } : candidate))
+    );
+    setSelectedIds([]);
+    pushLog("info", `${queueItems.length} candidates queued for future download`);
+  }, [candidates, pushLog, queuedSet, selectedSet]);
 
   return (
     <main className="app-shell">
@@ -229,7 +433,7 @@ export function App(): ReactElement {
               <Send size={16} />
             </button>
           </form>
-          {pageState.isLoading ? <Loader2 className="loading-icon" size={18} /> : null}
+          {pageState.isLoading || busyAction === "Navigate" ? <Loader2 className="loading-icon" size={18} /> : null}
         </div>
         <div className="browser-status">
           <span>{hostLabel(pageState.url)}</span>
@@ -238,68 +442,102 @@ export function App(): ReactElement {
         <div ref={browserSlotRef} className="browser-slot" />
       </section>
 
-      <aside className="tool-pane" aria-label="自动化控制面板">
+      <aside className="tool-pane" aria-label="视频采集控制面板">
         <header className="tool-header">
           <div>
-            <p className="eyebrow">Workbench</p>
+            <p className="eyebrow">Video Workbench</p>
             <h1>CrawlWebElectron</h1>
           </div>
-          <span className={pageState.isLoading ? "state-pill loading" : "state-pill"}>{pageState.isLoading ? "Loading" : "Ready"}</span>
+          <span className={`state-pill ${scanState.status}`}>{scanState.status}</span>
         </header>
 
-        <section className="tool-section">
-          <h2>Automation</h2>
-          <div className="tool-grid">
-            <button
-              type="button"
-              onClick={() => void runTool("Get URL", async () => ({ kind: "url", url: await window.crawlWeb.browser.getUrl() }))}
-            >
-              <Globe size={18} />
-              <span>URL</span>
-            </button>
-            <button
-              type="button"
-              onClick={() =>
-                void runTool("Get title", async () => ({ kind: "title", title: await window.crawlWeb.browser.getTitle() }))
-              }
-            >
-              <FileText size={18} />
-              <span>Title</span>
-            </button>
-            <button
-              type="button"
-              onClick={() =>
-                void runTool("Extract links", async () => ({
-                  kind: "links",
-                  links: await window.crawlWeb.browser.extractLinks(100)
-                }))
-              }
-            >
-              <Link2 size={18} />
-              <span>Links</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => void runTool("IPC ping", async () => ({ kind: "ping", ping: await window.crawlWeb.debug.ping() }))}
-            >
-              <Bug size={18} />
-              <span>Ping</span>
-            </button>
+        <section className="status-strip" aria-label="当前状态">
+          <Metric label="Page" value={hostLabel(pageState.url)} />
+          <Metric label="Candidates" value={String(candidates.length)} />
+          <Metric label="Selected" value={String(selectedCount)} />
+          <Metric label="Queue" value={String(queue.length)} />
+        </section>
+
+        <section className="session-strip">
+          <Info size={15} />
+          <span>{sessionSummary ? `Session ${sessionSummary.partition}` : "Session loading"}</span>
+          <span>{scanState.reason}</span>
+        </section>
+
+        <section className="control-bar" aria-label="扫描操作">
+          <button type="button" onClick={() => void scanCurrentPage()} disabled={Boolean(busyAction)}>
+            <Search size={17} />
+            <span>Scan</span>
+          </button>
+          <button type="button" onClick={() => void startAutoScan()} disabled={scanBusy || Boolean(busyAction)}>
+            <Play size={17} />
+            <span>Auto</span>
+          </button>
+          <button type="button" onClick={() => void stopAutoScan()} disabled={!scanBusy && scanState.status !== "paused"}>
+            <Square size={17} />
+            <span>Stop</span>
+          </button>
+          <button type="button" onClick={() => void pauseAutoScan()} disabled={!scanBusy}>
+            <Pause size={17} />
+            <span>Pause</span>
+          </button>
+          <button type="button" onClick={() => void resumeAutoScan()} disabled={scanState.status !== "paused"}>
+            <Play size={17} />
+            <span>Resume</span>
+          </button>
+          <button type="button" onClick={clearCandidates} disabled={candidates.length === 0}>
+            <Trash2 size={17} />
+            <span>Clear</span>
+          </button>
+          <button type="button" onClick={addSelectedToQueue} disabled={selectedCount === 0}>
+            <ListPlus size={17} />
+            <span>Queue</span>
+          </button>
+        </section>
+
+        <section className="candidate-section">
+          <h2>
+            <Link2 size={17} />
+            Candidates
+          </h2>
+          <div className="candidate-list">
+            {candidates.length === 0 ? <p className="muted">No candidates.</p> : null}
+            {candidates.map((candidate) => (
+              <CandidateRow
+                candidate={candidate}
+                checked={selectedSet.has(candidate.id)}
+                queued={queuedSet.has(candidate.id)}
+                key={candidate.id}
+                onOpen={() => void window.crawlWeb.browser.navigate(candidate.pageUrl)}
+                onToggle={() => toggleCandidate(candidate)}
+              />
+            ))}
           </div>
         </section>
 
-        <section className="tool-section result-section">
-          <h2>Result</h2>
-          <ResultView result={result} busyTool={busyTool} />
+        <section className="queue-section">
+          <h2>
+            <ClipboardList size={17} />
+            Queue
+          </h2>
+          <div className="queue-list">
+            {queue.length === 0 ? <p className="muted">No queued candidates.</p> : null}
+            {queue.map((item) => (
+              <div className="queue-row" key={item.id}>
+                <span>{item.candidate.title}</span>
+                <strong>{statusLabel(item.status)}</strong>
+              </div>
+            ))}
+          </div>
         </section>
 
-        <section className="tool-section log-section">
+        <section className="log-section">
           <h2>
             <Terminal size={17} />
             Logs
           </h2>
           <div className="log-list">
-            {activity.length === 0 ? <p className="muted">No renderer activity yet.</p> : null}
+            {activity.length === 0 ? <p className="muted">No activity yet.</p> : null}
             {activity.map((item) => (
               <div className={`log-row ${item.level}`} key={item.id}>
                 <time>{item.at}</time>
@@ -313,47 +551,52 @@ export function App(): ReactElement {
   );
 }
 
-function ResultView({ result, busyTool }: { result: ToolResult; busyTool: string | null }): ReactElement {
-  if (busyTool) {
-    return (
-      <div className="result-box center">
-        <Loader2 className="loading-icon" size={20} />
-        <span>{busyTool}</span>
-      </div>
-    );
-  }
-
-  if (result.kind === "empty") {
-    return <div className="result-box muted">No result selected.</div>;
-  }
-
-  if (result.kind === "error") {
-    return <div className="result-box error">{result.message}</div>;
-  }
-
-  if (result.kind === "url") {
-    return <pre className="result-box">{result.url}</pre>;
-  }
-
-  if (result.kind === "title") {
-    return <pre className="result-box">{result.title || "Untitled"}</pre>;
-  }
-
-  if (result.kind === "ping") {
-    return <pre className="result-box">{JSON.stringify(result.ping, null, 2)}</pre>;
-  }
-
+function Metric({ label, value }: { label: string; value: string }): ReactElement {
   return (
-    <div className="result-box links-result">
-      <div className="result-count">{result.links.length} links</div>
-      {result.links.map((link, index) => (
-        <div className="link-row" key={`${link.href}-${index}`}>
-          <span>{link.text || "(no text)"}</span>
-          <a href={link.href} title={link.href}>
-            {link.href}
-          </a>
+    <div className="metric">
+      <span>{label}</span>
+      <strong title={value}>{value}</strong>
+    </div>
+  );
+}
+
+function CandidateRow({
+  candidate,
+  checked,
+  queued,
+  onOpen,
+  onToggle
+}: {
+  candidate: VideoCandidate;
+  checked: boolean;
+  queued: boolean;
+  onOpen: () => void;
+  onToggle: () => void;
+}): ReactElement {
+  return (
+    <div className={`candidate-row ${queued ? "queued" : ""}`}>
+      <button className="check-button" type="button" title={checked ? "取消选择" : "选择"} disabled={queued} onClick={onToggle}>
+        {checked || queued ? <CheckCircle2 size={18} /> : <Circle size={18} />}
+      </button>
+      <div className="candidate-main">
+        <div className="candidate-title">{candidate.title}</div>
+        <div className="candidate-meta">
+          <span>{candidate.provider}</span>
+          <span>{candidate.extractionMethod}</span>
+          <span>{Math.round(candidate.confidence * 100)}%</span>
+          <span>{statusLabel(candidate.status)}</span>
         </div>
-      ))}
+        <div className="candidate-links">
+          <span>{shortUrl(candidate.pageUrl)}</span>
+          <span>{candidate.mediaUrl ? shortUrl(candidate.mediaUrl) : "no media url"}</span>
+          <span>{candidate.thumbnailUrl ? shortUrl(candidate.thumbnailUrl) : "no thumbnail"}</span>
+          {candidate.durationText ? <span>{candidate.durationText}</span> : null}
+        </div>
+      </div>
+      <button className="open-button" type="button" title="在左侧打开" onClick={onOpen}>
+        <Globe size={16} />
+      </button>
+      {candidate.status === "paused_for_manual_action" ? <ShieldAlert className="manual-icon" size={17} /> : null}
     </div>
   );
 }
