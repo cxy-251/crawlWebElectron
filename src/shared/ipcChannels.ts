@@ -17,5 +17,14 @@ export const IPC_CHANNELS = {
   mediaScrollScanUpdate: "media:scroll-scan-update",
   mediaScanStateChanged: "media:scan-state-changed",
   browserStateChanged: "browser:state-changed",
-  debugPing: "debug:ping"
+  debugPing: "debug:ping",
+  publishNavigate: "publish:navigate",
+  publishMountVideo: "publish:mount-video",
+  publishSyncForm: "publish:sync-form",
+  publishSubmit: "publish:submit",
+  publishUploadLog: "publish:upload-log",
+  dialogSelectFile: "dialog:select-file",
+  publishGetUserInfo: "publish:get-user-info",
+  browserGetCookies: "browser:get-cookies",
+  browserExecuteJs: "browser:execute-js"
 } as const;

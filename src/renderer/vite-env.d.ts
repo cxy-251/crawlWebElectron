@@ -9,6 +9,8 @@ import type {
   ScrollScanState,
   ScrollScanUpdate,
   SessionSummary,
+  UploadLog,
+  FormSyncPayload,
   VideoScanResult
 } from "../shared/types";
 
@@ -26,6 +28,8 @@ declare global {
         getTitle(): Promise<string>;
         extractLinks(limit?: number): Promise<LinkInfo[]>;
         getSessionSummary(): Promise<SessionSummary>;
+        getCookies(filter?: { url?: string }): Promise<any[]>;
+        executeJs<T = unknown>(code: string): Promise<T>;
         onStateChange(handler: (state: PageState) => void): () => void;
       };
       media: {
@@ -39,6 +43,17 @@ declare global {
       };
       debug: {
         ping(): Promise<PingResult>;
+      };
+      publish: {
+        navigate(url: string): Promise<void>;
+        mountVideo(filePath: string): Promise<void>;
+        syncForm(payload: FormSyncPayload): Promise<void>;
+        submit(platform: string): Promise<void>;
+        getUserInfo(platform: string): Promise<{ username: string, avatar: string, playlists: string[] } | null>;
+        onUploadLog(handler: (log: UploadLog) => void): () => void;
+      };
+      system: {
+        selectFile(options?: any): Promise<string[]>;
       };
     };
   }

@@ -9,12 +9,15 @@ import type {
   ScrollScanState,
   ScrollScanUpdate,
   SessionSummary,
+  UploadLog,
+  FormSyncPayload,
   VideoScanResult
 } from "../shared/types";
 
 type StateHandler = (state: PageState) => void;
 type ScanStateHandler = (state: ScrollScanState) => void;
 type ScrollScanUpdateHandler = (update: ScrollScanUpdate) => void;
+type UploadLogHandler = (log: UploadLog) => void;
 
 const browserApi = {
   navigate(url: string): Promise<PageState> {
@@ -46,6 +49,12 @@ const browserApi = {
   },
   getSessionSummary(): Promise<SessionSummary> {
     return ipcRenderer.invoke(IPC_CHANNELS.browserGetSessionSummary);
+  },
+  getCookies(filter?: { url?: string }): Promise<unknown[]> {
+    return ipcRenderer.invoke(IPC_CHANNELS.browserGetCookies, filter);
+  },
+  executeJs<T = unknown>(code: string): Promise<T> {
+    return ipcRenderer.invoke(IPC_CHANNELS.browserExecuteJs, code);
   },
   onStateChange(handler: StateHandler): () => void {
     const listener = (_event: Electron.IpcRendererEvent, state: PageState): void => {
@@ -97,10 +106,44 @@ const debugApi = {
   }
 };
 
+const publishApi = {
+  navigate(url: string): Promise<void> {
+    return ipcRenderer.invoke(IPC_CHANNELS.publishNavigate, url);
+  },
+  mountVideo(filePath: string): Promise<void> {
+    return ipcRenderer.invoke(IPC_CHANNELS.publishMountVideo, filePath);
+  },
+  syncForm(payload: FormSyncPayload): Promise<void> {
+    return ipcRenderer.invoke(IPC_CHANNELS.publishSyncForm, payload);
+  },
+  submit(platform: string): Promise<void> {
+    return ipcRenderer.invoke(IPC_CHANNELS.publishSubmit, platform);
+  },
+  getUserInfo(platform: string): Promise<{ username: string, avatar: string, playlists: string[] } | null> {
+    return ipcRenderer.invoke(IPC_CHANNELS.publishGetUserInfo, platform);
+  },
+  onUploadLog(handler: UploadLogHandler): () => void {
+    const listener = (_event: Electron.IpcRendererEvent, log: UploadLog): void => {
+      handler(log);
+    };
+
+    ipcRenderer.on(IPC_CHANNELS.publishUploadLog, listener);
+    return () => ipcRenderer.removeListener(IPC_CHANNELS.publishUploadLog, listener);
+  }
+};
+
+const systemApi = {
+  selectFile(options?: Electron.OpenDialogOptions): Promise<string[]> {
+    return ipcRenderer.invoke(IPC_CHANNELS.dialogSelectFile, options);
+  }
+};
+
 contextBridge.exposeInMainWorld("crawlWeb", {
   browser: browserApi,
   media: mediaApi,
-  debug: debugApi
+  debug: debugApi,
+  publish: publishApi,
+  system: systemApi
 });
 
 console.info("[preload] crawlWeb API exposed");

@@ -17,9 +17,9 @@ function rendererEntry(): string {
 
 export function createAppWindow(): BrowserWindow {
   const window = new BrowserWindow({
-    width: 1400,
+    width: 1600,
     height: 900,
-    minWidth: 960,
+    minWidth: 1200,
     minHeight: 640,
     title: "CrawlWebElectron",
     backgroundColor: "#f6f7f9",

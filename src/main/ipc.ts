@@ -1,6 +1,6 @@
-import { ipcMain } from "electron";
+import { ipcMain, dialog } from "electron";
 import { IPC_CHANNELS } from "../shared/ipcChannels";
-import type { BrowserBounds, PingResult, ScrollScanOptions } from "../shared/types";
+import type { BrowserBounds, PingResult, ScrollScanOptions, FormSyncPayload } from "../shared/types";
 import { logger } from "./logger";
 import type { WebViewController } from "./webViewController";
 
@@ -42,6 +42,9 @@ export function registerIpc(controller: WebViewController): void {
   register(IPC_CHANNELS.mediaStopScrollScan, () => controller.stopScrollScan());
   register(IPC_CHANNELS.mediaPauseScrollScan, () => controller.pauseScrollScan("Paused by user"));
   register(IPC_CHANNELS.mediaResumeScrollScan, () => controller.resumeScrollScan());
+  
+  register(IPC_CHANNELS.browserGetCookies, (filter) => controller.getCookies(filter as any));
+  register(IPC_CHANNELS.browserExecuteJs, (code) => controller.executeJavaScript(String(code)));
   register(IPC_CHANNELS.browserSetBounds, (bounds) => {
     if (!isBounds(bounds)) {
       throw new Error("Invalid BrowserView bounds.");
@@ -54,6 +57,38 @@ export function registerIpc(controller: WebViewController): void {
     at: new Date().toISOString(),
     page: controller.getState()
   }));
+
+  register(IPC_CHANNELS.dialogSelectFile, async (options) => {
+    const result = await dialog.showOpenDialog(options as Electron.OpenDialogOptions);
+    return result.filePaths;
+  });
+
+  register(IPC_CHANNELS.publishNavigate, (url) => {
+    return controller.navigate(String(url));
+  });
+
+  register(IPC_CHANNELS.publishMountVideo, (filePath) => {
+    return controller.mountVideo(String(filePath));
+  });
+
+  register(IPC_CHANNELS.publishSyncForm, (payload) => {
+    return controller.syncForm(payload as FormSyncPayload);
+  });
+
+  register(IPC_CHANNELS.publishSubmit, (platform) => {
+    return controller.submitUpload(String(platform));
+  });
+
+  register(IPC_CHANNELS.publishGetUserInfo, async (platform) => {
+    const result = await controller.getFormContext(String(platform));
+    if (result && result.ksDump) {
+      require('fs').writeFileSync(
+        require('path').join(require('os').homedir(), 'kuaishou_vue_dump.json'),
+        JSON.stringify(result.ksDump, null, 2)
+      );
+    }
+    return result;
+  });
 
   logger.info("ipc", "registered browser IPC handlers");
 }

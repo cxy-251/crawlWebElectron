@@ -6,6 +6,7 @@ dist/
 build/
 out/
 release/
+social_auto_upload_temp/
 
 # Local runtime data and secrets
 .env

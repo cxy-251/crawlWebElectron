@@ -92,3 +92,23 @@ export type PingResult = {
   at: string;
   page: PageState;
 };
+
+export type UploadLog = {
+  id: number;
+  level: "info" | "success" | "warn" | "error";
+  message: string;
+  timestamp: number;
+};
+
+export interface FormSyncPayload {
+  platform: string;
+  title?: string;
+  description?: string;
+  tags?: string[];
+  category?: string;
+  visibility?: 'public' | 'private';
+  coverImage?: string;
+  publishTime?: string;
+  collection?: string;
+  localInvisible?: boolean;
+};

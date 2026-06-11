@@ -18,9 +18,11 @@ import {
   ShieldAlert,
   Square,
   Terminal,
-  Trash2
+  Trash2,
+  LayoutGrid
 } from "lucide-react";
 import type { ReactElement } from "react";
+import { PublishPanel } from "./components/PublishPanel";
 import type {
   PageState,
   QueueItem,
@@ -33,7 +35,7 @@ import type {
 
 type Activity = {
   id: number;
-  level: "info" | "warn" | "error";
+  level: "info" | "warn" | "error" | "success";
   message: string;
   at: string;
 };
@@ -109,6 +111,7 @@ function mergeCandidates(
 export function App(): ReactElement {
   const browserSlotRef = useRef<HTMLDivElement | null>(null);
   const logIdRef = useRef(0);
+  const lastBoundsRef = useRef({ x: -1, y: -1, width: -1, height: -1 });
   const [pageState, setPageState] = useState<PageState>(EMPTY_STATE);
   const [urlInput, setUrlInput] = useState("https://example.com");
   const [sessionSummary, setSessionSummary] = useState<SessionSummary | null>(null);
@@ -118,6 +121,7 @@ export function App(): ReactElement {
   const [queue, setQueue] = useState<QueueItem[]>([]);
   const [activity, setActivity] = useState<Activity[]>([]);
   const [busyAction, setBusyAction] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"scraper" | "publish" | "logs">("publish");
 
   const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds]);
   const queuedSet = useMemo(() => new Set(queue.map((item) => item.id)), [queue]);
@@ -143,12 +147,22 @@ export function App(): ReactElement {
     }
 
     const rect = element.getBoundingClientRect();
-    void window.crawlWeb.browser.setBounds({
-      x: rect.x,
-      y: rect.y,
-      width: rect.width,
-      height: rect.height
-    });
+    const x = Math.round(rect.x);
+    const y = Math.round(rect.y);
+    const width = Math.round(rect.width);
+    const height = Math.round(rect.height);
+
+    if (
+      x === lastBoundsRef.current.x &&
+      y === lastBoundsRef.current.y &&
+      width === lastBoundsRef.current.width &&
+      height === lastBoundsRef.current.height
+    ) {
+      return;
+    }
+
+    lastBoundsRef.current = { x, y, width, height };
+    void window.crawlWeb.browser.setBounds({ x, y, width, height });
   }, []);
 
   const applyScanResult = useCallback(
@@ -219,12 +233,16 @@ export function App(): ReactElement {
       applyScanResult(update.result);
       pushLog("info", `Scroll round ${update.round} merged`);
     });
+    const unsubscribeUploadLog = window.crawlWeb.publish.onUploadLog((log) => {
+      pushLog(log.level, `[Publish] ${log.message}`);
+    });
 
     return () => {
       disposed = true;
       unsubscribeBrowser();
       unsubscribeScanState();
       unsubscribeScanUpdate();
+      unsubscribeUploadLog();
     };
   }, [applyScanResult, pushLog]);
 
@@ -444,108 +462,142 @@ export function App(): ReactElement {
 
       <aside className="tool-pane" aria-label="视频采集控制面板">
         <header className="tool-header">
-          <div>
-            <p className="eyebrow">Video Workbench</p>
-            <h1>CrawlWebElectron</h1>
+          <div className="tool-header-icon">
+            <LayoutGrid size={18} />
           </div>
-          <span className={`state-pill ${scanState.status}`}>{scanState.status}</span>
+          <div className="tool-header-title">
+            AUTOMATION WEBTOOL UI v4.0 <span style={{ color: '#38bdf8' }}>[GLOBAL DASHBOARD]</span>
+          </div>
         </header>
-
-        <section className="status-strip" aria-label="当前状态">
-          <Metric label="Page" value={hostLabel(pageState.url)} />
-          <Metric label="Candidates" value={String(candidates.length)} />
-          <Metric label="Selected" value={String(selectedCount)} />
-          <Metric label="Queue" value={String(queue.length)} />
-        </section>
-
-        <section className="session-strip">
-          <Info size={15} />
-          <span>{sessionSummary ? `Session ${sessionSummary.partition}` : "Session loading"}</span>
-          <span>{scanState.reason}</span>
-        </section>
-
-        <section className="control-bar" aria-label="扫描操作">
-          <button type="button" onClick={() => void scanCurrentPage()} disabled={Boolean(busyAction)}>
-            <Search size={17} />
-            <span>Scan</span>
+        <div className="tab-bar">
+          <button
+            className={`tab-btn ${activeTab === "scraper" ? "active" : ""}`}
+            onClick={() => setActiveTab("scraper")}
+          >
+            <Search size={15} />
+            Scraper
           </button>
-          <button type="button" onClick={() => void startAutoScan()} disabled={scanBusy || Boolean(busyAction)}>
-            <Play size={17} />
-            <span>Auto</span>
+          <button
+            className={`tab-btn ${activeTab === "publish" ? "active" : ""}`}
+            onClick={() => setActiveTab("publish")}
+          >
+            <Send size={15} />
+            Publish
           </button>
-          <button type="button" onClick={() => void stopAutoScan()} disabled={!scanBusy && scanState.status !== "paused"}>
-            <Square size={17} />
-            <span>Stop</span>
-          </button>
-          <button type="button" onClick={() => void pauseAutoScan()} disabled={!scanBusy}>
-            <Pause size={17} />
-            <span>Pause</span>
-          </button>
-          <button type="button" onClick={() => void resumeAutoScan()} disabled={scanState.status !== "paused"}>
-            <Play size={17} />
-            <span>Resume</span>
-          </button>
-          <button type="button" onClick={clearCandidates} disabled={candidates.length === 0}>
-            <Trash2 size={17} />
-            <span>Clear</span>
-          </button>
-          <button type="button" onClick={addSelectedToQueue} disabled={selectedCount === 0}>
-            <ListPlus size={17} />
-            <span>Queue</span>
-          </button>
-        </section>
-
-        <section className="candidate-section">
-          <h2>
-            <Link2 size={17} />
-            Candidates
-          </h2>
-          <div className="candidate-list">
-            {candidates.length === 0 ? <p className="muted">No candidates.</p> : null}
-            {candidates.map((candidate) => (
-              <CandidateRow
-                candidate={candidate}
-                checked={selectedSet.has(candidate.id)}
-                queued={queuedSet.has(candidate.id)}
-                key={candidate.id}
-                onOpen={() => void window.crawlWeb.browser.navigate(candidate.pageUrl)}
-                onToggle={() => toggleCandidate(candidate)}
-              />
-            ))}
-          </div>
-        </section>
-
-        <section className="queue-section">
-          <h2>
-            <ClipboardList size={17} />
-            Queue
-          </h2>
-          <div className="queue-list">
-            {queue.length === 0 ? <p className="muted">No queued candidates.</p> : null}
-            {queue.map((item) => (
-              <div className="queue-row" key={item.id}>
-                <span>{item.candidate.title}</span>
-                <strong>{statusLabel(item.status)}</strong>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="log-section">
-          <h2>
-            <Terminal size={17} />
+          <button
+            className={`tab-btn ${activeTab === "logs" ? "active" : ""}`}
+            onClick={() => setActiveTab("logs")}
+          >
+            <Terminal size={15} />
             Logs
-          </h2>
-          <div className="log-list">
-            {activity.length === 0 ? <p className="muted">No activity yet.</p> : null}
-            {activity.map((item) => (
-              <div className={`log-row ${item.level}`} key={item.id}>
-                <time>{item.at}</time>
-                <span>{item.message}</span>
+          </button>
+        </div>
+
+        {activeTab === "scraper" && (
+          <>
+            <section className="status-strip" aria-label="当前状态">
+              <Metric label="Page" value={hostLabel(pageState.url)} />
+              <Metric label="Candidates" value={String(candidates.length)} />
+              <Metric label="Selected" value={String(selectedCount)} />
+              <Metric label="Queue" value={String(queue.length)} />
+            </section>
+
+            <section className="session-strip">
+              <Info size={15} />
+              <span>{sessionSummary ? `Session ${sessionSummary.partition}` : "Session loading"}</span>
+              <span>{scanState.reason}</span>
+            </section>
+
+            <section className="control-bar" aria-label="扫描操作">
+              <button type="button" onClick={() => void scanCurrentPage()} disabled={Boolean(busyAction)}>
+                <Search size={17} />
+                <span>Scan</span>
+              </button>
+              <button type="button" onClick={() => void startAutoScan()} disabled={scanBusy || Boolean(busyAction)}>
+                <Play size={17} />
+                <span>Auto</span>
+              </button>
+              <button type="button" onClick={() => void stopAutoScan()} disabled={!scanBusy && scanState.status !== "paused"}>
+                <Square size={17} />
+                <span>Stop</span>
+              </button>
+              <button type="button" onClick={() => void pauseAutoScan()} disabled={!scanBusy}>
+                <Pause size={17} />
+                <span>Pause</span>
+              </button>
+              <button type="button" onClick={() => void resumeAutoScan()} disabled={scanState.status !== "paused"}>
+                <Play size={17} />
+                <span>Resume</span>
+              </button>
+              <button type="button" onClick={clearCandidates} disabled={candidates.length === 0}>
+                <Trash2 size={17} />
+                <span>Clear</span>
+              </button>
+              <button type="button" onClick={addSelectedToQueue} disabled={selectedCount === 0}>
+                <ListPlus size={17} />
+                <span>Queue</span>
+              </button>
+            </section>
+
+            <section className="candidate-section">
+              <h2>
+                <Link2 size={17} />
+                Candidates
+              </h2>
+              <div className="candidate-list">
+                {candidates.length === 0 ? <p className="muted">No candidates.</p> : null}
+                {candidates.map((candidate) => (
+                  <CandidateRow
+                    candidate={candidate}
+                    checked={selectedSet.has(candidate.id)}
+                    queued={queuedSet.has(candidate.id)}
+                    key={candidate.id}
+                    onOpen={() => void window.crawlWeb.browser.navigate(candidate.pageUrl)}
+                    onToggle={() => toggleCandidate(candidate)}
+                  />
+                ))}
               </div>
-            ))}
-          </div>
-        </section>
+            </section>
+
+            <section className="queue-section">
+              <h2>
+                <ClipboardList size={17} />
+                Queue
+              </h2>
+              <div className="queue-list">
+                {queue.length === 0 ? <p className="muted">No queued candidates.</p> : null}
+                {queue.map((item) => (
+                  <div className="queue-row" key={item.id}>
+                    <span>{item.candidate.title}</span>
+                    <strong>{statusLabel(item.status)}</strong>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </>
+        )}
+
+        {activeTab === "publish" && (
+          <PublishPanel />
+        )}
+
+        {activeTab === "logs" && (
+          <section className="log-section flex-1 h-full">
+            <h2>
+              <Terminal size={17} />
+              Logs
+            </h2>
+            <div className="log-list h-full">
+              {activity.length === 0 ? <p className="muted">No activity yet.</p> : null}
+              {activity.map((item) => (
+                <div className={`log-row ${item.level}`} key={item.id}>
+                  <time>{item.at}</time>
+                  <span>{item.message}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </aside>
     </main>
   );
