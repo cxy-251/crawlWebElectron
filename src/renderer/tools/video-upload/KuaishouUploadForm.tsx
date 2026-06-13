@@ -51,10 +51,10 @@ export function KuaishouUploadForm({
     ? "继续当前视频并写入参数"
     : form.videoPath
       ? "上传所选视频进入编辑页"
-      : "选择视频并上传新视频";
+      : "上传新视频";
   const uploadActionHint = pageHasEditableContent
     ? "当前页面已有可编辑内容；未选择新视频时只写入网页参数。"
-    : "未选择视频时会先弹出本地文件选择窗口，再进入快手上传入口。";
+    : "先填写或选择视频路径；主上传按钮不会弹出文件选择窗口。";
 
   return (
     <Card title="单个快手视频任务">

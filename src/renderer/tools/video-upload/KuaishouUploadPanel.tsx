@@ -277,13 +277,9 @@ export function KuaishouUploadPanel() {
         return;
       }
 
-      let videoPath = form.videoPath;
+      const videoPath = form.videoPath.trim();
       if (!videoPath) {
-        videoPath = await pickLocalFile("video", "videoPath");
-      }
-
-      if (!videoPath) {
-        setSyncError("已取消选择视频。");
+        setSyncError("请先填写或选择视频路径。");
         return;
       }
 

@@ -98,6 +98,6 @@ function getSmartAction(
     label: "上传新视频",
     disabled: false,
     onClick: actions.onUploadNew,
-    hint: "当前没有检测到可编辑内容，点击后会先检测页面，再选择本地视频并进入上传流程。"
+    hint: "当前没有检测到可编辑内容，请先填写或选择视频路径，再点击进入上传流程。"
   };
 }
