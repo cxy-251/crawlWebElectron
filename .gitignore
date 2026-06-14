@@ -8,10 +8,10 @@ dist/
 *.sqlite
 *.sqlite-shm
 *.sqlite-wal
-local-api-usage/
+local-api-usage/*
+!local-api-usage/batch-publish-kuaishou.mjs
+!local-api-usage/generate-kuaishou-tasks.mjs
+!local-api-usage/README.md
 *.jsonl
 *.state.json
 tasks.*.json
-src/main/browser-automation/
-src/main/ipc/browserAutomationIpcHandlers.ts
-src/renderer/tools/browser-automation/
