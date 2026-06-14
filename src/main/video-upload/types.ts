@@ -132,7 +132,7 @@ export type KuaishouPublishTimingMode = "immediate" | "scheduled";
 
 export type KuaishouPublishMode = "manual_confirm" | "auto_publish";
 
-export type KuaishouUploadIntent = "new_video" | "continue_current";
+export type KuaishouUploadIntent = "new_video" | "continue_current" | "current_intake";
 
 export type KuaishouDraftPolicy = "pause" | "continue";
 

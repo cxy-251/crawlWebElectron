@@ -19,7 +19,11 @@ export const defaultKuaishouElementProfile: KuaishouElementProfile = {
       { type: "text", value: "发布视频", exact: false, note: "创作者首页发布视频入口" },
       { type: "text", value: "上传视频", exact: false, note: "上传入口" }
     ],
-    fileInput: [{ type: "css", value: "input[type='file']", note: "视频文件 input" }],
+    fileInput: [
+      { type: "css", value: "input[type='file'][accept*='video']", note: "视频文件 input" },
+      { type: "css", value: "input[type='file']:not([accept*='image'])", note: "非图片 file input" },
+      { type: "css", value: "input[type='file']", note: "视频文件 input 兜底" }
+    ],
     captionEditor: [
       { type: "placeholder", value: "添加作品描述", note: "文案输入框" },
       { type: "contentEditable", nearText: "作品描述", note: "contenteditable 文案编辑区" },

@@ -12,3 +12,6 @@ local-api-usage/
 *.jsonl
 *.state.json
 tasks.*.json
+src/main/browser-automation/
+src/main/ipc/browserAutomationIpcHandlers.ts
+src/renderer/tools/browser-automation/

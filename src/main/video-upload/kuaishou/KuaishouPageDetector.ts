@@ -92,12 +92,31 @@ export class KuaishouPageDetector {
     const hasUploadEntryButton = this.hasMatch(resolutions, "uploadEntryButton");
     const hasPublishButton = domCapabilities.hasPublishButton;
     const hasErrorToast = this.hasMatch(resolutions, "errorToast");
+    const hasCoverSettings = this.hasMatch(resolutions, "coverButton");
+    const hasCollectionSelect = this.hasMatch(resolutions, "collectionSelect");
+    const hasInteractionSettings =
+      this.hasMatch(resolutions, "allowSameFrameCheckbox") ||
+      this.hasMatch(resolutions, "allowDownloadCheckbox") ||
+      this.hasMatch(resolutions, "showNearbyCheckbox");
+    const hasVisibilitySettings =
+      this.hasMatch(resolutions, "visibilityPublicRadio") ||
+      this.hasMatch(resolutions, "visibilityFriendsRadio") ||
+      this.hasMatch(resolutions, "visibilityPrivateRadio");
+    const hasPublishTimingSettings = this.hasMatch(resolutions, "publishNowRadio") || this.hasMatch(resolutions, "scheduledPublishRadio");
     const hasUploadProgress = domCapabilities.hasUploadProgress || (this.isPublishContext(url) && this.hasMatch(resolutions, "uploadProgressHints"));
     const hasUploadComplete =
       domCapabilities.hasUploadComplete ||
       ((domCapabilities.hasCaptionEditor || domCapabilities.hasPublishButton || hasUploadProgress) && this.hasMatch(resolutions, "uploadCompleteHints"));
-    const hasEditableContent = hasCaptionEditor || hasPublishTimeInput || hasPublishButton || hasUploadProgress || hasUploadComplete;
-    const hasWorkflowHint = hasEditableContent || hasFileInput || hasUploadEntryButton;
+    const hasEditableContent =
+      hasCaptionEditor ||
+      hasPublishTimeInput ||
+      hasPublishButton ||
+      hasCollectionSelect ||
+      hasInteractionSettings ||
+      hasVisibilitySettings ||
+      hasPublishTimingSettings ||
+      hasCoverSettings;
+    const hasWorkflowHint = hasEditableContent || hasFileInput || hasUploadEntryButton || hasUploadProgress || hasUploadComplete;
     const hasLoginHint = this.hasMatch(resolutions, "loginRequiredHints");
     const loginRequired = /login|passport/i.test(url) || (hasLoginHint && !hasWorkflowHint);
 
@@ -108,25 +127,19 @@ export class KuaishouPageDetector {
       hasPublishTimeInput,
       hasFileInput,
       hasUploadEntryButton,
-      hasCoverSettings: this.hasMatch(resolutions, "coverButton"),
+      hasCoverSettings,
       hasPkCoverSwitch: this.hasMatch(resolutions, "pkCoverSwitch"),
       hasChapterButton: this.hasMatch(resolutions, "chapterButton"),
       hasAuthorServiceSelect: this.hasMatch(resolutions, "authorServiceSelect"),
       hasBenefitSelect: this.hasMatch(resolutions, "benefitSelect"),
       hasHotspotInput: this.hasMatch(resolutions, "hotspotInput"),
       hasAuthorStatementInput: this.hasMatch(resolutions, "authorStatementInput"),
-      hasCollectionSelect: this.hasMatch(resolutions, "collectionSelect"),
+      hasCollectionSelect,
       hasLocationRegionSelect: this.hasMatch(resolutions, "locationRegionSelect"),
       hasLocationAddressInput: this.hasMatch(resolutions, "locationAddressInput"),
-      hasInteractionSettings:
-        this.hasMatch(resolutions, "allowSameFrameCheckbox") ||
-        this.hasMatch(resolutions, "allowDownloadCheckbox") ||
-        this.hasMatch(resolutions, "showNearbyCheckbox"),
-      hasVisibilitySettings:
-        this.hasMatch(resolutions, "visibilityPublicRadio") ||
-        this.hasMatch(resolutions, "visibilityFriendsRadio") ||
-        this.hasMatch(resolutions, "visibilityPrivateRadio"),
-      hasPublishTimingSettings: this.hasMatch(resolutions, "publishNowRadio") || this.hasMatch(resolutions, "scheduledPublishRadio"),
+      hasInteractionSettings,
+      hasVisibilitySettings,
+      hasPublishTimingSettings,
       hasUploadProgress,
       hasUploadComplete,
       hasPublishButton,
@@ -143,7 +156,13 @@ export class KuaishouPageDetector {
     if (capabilities.hasUploadProgress) return "uploading";
     if (capabilities.hasUploadComplete || capabilities.hasPublishButton) return "waiting_publish";
     if (capabilities.hasEditableContent) return "upload_edit";
-    if (capabilities.hasDraftContinueButton || capabilities.hasFileInput || capabilities.hasUploadEntryButton) return "upload_entry";
+    if (
+      capabilities.hasDraftContinueButton ||
+      capabilities.hasFileInput ||
+      (capabilities.hasUploadEntryButton && this.isPublishContext(url))
+    ) {
+      return "upload_entry";
+    }
     if (lowerUrl.includes("cp.kuaishou.com")) return "creator_home";
     return "unknown";
   }
@@ -173,8 +192,11 @@ export class KuaishouPageDetector {
       merged.hasCaptionEditor ||
       merged.hasPublishTimeInput ||
       merged.hasPublishButton ||
-      merged.hasUploadProgress ||
-      merged.hasUploadComplete;
+      merged.hasCollectionSelect ||
+      merged.hasInteractionSettings ||
+      merged.hasVisibilitySettings ||
+      merged.hasPublishTimingSettings ||
+      merged.hasCoverSettings;
     merged.loginRequired = Boolean(base.loginRequired || patch.loginRequired);
     return merged;
   }

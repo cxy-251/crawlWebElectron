@@ -4,6 +4,7 @@ import type { ElementProfileRepository } from "../storage/repositories/ElementPr
 import type { TaskArtifactRepository } from "../storage/repositories/TaskArtifactRepository";
 import type { TaskLogRepository } from "../storage/repositories/TaskLogRepository";
 import type { UploadTaskRepository } from "../storage/repositories/UploadTaskRepository";
+import { registerBrowserAutomationIpcHandlers } from "./browserAutomationIpcHandlers";
 import { registerBrowserIpcHandlers } from "./browserIpcHandlers";
 import { registerKuaishouIpcHandlers } from "./kuaishouIpcHandlers";
 import { registerToolIpcHandlers } from "./toolIpcHandlers";
@@ -21,6 +22,7 @@ export type IpcContext = {
 
 export function registerIpcHandlers(context: IpcContext): void {
   registerBrowserIpcHandlers(context);
+  registerBrowserAutomationIpcHandlers(context);
   registerToolIpcHandlers();
   registerKuaishouIpcHandlers(context);
 }

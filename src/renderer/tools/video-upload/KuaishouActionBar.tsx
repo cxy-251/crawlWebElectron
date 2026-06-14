@@ -6,24 +6,30 @@ export function KuaishouActionBar({
   detection,
   onOpenHome,
   onIdentify,
+  onEnterUploadPage,
   onContinueEditing,
-  onUploadNew,
+  onUploadVideo,
+  onWaitForEditPage,
   busy,
   error
 }: {
   detection: KuaishouPageDetection | null;
   onOpenHome: () => void;
   onIdentify: () => void;
+  onEnterUploadPage: () => void;
   onContinueEditing: () => void;
-  onUploadNew: () => void;
+  onUploadVideo: () => void;
+  onWaitForEditPage: () => void;
   busy?: boolean;
   error: string;
 }) {
   const pageType = detection?.pageType || "unknown";
-  const smartAction = getSmartAction(detection?.capabilities, {
+  const smartAction = getSmartAction(detection, {
     onIdentify,
+    onEnterUploadPage,
     onContinueEditing,
-    onUploadNew
+    onUploadVideo,
+    onWaitForEditPage
   });
 
   return (
@@ -51,13 +57,16 @@ export function KuaishouActionBar({
 }
 
 function getSmartAction(
-  capabilities: KuaishouPageCapabilities | undefined,
+  detection: KuaishouPageDetection | null,
   actions: {
     onIdentify: () => void;
+    onEnterUploadPage: () => void;
     onContinueEditing: () => void;
-    onUploadNew: () => void;
+    onUploadVideo: () => void;
+    onWaitForEditPage: () => void;
   }
 ) {
+  const capabilities: KuaishouPageCapabilities | undefined = detection?.capabilities;
   if (!capabilities) {
     return {
       label: "识别当前页面",
@@ -73,6 +82,15 @@ function getSmartAction(
       disabled: true,
       onClick: actions.onIdentify,
       hint: "当前需要登录，请先在左侧浏览器完成登录。"
+    };
+  }
+
+  if (capabilities.hasUploadProgress || detection?.pageType === "uploading") {
+    return {
+      label: "等待进入编辑页",
+      disabled: false,
+      onClick: actions.onWaitForEditPage,
+      hint: "视频仍在上传或处理中，只刷新状态，不写入发布参数。"
     };
   }
 
@@ -94,10 +112,28 @@ function getSmartAction(
     };
   }
 
+  if (detection?.pageType === "upload_entry" && capabilities.hasFileInput) {
+    return {
+      label: "上传视频进入编辑页",
+      disabled: false,
+      onClick: actions.onUploadVideo,
+      hint: "当前已到视频文件选择阶段，点击后会使用工具区的视频路径。"
+    };
+  }
+
+  if (detection?.pageType === "upload_entry" && capabilities.hasUploadEntryButton) {
+    return {
+      label: "进入上传视频页",
+      disabled: false,
+      onClick: actions.onEnterUploadPage,
+      hint: "当前在发布作品入口页，点击页面里的上传视频入口，不要求视频路径。"
+    };
+  }
+
   return {
-    label: "上传新视频",
+    label: "进入发布作品页",
     disabled: false,
-    onClick: actions.onUploadNew,
-    hint: "当前没有检测到可编辑内容，请先填写或选择视频路径，再点击进入上传流程。"
+    onClick: actions.onEnterUploadPage,
+    hint: "先进入快手发布作品页面；到上传视频阶段后才需要视频路径。"
   };
 }

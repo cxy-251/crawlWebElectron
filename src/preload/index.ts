@@ -18,6 +18,16 @@ const appApi: AppApi = {
       return ipcRenderer.invoke("tools:list-tools");
     }
   },
+  browserAutomation: {
+    boss: {
+      async openBossPage(url: string) {
+        return ipcRenderer.invoke("browser-automation:boss:open-page", url);
+      },
+      async clickFirstImmediateChat() {
+        return ipcRenderer.invoke("browser-automation:boss:click-first-immediate-chat");
+      }
+    }
+  },
   kuaishou: {
     async openHome(): Promise<void> {
       await ipcRenderer.invoke("kuaishou:open-home");

@@ -1,5 +1,5 @@
 export type ToolInfo = {
-  id: "video-upload";
+  id: "video-upload" | "browser-automation";
   name: string;
   route: string;
   enabled: boolean;
@@ -12,6 +12,7 @@ export type LocalFilePickResult = {
   filePath: string;
 };
 
+import type { BrowserAutomationActionResult } from "../main/browser-automation/types";
 import type {
   ElementTestResult,
   KuaishouElementKey,
@@ -34,6 +35,12 @@ export type AppApi = {
   };
   tools: {
     listTools(): Promise<ToolInfo[]>;
+  };
+  browserAutomation: {
+    boss: {
+      openBossPage(url: string): Promise<{ url: string; title: string }>;
+      clickFirstImmediateChat(): Promise<BrowserAutomationActionResult>;
+    };
   };
   kuaishou: {
     openHome(): Promise<void>;

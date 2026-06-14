@@ -224,6 +224,7 @@ export function KuaishouUploadPanel() {
 
   async function continueEditingOrStartNewUpload() {
     await run(async () => {
+      setSyncError("");
       const nextDetection = await window.appApi.kuaishou.continueEditingOrStartNewUpload();
       setDetection(nextDetection);
 
@@ -235,6 +236,26 @@ export function KuaishouUploadPanel() {
       if (nextDetection.capabilities.hasEditableContent) {
         await readPageFields();
       }
+    });
+  }
+
+  async function waitForEditPage() {
+    await run(async () => {
+      setSyncError("");
+      const nextDetection = await detectAndStore();
+
+      if (nextDetection.capabilities.hasUploadProgress) {
+        setSyncError("视频仍在上传或处理中，请稍后再次识别。");
+        return;
+      }
+
+      if (nextDetection.capabilities.hasEditableContent) {
+        await readPageFields();
+        setSyncError("已进入发布参数编辑页。");
+        return;
+      }
+
+      setSyncError("还没有检测到发布参数编辑控件，请等待页面跳转完成。");
     });
   }
 
@@ -266,9 +287,21 @@ export function KuaishouUploadPanel() {
         return;
       }
 
+      if (nextDetection.capabilities.hasUploadProgress) {
+        setSyncError("视频仍在上传或处理中，请等待进入发布参数编辑页。");
+        return;
+      }
+
+      const videoPath = form.videoPath.trim();
+
       if (nextDetection.capabilities.hasEditableContent) {
         await writePageFields();
         setSyncError("当前已在编辑页，已写入网页参数；新视频上传不会覆盖当前编辑内容。");
+        return;
+      }
+
+      if (!nextDetection.capabilities.hasFileInput) {
+        setSyncError("当前页面还没有视频文件选择入口，请先点击“进入上传视频页”。");
         return;
       }
 
@@ -277,12 +310,12 @@ export function KuaishouUploadPanel() {
         return;
       }
 
-      const videoPath = form.videoPath.trim();
       if (!videoPath) {
         setSyncError("请先填写或选择视频路径。");
         return;
       }
 
+      setSyncError("正在设置视频文件，等待上传开始...");
       const result = await window.appApi.kuaishou.uploadSingleVideo({
         platform: "kuaishou",
         accountId: "default-kuaishou",
@@ -307,14 +340,16 @@ export function KuaishouUploadPanel() {
         useBestTimeSuggestion: form.useBestTimeSuggestion,
         publishMode: form.publishMode,
         elementProfileId: profile?.id,
-        uploadIntent: "new_video",
+        uploadIntent: "current_intake",
         draftPolicy: "pause",
         dirtyFields: form.dirtyFields.filter((field): field is KuaishouWebEditableField =>
           WEB_EDITABLE_FIELDS.includes(field as KuaishouWebEditableField)
         )
       });
       setTask(result);
+      setLogs(await window.appApi.kuaishou.getTaskLogs(result.taskId));
       await detectAndStore();
+      setSyncError(result.ok ? "已进入发布参数编辑页或等待发布确认。" : formatTaskError(result));
     });
   }
 
@@ -414,8 +449,10 @@ export function KuaishouUploadPanel() {
           })
         }
         onIdentify={() => void refreshDetection()}
+        onEnterUploadPage={() => void continueEditingOrStartNewUpload()}
         onContinueEditing={() => void continueEditingOrStartNewUpload()}
-        onUploadNew={() => void uploadVideo()}
+        onUploadVideo={() => void uploadVideo()}
+        onWaitForEditPage={() => void waitForEditPage()}
       />
       <KuaishouPageStatePanel detection={detection} />
       {conflictPanel}
@@ -508,4 +545,13 @@ function formatActionError(message: string): string {
   } catch {
     return message;
   }
+}
+
+function formatTaskError(result: KuaishouUploadTaskResult): string {
+  const error = result.error;
+  if (!error) {
+    return `任务状态：${result.status}`;
+  }
+
+  return [error.code, error.message].filter(Boolean).join("：");
 }

@@ -143,6 +143,17 @@ export class KuaishouLocalApiServer {
           result = await this.adapter.confirmPublish(result.taskId);
         }
 
+        if (body.confirmPublish === true && result.ok && result.status === "published") {
+          try {
+            await this.adapter.prepareForNextUploadTask();
+          } catch (error) {
+            console.warn("[api:kuaishou] published task but failed to prepare next upload page", {
+              taskId: result.taskId,
+              error: error instanceof Error ? error.message : String(error)
+            });
+          }
+        }
+
         this.send(response, 200, { ok: result.ok, data: result });
         return;
       }
@@ -298,7 +309,8 @@ export class KuaishouLocalApiServer {
       publishMode: "manual_confirm",
       timeoutMs: typeof body.timeoutMs === "number" ? body.timeoutMs : undefined,
       dirtyFields,
-      uploadIntent: body.uploadIntent === "continue_current" ? "continue_current" : "new_video",
+      uploadIntent:
+        body.uploadIntent === "continue_current" ? "continue_current" : body.uploadIntent === "current_intake" ? "current_intake" : "new_video",
       draftPolicy: body.draftPolicy === "continue" ? "continue" : "pause"
     };
   }

@@ -492,7 +492,15 @@ export function kuaishouInspectPageScript(): string {
         hasErrorToast: text.includes("失败") || text.includes("错误"),
         loginRequired: /login|passport/i.test(location.href) || ((text.includes("立即登录") || text.includes("扫码登录") || text.includes("请先登录")) && !captionEditor && !document.querySelector("input[type='file']"))
       };
-      capabilities.hasEditableContent = capabilities.hasCaptionEditor || capabilities.hasPublishTimeInput || capabilities.hasPublishButton || capabilities.hasUploadProgress || capabilities.hasUploadComplete;
+      capabilities.hasEditableContent = Boolean(
+        capabilities.hasCaptionEditor ||
+        capabilities.hasPublishTimeInput ||
+        capabilities.hasCollectionSelect ||
+        capabilities.hasInteractionSettings ||
+        capabilities.hasVisibilitySettings ||
+        capabilities.hasPublishTimingSettings ||
+        capabilities.hasPublishButton
+      );
       const matchedKeys = Object.keys(capabilities).filter((key) => capabilities[key] === true);
       return { capabilities, fields, matchedKeys };
     })()

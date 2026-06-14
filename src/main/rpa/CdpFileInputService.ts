@@ -44,11 +44,19 @@ export class CdpFileInputService {
         throw new Error("File input element not found");
       }
 
-      const requested = (await debuggerApi.sendCommand("DOM.requestNode", { objectId })) as { nodeId: number };
       await debuggerApi.sendCommand("DOM.setFileInputFiles", {
-        nodeId: requested.nodeId,
+        objectId,
         files
       });
+      await debuggerApi
+        .sendCommand("Runtime.callFunctionOn", {
+          objectId,
+          functionDeclaration: `function() {
+            this.dispatchEvent(new Event("input", { bubbles: true }));
+            this.dispatchEvent(new Event("change", { bubbles: true }));
+          }`
+        })
+        .catch(() => undefined);
     } finally {
       await debuggerApi.sendCommand("Runtime.releaseObjectGroup", { objectGroup: "crawl-web-electron" }).catch(() => undefined);
       if (attachedHere && debuggerApi.isAttached()) {
@@ -57,4 +65,3 @@ export class CdpFileInputService {
     }
   }
 }
-

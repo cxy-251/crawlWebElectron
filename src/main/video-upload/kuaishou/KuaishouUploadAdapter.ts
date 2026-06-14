@@ -40,6 +40,14 @@ export class KuaishouUploadAdapter {
     await this.browserWorkspace.navigation.goto(firstUrl);
   }
 
+  async prepareForNextUploadTask(): Promise<KuaishouPageDetection> {
+    const profile = this.repositories.elementProfileRepository.getActiveKuaishouProfile();
+    const driver = new RpaDriver(this.browserWorkspace.webContents);
+    const detector = new KuaishouPageDetector(driver, profile);
+    await this.openUploadPage();
+    return this.waitForPageState(detector, "next_upload_page_opened", (detection) => this.isKnownUploadSurface(detection));
+  }
+
   async continueEditingOrStartNewUpload(): Promise<KuaishouPageDetection> {
     console.info("[kuaishou:continue] detect start");
     const profile = this.repositories.elementProfileRepository.getActiveKuaishouProfile();
@@ -70,8 +78,18 @@ export class KuaishouUploadAdapter {
         });
         const draftContinueButton = await binding.draftContinueButton();
         await draftContinueButton.click();
-        await this.waitForPageSettle();
-        detection = await detector.detectPage();
+        detection = await this.waitForPageState(
+          detector,
+          "draft_continue_clicked",
+          (nextDetection) =>
+            !nextDetection.capabilities.hasDraftContinueButton &&
+            (nextDetection.capabilities.loginRequired ||
+              nextDetection.capabilities.hasUploadEntryButton ||
+              nextDetection.capabilities.hasFileInput ||
+              nextDetection.capabilities.hasEditableContent ||
+              nextDetection.capabilities.hasUploadProgress ||
+              nextDetection.capabilities.hasUploadComplete)
+        );
         if (detection.capabilities.hasEditableContent) {
           await binding.readPageState();
         }
@@ -115,8 +133,16 @@ export class KuaishouUploadAdapter {
         });
         const uploadEntryButton = await binding.uploadEntryButton();
         await uploadEntryButton.click();
-        await this.waitForPageSettle();
-        detection = await detector.detectPage();
+        detection = await this.waitForPageState(
+          detector,
+          "upload_entry_clicked",
+          (nextDetection) =>
+            nextDetection.capabilities.loginRequired ||
+            nextDetection.capabilities.hasDraftContinueButton ||
+            nextDetection.capabilities.hasFileInput ||
+            nextDetection.capabilities.hasEditableContent ||
+            nextDetection.capabilities.hasUploadProgress
+        );
 
         if (!detection.capabilities.hasEditableContent && !detection.capabilities.hasFileInput) {
           console.info("[kuaishou:continue] action fallback_open_upload_page", {
@@ -124,8 +150,9 @@ export class KuaishouUploadAdapter {
             url: detection.url
           });
           await this.openUploadPage();
-          await this.waitForPageSettle();
-          detection = await detector.detectPage();
+          detection = await this.waitForPageState(detector, "fallback_upload_page_opened", (nextDetection) =>
+            this.isKnownUploadSurface(nextDetection)
+          );
         }
 
         console.info("[kuaishou:continue] done", {
@@ -140,8 +167,7 @@ export class KuaishouUploadAdapter {
         url: detection.url
       });
       await this.openUploadPage();
-      await this.waitForPageSettle();
-      detection = await detector.detectPage();
+      detection = await this.waitForPageState(detector, "upload_page_opened", (nextDetection) => this.isKnownUploadSurface(nextDetection));
       console.info("[kuaishou:continue] done", {
         pageType: detection.pageType,
         url: detection.url
@@ -210,7 +236,107 @@ export class KuaishouUploadAdapter {
     return new KuaishouUploadService(this.browserWorkspace, this.repositories, () => this.openUploadPage());
   }
 
-  private async waitForPageSettle(): Promise<void> {
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+  private async waitForPageState(
+    detector: KuaishouPageDetector,
+    label: string,
+    predicate: (detection: KuaishouPageDetection) => boolean,
+    options: { timeoutMs?: number; intervalMs?: number; settleMs?: number } = {}
+  ): Promise<KuaishouPageDetection> {
+    const timeoutMs = options.timeoutMs ?? 60000;
+    const intervalMs = options.intervalMs ?? 750;
+    const settleMs = options.settleMs ?? 300;
+    const startedAt = Date.now();
+    let lastDetection: KuaishouPageDetection | undefined;
+    let lastError = "";
+
+    console.info("[kuaishou:continue] wait start", {
+      label,
+      timeoutMs,
+      intervalMs,
+      settleMs
+    });
+
+    while (Date.now() - startedAt < timeoutMs) {
+      const elapsedMs = Date.now() - startedAt;
+      try {
+        const detection = await detector.detectPage();
+        lastDetection = detection;
+        console.info("[kuaishou:continue] wait poll", {
+          label,
+          elapsedMs,
+          pageType: detection.pageType,
+          url: detection.url,
+          capabilities: this.keyCapabilities(detection)
+        });
+
+        if (predicate(detection)) {
+          if (settleMs > 0) {
+            await this.sleep(settleMs);
+          }
+          const settledDetection = await detector.detectPage().catch(() => detection);
+          console.info("[kuaishou:continue] wait done", {
+            label,
+            elapsedMs: Date.now() - startedAt,
+            pageType: settledDetection.pageType,
+            url: settledDetection.url,
+            capabilities: this.keyCapabilities(settledDetection)
+          });
+          return settledDetection;
+        }
+      } catch (error) {
+        lastError = error instanceof Error ? error.message : String(error);
+        console.warn("[kuaishou:continue] wait poll failed", {
+          label,
+          elapsedMs,
+          error: lastError
+        });
+      }
+
+      await this.sleep(intervalMs);
+    }
+
+    console.warn("[kuaishou:continue] wait timeout", {
+      label,
+      timeoutMs,
+      lastError,
+      lastDetection: lastDetection
+        ? {
+            pageType: lastDetection.pageType,
+            url: lastDetection.url,
+            capabilities: this.keyCapabilities(lastDetection)
+          }
+        : undefined
+    });
+    return lastDetection || detector.detectPage();
+  }
+
+  private isKnownUploadSurface(detection: KuaishouPageDetection): boolean {
+    const capabilities = detection.capabilities;
+    return Boolean(
+      capabilities.loginRequired ||
+        capabilities.hasDraftContinueButton ||
+        capabilities.hasUploadEntryButton ||
+        capabilities.hasFileInput ||
+        capabilities.hasEditableContent ||
+        capabilities.hasUploadProgress
+    );
+  }
+
+  private keyCapabilities(detection: KuaishouPageDetection) {
+    const capabilities = detection.capabilities;
+    return {
+      loginRequired: capabilities.loginRequired,
+      hasDraftContinueButton: capabilities.hasDraftContinueButton,
+      hasUploadEntryButton: capabilities.hasUploadEntryButton,
+      hasFileInput: capabilities.hasFileInput,
+      hasUploadProgress: capabilities.hasUploadProgress,
+      hasEditableContent: capabilities.hasEditableContent,
+      hasUploadComplete: capabilities.hasUploadComplete,
+      hasPublishButton: capabilities.hasPublishButton
+    };
+  }
+
+  private async sleep(ms: number): Promise<void> {
+    await new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
