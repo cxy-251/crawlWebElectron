@@ -1,29 +1,24 @@
 import { BaseWindow, WebContentsView } from "electron";
 import { BrowserNavigationService } from "./BrowserNavigationService";
 import { BrowserStateService } from "./BrowserStateService";
-import { SessionManager } from "../session/SessionManager";
+import { BrowserProfileId, SessionManager } from "../session/SessionManager";
 
 const TOOL_PANE_WIDTH = 420;
-const MIN_BROWSER_WIDTH = 760;
+const MIN_BROWSER_WIDTH = 1280;
 const DEFAULT_BROWSER_URL = "https://example.com";
+const VERBOSE_BROWSER_CONSOLE = process.env.CWE_VERBOSE_BROWSER_CONSOLE === "1";
 
 export class BrowserWorkspace {
-  readonly view: WebContentsView;
-  readonly navigation: BrowserNavigationService;
-  readonly state: BrowserStateService;
+  view: WebContentsView;
+  navigation: BrowserNavigationService;
+  state: BrowserStateService;
+  private activeProfileId: BrowserProfileId = "kuaishou";
 
   constructor(
     private readonly window: BaseWindow,
-    sessionManager: SessionManager
+    private readonly sessionManager: SessionManager
   ) {
-    this.view = new WebContentsView({
-      webPreferences: {
-        session: sessionManager.getKuaishouSession(),
-        contextIsolation: true,
-        nodeIntegration: false,
-        sandbox: true
-      }
-    });
+    this.view = this.createView(this.activeProfileId);
     this.navigation = new BrowserNavigationService(this.view.webContents);
     this.state = new BrowserStateService(this.view.webContents);
 
@@ -48,6 +43,46 @@ export class BrowserWorkspace {
 
   get webContents() {
     return this.view.webContents;
+  }
+
+  get activeProfile() {
+    return this.activeProfileId;
+  }
+
+  async useProfile(profileId: BrowserProfileId): Promise<void> {
+    if (this.activeProfileId === profileId) return;
+
+    const previousView = this.view;
+    this.activeProfileId = profileId;
+    this.view = this.createView(profileId);
+    this.navigation = new BrowserNavigationService(this.view.webContents);
+    this.state = new BrowserStateService(this.view.webContents);
+    this.registerWebContentsLogs();
+    this.window.contentView.removeChildView(previousView);
+    this.window.contentView.addChildView(this.view);
+    this.updateBounds();
+    previousView.webContents.close({ waitForBeforeUnload: false });
+    console.info("[browser:profile] switched", {
+      profileId,
+      currentUrl: this.view.webContents.getURL()
+    });
+  }
+
+  private createView(profileId: BrowserProfileId): WebContentsView {
+    const view = new WebContentsView({
+      webPreferences: {
+        session: this.sessionManager.getSession(profileId),
+        contextIsolation: true,
+        nodeIntegration: false,
+        sandbox: true
+      }
+    });
+
+    if (profileId === "boss-zhipin") {
+      view.webContents.setUserAgent(this.sessionManager.getChromeCompatibleUserAgent());
+    }
+
+    return view;
   }
 
   private updateBounds(): void {
@@ -117,7 +152,12 @@ export class BrowserWorkspace {
     });
 
     contents.on("console-message", (details) => {
-      console.info("[browser:event] console-message", {
+      if (!VERBOSE_BROWSER_CONSOLE && !["error", "warning"].includes(details.level)) {
+        return;
+      }
+
+      const log = details.level === "error" ? console.error : details.level === "warning" ? console.warn : console.info;
+      log("[browser:event] console-message", {
         level: details.level,
         message: details.message,
         lineNumber: details.lineNumber,

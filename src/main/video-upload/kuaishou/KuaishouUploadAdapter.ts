@@ -31,16 +31,19 @@ export class KuaishouUploadAdapter {
   ) {}
 
   async openHome(): Promise<void> {
+    await this.ensureKuaishouProfile();
     await this.browserWorkspace.navigation.goto(KUAISHOU_HOME);
   }
 
   async openUploadPage(): Promise<void> {
+    await this.ensureKuaishouProfile();
     const profile = this.repositories.elementProfileRepository.getActiveKuaishouProfile();
     const firstUrl = profile.uploadUrlCandidates[0] || KUAISHOU_HOME;
     await this.browserWorkspace.navigation.goto(firstUrl);
   }
 
   async prepareForNextUploadTask(): Promise<KuaishouPageDetection> {
+    await this.ensureKuaishouProfile();
     const profile = this.repositories.elementProfileRepository.getActiveKuaishouProfile();
     const driver = new RpaDriver(this.browserWorkspace.webContents);
     const detector = new KuaishouPageDetector(driver, profile);
@@ -49,6 +52,7 @@ export class KuaishouUploadAdapter {
   }
 
   async continueEditingOrStartNewUpload(): Promise<KuaishouPageDetection> {
+    await this.ensureKuaishouProfile();
     console.info("[kuaishou:continue] detect start");
     const profile = this.repositories.elementProfileRepository.getActiveKuaishouProfile();
     const driver = new RpaDriver(this.browserWorkspace.webContents);
@@ -184,12 +188,14 @@ export class KuaishouUploadAdapter {
   }
 
   async detectPage(): Promise<KuaishouPageDetection> {
+    await this.ensureKuaishouProfile();
     const profile = this.repositories.elementProfileRepository.getActiveKuaishouProfile();
     const driver = new RpaDriver(this.browserWorkspace.webContents);
     return new KuaishouPageDetector(driver, profile).detectPage();
   }
 
   async readPageState(): Promise<KuaishouPageSnapshot> {
+    await this.ensureKuaishouProfile();
     const profile = this.repositories.elementProfileRepository.getActiveKuaishouProfile();
     const driver = new RpaDriver(this.browserWorkspace.webContents);
     const binding = new KuaishouPageBinding(driver, profile, () => new KuaishouPageDetector(driver, profile).detectPage());
@@ -197,6 +203,7 @@ export class KuaishouUploadAdapter {
   }
 
   async readOptions(field: KuaishouOptionField, query = ""): Promise<KuaishouOptionsResult> {
+    await this.ensureKuaishouProfile();
     const profile = this.repositories.elementProfileRepository.getActiveKuaishouProfile();
     const driver = new RpaDriver(this.browserWorkspace.webContents);
     const binding = new KuaishouPageBinding(driver, profile, () => new KuaishouPageDetector(driver, profile).detectPage());
@@ -204,6 +211,7 @@ export class KuaishouUploadAdapter {
   }
 
   async applyFormState(state: KuaishouFormState): Promise<KuaishouPageSnapshot> {
+    await this.ensureKuaishouProfile();
     const profile = this.repositories.elementProfileRepository.getActiveKuaishouProfile();
     const driver = new RpaDriver(this.browserWorkspace.webContents);
     const binding = new KuaishouPageBinding(driver, profile, () => new KuaishouPageDetector(driver, profile).detectPage());
@@ -211,10 +219,12 @@ export class KuaishouUploadAdapter {
   }
 
   async uploadSingleVideo(input: KuaishouUploadTaskInput): Promise<KuaishouUploadTaskResult> {
+    await this.ensureKuaishouProfile();
     return this.service().uploadSingleVideo(input);
   }
 
   async confirmPublish(taskId: string): Promise<KuaishouUploadTaskResult> {
+    await this.ensureKuaishouProfile();
     return this.service().confirmPublish(taskId);
   }
 
@@ -234,6 +244,10 @@ export class KuaishouUploadAdapter {
 
   private service(): KuaishouUploadService {
     return new KuaishouUploadService(this.browserWorkspace, this.repositories, () => this.openUploadPage());
+  }
+
+  private async ensureKuaishouProfile(): Promise<void> {
+    await this.browserWorkspace.useProfile("kuaishou");
   }
 
   private async waitForPageState(

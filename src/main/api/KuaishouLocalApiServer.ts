@@ -1,5 +1,7 @@
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
 import { URL } from "node:url";
+import type { BossZhipinAutomationService } from "../browser-automation/BossZhipinAutomationService";
+import type { BossZhipinBatchMode, BossZhipinFilters } from "../browser-automation/types";
 import type { KuaishouUploadAdapter } from "../video-upload/kuaishou/KuaishouUploadAdapter";
 import { isKuaishouPageActionError } from "../video-upload/kuaishou/KuaishouPageBinding";
 import type {
@@ -45,7 +47,10 @@ const OPTION_FIELDS: KuaishouOptionField[] = [
 export class KuaishouLocalApiServer {
   private server: Server | null = null;
 
-  constructor(private readonly adapter: KuaishouUploadAdapter) {}
+  constructor(
+    private readonly adapter: KuaishouUploadAdapter,
+    private readonly bossService?: BossZhipinAutomationService
+  ) {}
 
   start(): void {
     if (this.server) return;
@@ -84,7 +89,66 @@ export class KuaishouLocalApiServer {
       const method = request.method || "GET";
 
       if (method === "GET" && url.pathname === "/api/health") {
-        this.send(response, 200, { ok: true, service: "crawl-web-electron", platform: "kuaishou" });
+        this.send(response, 200, { ok: true, service: "crawl-web-electron", platforms: ["kuaishou", "boss-zhipin"] });
+        return;
+      }
+
+      if (method === "GET" && url.pathname === "/api/boss/detection") {
+        this.send(response, 200, { ok: true, data: await this.requireBossService().detectPage() });
+        return;
+      }
+
+      if (method === "POST" && url.pathname === "/api/boss/open-page") {
+        const body = await this.readJson(request);
+        this.send(response, 200, { ok: true, data: await this.requireBossService().openBossPage(this.optionalString(body.url)) });
+        return;
+      }
+
+      if (method === "POST" && url.pathname === "/api/boss/open-messages-page") {
+        const body = await this.readJson(request);
+        this.send(response, 200, { ok: true, data: await this.requireBossService().openMessagesPage(this.optionalString(body.url)) });
+        return;
+      }
+
+      if (method === "POST" && url.pathname === "/api/boss/filter-options") {
+        this.send(response, 200, { ok: true, data: await this.requireBossService().readFilterOptions() });
+        return;
+      }
+
+      if (method === "POST" && url.pathname === "/api/boss/apply-filters") {
+        const body = await this.readJson(request);
+        this.send(response, 200, { ok: true, data: await this.requireBossService().applyFilters(this.bossFiltersFromBody(body.filters)) });
+        return;
+      }
+
+      if (method === "POST" && url.pathname === "/api/boss/collect-current-job") {
+        this.send(response, 200, { ok: true, data: await this.requireBossService().collectCurrentJob() });
+        return;
+      }
+
+      if (method === "POST" && url.pathname === "/api/boss/run-batch") {
+        const body = await this.readJson(request);
+        this.send(response, 200, {
+          ok: true,
+          data: await this.requireBossService().runBatch({
+            filters: this.bossFiltersFromBody(body.filters),
+            maxJobs: typeof body.maxJobs === "number" ? body.maxJobs : undefined,
+            mode: this.bossBatchMode(body.mode),
+            applyFilters: body.applyFilters === true,
+            continueOnFilterFailure: body.continueOnFilterFailure !== false
+          })
+        });
+        return;
+      }
+
+      if (method === "POST" && url.pathname === "/api/boss/collect-message-jobs") {
+        const body = await this.readJson(request);
+        this.send(response, 200, {
+          ok: true,
+          data: await this.requireBossService().collectMessageJobs({
+            maxConversations: typeof body.maxConversations === "number" ? body.maxConversations : undefined
+          })
+        });
         return;
       }
 
@@ -319,12 +383,39 @@ export class KuaishouLocalApiServer {
     if (isKuaishouPageActionError(error)) {
       return { ok: false, error: error.details };
     }
+    const details = (error as { details?: unknown })?.details;
+    if (details && typeof details === "object") {
+      return { ok: false, error: details as JsonRecord };
+    }
     const message = error instanceof Error ? error.message : String(error);
     return { ok: false, error: { code: message, message } };
   }
 
   private isOptionField(value: unknown): value is KuaishouOptionField {
     return typeof value === "string" && OPTION_FIELDS.includes(value as KuaishouOptionField);
+  }
+
+  private requireBossService(): BossZhipinAutomationService {
+    if (!this.bossService) {
+      throw new Error("BOSS_SERVICE_NOT_AVAILABLE");
+    }
+    return this.bossService;
+  }
+
+  private bossFiltersFromBody(value: unknown): BossZhipinFilters {
+    const input = this.objectBody(value);
+    return {
+      location: this.optionalString(input.location),
+      jobType: this.optionalString(input.jobType),
+      salary: this.optionalString(input.salary),
+      experience: this.optionalString(input.experience),
+      education: this.optionalString(input.education),
+      companySize: this.optionalString(input.companySize)
+    };
+  }
+
+  private bossBatchMode(value: unknown): BossZhipinBatchMode | undefined {
+    return value === "collect" || value === "chat" || value === "collect_and_chat" ? value : undefined;
   }
 
   private stringValue(value: unknown): string {

@@ -1,4 +1,4 @@
-import { ArrowRight, Bot, Upload } from "lucide-react";
+import { ArrowRight, Bot, TriangleAlert, Upload } from "lucide-react";
 
 export function ToolHome({
   onEnterVideoUpload,
@@ -44,12 +44,16 @@ export function ToolHome({
             <p className="mt-1 text-sm leading-6 text-slate-600">打开网页工具，执行当前页面上的自动化动作。</p>
           </div>
         </div>
+        <div className="mt-3 flex gap-2 rounded-md border border-amber-300 bg-amber-50 p-3 text-sm leading-6 text-amber-900">
+          <TriangleAlert className="mt-0.5 shrink-0" size={17} />
+          <p>高风险：Boss 直聘可能将自动筛选、批量采集或批量沟通判定为违规操作，导致账号临时或永久封禁。请遵守平台规则并谨慎使用。</p>
+        </div>
         <button
           type="button"
           onClick={onEnterBrowserAutomation}
           className="mt-4 inline-flex h-9 items-center gap-2 rounded-md bg-slate-900 px-3 text-sm font-medium text-white hover:bg-slate-800"
         >
-          进入
+          了解风险后进入
           <ArrowRight size={16} />
         </button>
       </section>

@@ -23,8 +23,32 @@ const appApi: AppApi = {
       async openBossPage(url: string) {
         return ipcRenderer.invoke("browser-automation:boss:open-page", url);
       },
+      async openMessagesPage(url) {
+        return ipcRenderer.invoke("browser-automation:boss:open-messages-page", url);
+      },
       async clickFirstImmediateChat() {
         return ipcRenderer.invoke("browser-automation:boss:click-first-immediate-chat");
+      },
+      async detectPage() {
+        return ipcRenderer.invoke("browser-automation:boss:detect-page");
+      },
+      async readFilterOptions() {
+        return ipcRenderer.invoke("browser-automation:boss:filter-options");
+      },
+      async applyFilters(filters) {
+        return ipcRenderer.invoke("browser-automation:boss:apply-filters", filters);
+      },
+      async collectCurrentJob() {
+        return ipcRenderer.invoke("browser-automation:boss:collect-current-job");
+      },
+      async runImmediateChatBatch(config) {
+        return ipcRenderer.invoke("browser-automation:boss:run-immediate-chat-batch", config);
+      },
+      async runBatch(config) {
+        return ipcRenderer.invoke("browser-automation:boss:run-batch", config);
+      },
+      async collectMessageJobs(config) {
+        return ipcRenderer.invoke("browser-automation:boss:collect-message-jobs", config);
       }
     }
   },

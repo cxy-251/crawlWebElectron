@@ -12,7 +12,18 @@ export type LocalFilePickResult = {
   filePath: string;
 };
 
-import type { BrowserAutomationActionResult } from "../main/browser-automation/types";
+import type {
+  BossZhipinBatchConfig,
+  BossZhipinBatchResult,
+  BossZhipinDetection,
+  BossZhipinFilterOptionsResult,
+  BossZhipinFilterResult,
+  BossZhipinFilters,
+  BossZhipinJobInfo,
+  BossZhipinMessageRunConfig,
+  BossZhipinMessageRunResult,
+  BrowserAutomationActionResult
+} from "../main/browser-automation/types";
 import type {
   ElementTestResult,
   KuaishouElementKey,
@@ -39,7 +50,15 @@ export type AppApi = {
   browserAutomation: {
     boss: {
       openBossPage(url: string): Promise<{ url: string; title: string }>;
+      openMessagesPage(url?: string): Promise<{ url: string; title: string }>;
       clickFirstImmediateChat(): Promise<BrowserAutomationActionResult>;
+      detectPage(): Promise<BossZhipinDetection>;
+      readFilterOptions(): Promise<BossZhipinFilterOptionsResult>;
+      applyFilters(filters: BossZhipinFilters): Promise<BossZhipinFilterResult>;
+      collectCurrentJob(): Promise<BossZhipinJobInfo>;
+      runImmediateChatBatch(config: BossZhipinBatchConfig): Promise<BossZhipinBatchResult>;
+      runBatch(config: BossZhipinBatchConfig): Promise<BossZhipinBatchResult>;
+      collectMessageJobs(config: BossZhipinMessageRunConfig): Promise<BossZhipinMessageRunResult>;
     };
   };
   kuaishou: {

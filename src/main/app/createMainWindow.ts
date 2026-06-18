@@ -2,6 +2,7 @@ import { BaseWindow } from "electron";
 import { KuaishouLocalApiServer } from "../api/KuaishouLocalApiServer";
 import { createAppShell } from "./createAppShell";
 import { BrowserWorkspace } from "../browser/BrowserWorkspace";
+import { BossZhipinAutomationService } from "../browser-automation/BossZhipinAutomationService";
 import { registerIpcHandlers } from "../ipc/registerIpcHandlers";
 import { SessionManager } from "../session/SessionManager";
 import { Database } from "../storage/Database";
@@ -15,9 +16,9 @@ import { KuaishouUploadAdapter } from "../video-upload/kuaishou/KuaishouUploadAd
 
 export function createMainWindow(): BaseWindow {
   const window = new BaseWindow({
-    width: 1440,
-    height: 920,
-    minWidth: 1180,
+    width: 1720,
+    height: 960,
+    minWidth: 1700,
     minHeight: 720,
     title: "CrawlWebElectron",
     backgroundColor: "#f8fafc"
@@ -51,7 +52,8 @@ export function createMainWindow(): BaseWindow {
       uploadTaskRepository,
       taskLogRepository,
       taskArtifactRepository
-    })
+    }),
+    new BossZhipinAutomationService(browserWorkspace)
   );
   apiServer.start();
   window.on("closed", () => {

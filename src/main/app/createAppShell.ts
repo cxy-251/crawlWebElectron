@@ -3,7 +3,7 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 
 const TOOL_PANE_WIDTH = 420;
-const MIN_BROWSER_WIDTH = 760;
+const MIN_BROWSER_WIDTH = 1280;
 
 export function createAppShell(window: BaseWindow): WebContentsView {
   const rendererView = new WebContentsView({
