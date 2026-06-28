@@ -34,6 +34,10 @@ export function registerKuaishouIpcHandlers({ browserWorkspace, repositories }: 
     return adapter.diagnoseDom();
   });
 
+  ipcMain.handle("kuaishou:capture-diagnostic-evidence", async () => {
+    return adapter.captureDiagnosticEvidence();
+  });
+
   ipcMain.handle("kuaishou:read-page-state", async () => {
     return adapter.readPageState();
   });

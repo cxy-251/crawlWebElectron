@@ -76,9 +76,10 @@ DOM-driven workflows are validated through real-page diagnostics rather than iso
 
 ```txt
 GET /api/kuaishou/diagnostics/dom
+POST /api/kuaishou/diagnostics/evidence
 ```
 
-The Electron panel and local API report current page detection, active element profile metadata, selector matches, missing selectors, and per-locator attempts.
+The Electron panel and local API report current page detection, active element profile metadata, selector matches, missing selectors, and per-locator attempts. Evidence capture saves a local screenshot and DOM snapshot without clicking or writing the webpage.
 
 Page-action failures should surface structured context in the renderer instead of collapsing to a single message. The Kuaishou tool displays failed field, locator key, page type, current URL, candidate options, matched capabilities, and locator attempts.
 

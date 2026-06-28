@@ -56,9 +56,11 @@ curl -s http://127.0.0.1:3218/api/workflows
 curl -s http://127.0.0.1:3218/api/workflows/boss.search-and-communicate.v1/service-check
 curl -s http://127.0.0.1:3218/api/workflows/boss.search-and-communicate.v1/runtime-snapshot
 curl -s http://127.0.0.1:3218/api/kuaishou/diagnostics/dom
+curl -s -X POST http://127.0.0.1:3218/api/kuaishou/diagnostics/evidence
 ```
 
 `/api/kuaishou/diagnostics/dom` is read-only. It detects the current page and tests every selector in the active Kuaishou element profile so DOM drift can be inspected before running upload actions.
+`/api/kuaishou/diagnostics/evidence` captures a local screenshot and DOM snapshot from the current Electron page. It does not click or write the webpage.
 
 When the Safari RPA service is running, `runtime-snapshot` returns the remote Safari RPA workflow list plus recent runs, reports, and schedules for the selected workflow. Run details are read-only:
 

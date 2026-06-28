@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type {
   ElementTestResult,
+  KuaishouDiagnosticEvidence,
   KuaishouDomDiagnostic,
   KuaishouElementKey,
   KuaishouElementProfile,
@@ -83,6 +84,7 @@ export function KuaishouUploadPanel() {
   const [snapshot, setSnapshot] = useState<KuaishouPageSnapshot | null>(null);
   const [conflicts, setConflicts] = useState<Conflict[]>([]);
   const [domDiagnostic, setDomDiagnostic] = useState<KuaishouDomDiagnostic | null>(null);
+  const [diagnosticEvidence, setDiagnosticEvidence] = useState<KuaishouDiagnosticEvidence | null>(null);
   const [optionsByField, setOptionsByField] = useState<Partial<Record<KuaishouOptionField, KuaishouOptionsResult>>>({});
   const [lastSyncAt, setLastSyncAt] = useState<number | null>(null);
   const [syncError, setSyncError] = useState("");
@@ -169,6 +171,15 @@ export function KuaishouUploadPanel() {
       setDomDiagnostic(result);
       setDetection(result.detection);
       setSyncError(result.missingCount > 0 ? `DOM 巡检完成，缺失 ${result.missingCount} 个 selector。` : "DOM 巡检完成，当前 selector 均有命中。");
+    });
+  }
+
+  async function captureDiagnosticEvidence() {
+    await run(async () => {
+      const result = await window.appApi.kuaishou.captureDiagnosticEvidence();
+      setDiagnosticEvidence(result);
+      setDetection(result.detection);
+      setSyncError("已保存当前页面诊断证据。");
     });
   }
 
@@ -471,7 +482,13 @@ export function KuaishouUploadPanel() {
       />
       <KuaishouPageStatePanel detection={detection} />
       <KuaishouFailureContextPanel details={failureContext} />
-      <KuaishouDomDiagnosticsPanel diagnostic={domDiagnostic} busy={busy} onRun={() => void runDomDiagnostic()} />
+      <KuaishouDomDiagnosticsPanel
+        diagnostic={domDiagnostic}
+        evidence={diagnosticEvidence}
+        busy={busy}
+        onRun={() => void runDomDiagnostic()}
+        onCaptureEvidence={() => void captureDiagnosticEvidence()}
+      />
       {conflictPanel}
       <KuaishouUploadForm
         form={form}

@@ -14,6 +14,7 @@ export type LocalFilePickResult = {
 
 import type {
   ElementTestResult,
+  KuaishouDiagnosticEvidence,
   KuaishouDomDiagnostic,
   KuaishouElementKey,
   KuaishouElementProfile,
@@ -49,6 +50,7 @@ export type AppApi = {
     continueEditingOrStartNewUpload(): Promise<KuaishouPageDetection>;
     detectPage(): Promise<KuaishouPageDetection>;
     diagnoseDom(): Promise<KuaishouDomDiagnostic>;
+    captureDiagnosticEvidence(): Promise<KuaishouDiagnosticEvidence>;
     readPageState(): Promise<KuaishouPageSnapshot>;
     getOptions(field: KuaishouOptionField, query?: string): Promise<KuaishouOptionsResult>;
     applyFormState(state: KuaishouFormState): Promise<KuaishouPageSnapshot>;

@@ -48,6 +48,9 @@ const appApi: AppApi = {
     async diagnoseDom() {
       return ipcRenderer.invoke("kuaishou:diagnose-dom");
     },
+    async captureDiagnosticEvidence() {
+      return ipcRenderer.invoke("kuaishou:capture-diagnostic-evidence");
+    },
     async readPageState() {
       return ipcRenderer.invoke("kuaishou:read-page-state");
     },

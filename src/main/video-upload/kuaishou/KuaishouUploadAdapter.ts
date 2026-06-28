@@ -5,6 +5,7 @@ import type { TaskArtifactRepository } from "../../storage/repositories/TaskArti
 import type { TaskLogRepository } from "../../storage/repositories/TaskLogRepository";
 import type { UploadTaskRepository } from "../../storage/repositories/UploadTaskRepository";
 import type {
+  KuaishouDiagnosticEvidence,
   ElementTestResult,
   KuaishouDomDiagnostic,
   KuaishouFormState,
@@ -228,6 +229,26 @@ export class KuaishouUploadAdapter {
       matchedCount: elementResults.filter((result) => result.ok).length,
       missingCount: elementResults.filter((result) => !result.ok).length,
       checkedAt: Date.now()
+    };
+  }
+
+  async captureDiagnosticEvidence(): Promise<KuaishouDiagnosticEvidence> {
+    await this.ensureKuaishouProfile();
+    const profile = this.repositories.elementProfileRepository.getActiveKuaishouProfile();
+    const driver = new RpaDriver(this.browserWorkspace.webContents);
+    const detection = await new KuaishouPageDetector(driver, profile).detectPage();
+    const stamp = new Date().toISOString().replace(/[:.]/g, "-");
+    const [screenshotPath, domSnapshotPath] = await Promise.all([
+      driver.screenshot(`kuaishou-diagnostic-${stamp}.png`),
+      driver.domSnapshot(`kuaishou-diagnostic-${stamp}.html`)
+    ]);
+
+    return {
+      platform: "kuaishou",
+      detection,
+      screenshotPath,
+      domSnapshotPath,
+      capturedAt: Date.now()
     };
   }
 

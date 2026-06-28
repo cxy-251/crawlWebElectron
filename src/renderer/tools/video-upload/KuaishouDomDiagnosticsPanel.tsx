@@ -1,5 +1,5 @@
 import { RefreshCw } from "lucide-react";
-import type { KuaishouDomDiagnostic, KuaishouElementKey } from "../../../main/video-upload/types";
+import type { KuaishouDiagnosticEvidence, KuaishouDomDiagnostic, KuaishouElementKey } from "../../../main/video-upload/types";
 import { Button } from "../../shared/components/Button";
 import { Card } from "../../shared/components/Card";
 import { StatusBadge } from "../../shared/components/StatusBadge";
@@ -40,12 +40,16 @@ const ELEMENT_LABELS: Record<KuaishouElementKey, string> = {
 
 export function KuaishouDomDiagnosticsPanel({
   diagnostic,
+  evidence,
   busy,
-  onRun
+  onRun,
+  onCaptureEvidence
 }: {
   diagnostic: KuaishouDomDiagnostic | null;
+  evidence: KuaishouDiagnosticEvidence | null;
   busy: boolean;
   onRun: () => void;
+  onCaptureEvidence: () => void;
 }) {
   const missingResults = diagnostic?.elementResults.filter((result) => !result.ok) || [];
   const matchedResults = diagnostic?.elementResults.filter((result) => result.ok) || [];
@@ -58,6 +62,7 @@ export function KuaishouDomDiagnosticsPanel({
             <RefreshCw size={16} />
             {busy ? "巡检中" : "全量巡检"}
           </Button>
+          <Button onClick={onCaptureEvidence} disabled={busy}>保存证据</Button>
           {diagnostic ? (
             <>
               <StatusBadge value={`命中 ${diagnostic.matchedCount}`} />
@@ -75,14 +80,33 @@ export function KuaishouDomDiagnosticsPanel({
               <Info label="checked" value={new Date(diagnostic.checkedAt).toLocaleString()} />
             </div>
 
+            {evidence ? <EvidencePanel evidence={evidence} /> : null}
+
             <ResultGroup title="缺失控件" results={missingResults} tone="missing" />
             <ResultGroup title="命中控件" results={matchedResults} tone="matched" />
           </>
         ) : (
-          <p className="text-sm text-slate-500">暂无诊断结果。</p>
+          <>
+            {evidence ? <EvidencePanel evidence={evidence} /> : null}
+            {!evidence ? <p className="text-sm text-slate-500">暂无诊断结果。</p> : null}
+          </>
         )}
       </div>
     </Card>
+  );
+}
+
+function EvidencePanel({ evidence }: { evidence: KuaishouDiagnosticEvidence }) {
+  return (
+    <div>
+      <h3 className="text-xs font-semibold uppercase text-slate-500">Evidence</h3>
+      <div className="mt-2 grid gap-2 text-xs text-slate-600">
+        <Info label="pageType" value={evidence.detection.pageType} />
+        <Info label="captured" value={new Date(evidence.capturedAt).toLocaleString()} />
+        <Info label="screenshot" value={evidence.screenshotPath} />
+        <Info label="dom" value={evidence.domSnapshotPath} />
+      </div>
+    </div>
   );
 }
 

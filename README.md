@@ -39,6 +39,7 @@ Useful read-only checks:
 curl -s http://127.0.0.1:3218/api/health
 curl -s http://127.0.0.1:3218/api/workflows
 curl -s http://127.0.0.1:3218/api/kuaishou/diagnostics/dom
+curl -s -X POST http://127.0.0.1:3218/api/kuaishou/diagnostics/evidence
 ```
 
 ## Safari RPA
@@ -85,6 +86,7 @@ For DOM-driven workflows, prefer real-page diagnosis over isolated selector assu
 - tests every configured selector in the active element profile
 - shows matched and missing controls with per-locator attempts
 - keeps the workflow read-only while diagnosing page drift
+- can save local screenshot and DOM snapshot evidence for later inspection
 
 When a page write fails, the Kuaishou tool also surfaces the structured failure context from the main process: failed field, locator key, page type, current URL, candidates, matched capabilities, and locator attempts.
 

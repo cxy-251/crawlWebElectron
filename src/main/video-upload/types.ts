@@ -293,6 +293,14 @@ export type KuaishouDomDiagnostic = {
   checkedAt: number;
 };
 
+export type KuaishouDiagnosticEvidence = {
+  platform: "kuaishou";
+  detection: KuaishouPageDetection;
+  screenshotPath: string;
+  domSnapshotPath: string;
+  capturedAt: number;
+};
+
 export type TaskLog = {
   id: string;
   taskId: string;
