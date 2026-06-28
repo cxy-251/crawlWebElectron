@@ -1,0 +1,48 @@
+search:
+  cities:
+    - {name: 深圳, code: "101280600"}
+    - {name: 广州, code: "101280100"}
+    - {name: 杭州, code: "101210100"}
+    - {name: 上海, code: "101020100"}
+    - {name: 成都, code: "101270100"}
+    - {name: 武汉, code: "101200100"}
+    - {name: 南京, code: "101190100"}
+    - {name: 苏州, code: "101190400"}
+    - {name: 东莞, code: "101281601"}
+    - {name: 佛山, code: "101280800"}
+    - {name: 重庆, code: "101040100"}
+  weekday_keywords:
+    mon: Python开发工程师
+    tue: AI应用开发工程师
+    wed: C++开发工程师
+    thu: Web前端开发工程师
+    fri: Android开发工程师
+    sat: iOS开发工程师
+    sun: HarmonyOS开发工程师
+  query_params:
+    scale: "304,305,306"
+    experience: "102,103,104,108"
+    degree: "203,202,201,208"
+    salary: "405"
+
+criteria:
+  title_allow: [开发, 前端, 后端, 客户端, 软件工程师, 算法, AI, Python, C++, Android, 安卓, iOS, HarmonyOS, 鸿蒙, Java, Golang, Go, 全栈, 测试开发]
+  title_deny: [销售, 运营, 产品经理, 客服, 讲师, 教师, 助教, 培训, 人事, 行政, 市场, 商务, 项目经理, 实施顾问]
+  experience_allow: [经验不限, 在校/应届, 1年以内, 1-3年]
+  education_deny: [硕士, 博士]
+  company_size_min: 500
+  salary_min_k: 10
+  salary_max_k: 20
+  allow_unknown: true
+
+limits:
+  run: 110
+  daily: 110
+  per_city: 10
+  max_pages: 10
+
+ordering:
+  strategy: random_rotated
+
+communication:
+  enabled: false

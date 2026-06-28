@@ -8,6 +8,9 @@ dist/
 *.sqlite
 *.sqlite-shm
 *.sqlite-wal
+__pycache__/
+*.py[cod]
+.pytest_cache/
 local-api-usage/*
 !local-api-usage/batch-publish-kuaishou.mjs
 !local-api-usage/generate-kuaishou-tasks.mjs
@@ -15,3 +18,9 @@ local-api-usage/*
 *.jsonl
 *.state.json
 tasks.*.json
+runtimes/safari-rpa/var/
+runtimes/**/.DS_Store
+runtimes/**/*.sqlite
+runtimes/**/*.sqlite-shm
+runtimes/**/*.sqlite-wal
+runtimes/**/*.log

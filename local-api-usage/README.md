@@ -1,6 +1,11 @@
-# Local Kuaishou API Usage
+# Browser Workflow Forge Local API Usage
 
 This folder is ignored by git. Keep personal paths, API tokens, generated task JSON, and local run state here.
+
+`Browser Workflow Forge` has two runtime paths:
+
+- Kuaishou and ordinary browser workflows run in Electron.
+- Boss Zhipin and Twitter/X high-risk workflows run through `runtimes/safari-rpa` with real Safari.
 
 ## 1. Edit local constants
 
@@ -32,12 +37,60 @@ The first four task times will be:
 ## 2. Start the app
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 Keep Electron open and log in to Kuaishou in the left browser area if needed.
 
-## 3. Generate the task array
+The Electron local API defaults to:
+
+```txt
+http://127.0.0.1:3218
+```
+
+Useful read-only checks:
+
+```bash
+curl -s http://127.0.0.1:3218/api/health
+curl -s http://127.0.0.1:3218/api/workflows
+curl -s http://127.0.0.1:3218/api/workflows/boss.search-and-communicate.v1/service-check
+curl -s http://127.0.0.1:3218/api/workflows/boss.search-and-communicate.v1/runtime-snapshot
+```
+
+When the Safari RPA service is running, `runtime-snapshot` returns the remote Safari RPA workflow list plus recent runs, reports, and schedules for the selected workflow. Run details are read-only:
+
+```bash
+curl -s http://127.0.0.1:3218/api/workflows/boss.search-and-communicate.v1/runs/RUN_ID
+```
+
+## 3. Install or refresh Safari RPA command
+
+Run this after pulling or renaming the Safari RPA runtime so the `kwai` environment has the new `safari-rpa` command:
+
+```bash
+cd runtimes/safari-rpa
+conda run -n kwai python -m pip install -e . --no-deps
+```
+
+This installs this local runtime in editable mode. `--no-deps` avoids installing the project's runtime dependencies.
+
+Verify:
+
+```bash
+conda run -n kwai safari-rpa --help
+```
+
+Start the Safari RPA loopback service when Boss/Twitter workflows need to run:
+
+```bash
+cd runtimes/safari-rpa
+SAFARI_RPA_API_TOKEN=replace-me PYTHONPATH=src conda run -n kwai \
+  safari-rpa --home var serve --host 127.0.0.1 --port 3211
+```
+
+Keep the token outside renderer code and local task JSON. Do not run Boss/Twitter live workflows unless you intend to operate the real Safari account.
+
+## 4. Generate the task array
 
 ```bash
 node local-api-usage/generate-kuaishou-tasks.mjs
@@ -51,7 +104,7 @@ local-api-usage/tasks.kuaishou.json
 
 The file is one JSON array. Each item is one video task.
 
-## 4. Run batch publishing
+## 5. Run batch publishing
 
 ```bash
 node local-api-usage/batch-publish-kuaishou.mjs

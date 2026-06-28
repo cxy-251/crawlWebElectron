@@ -35,7 +35,7 @@ export class CdpFileInputService {
     try {
       const evaluated = (await debuggerApi.sendCommand("Runtime.evaluate", {
         expression: objectScript(specs),
-        objectGroup: "crawl-web-electron",
+        objectGroup: "browser-workflow-forge",
         includeCommandLineAPI: false
       })) as { result?: { objectId?: string } };
 
@@ -58,7 +58,7 @@ export class CdpFileInputService {
         })
         .catch(() => undefined);
     } finally {
-      await debuggerApi.sendCommand("Runtime.releaseObjectGroup", { objectGroup: "crawl-web-electron" }).catch(() => undefined);
+      await debuggerApi.sendCommand("Runtime.releaseObjectGroup", { objectGroup: "browser-workflow-forge" }).catch(() => undefined);
       if (attachedHere && debuggerApi.isAttached()) {
         debuggerApi.detach();
       }

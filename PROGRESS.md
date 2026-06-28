@@ -1,5 +1,55 @@
 # PROGRESS.md
 
+## 浏览器工作流平台融合记录
+
+### 本轮实际修改文件
+
+- `PROJPLAN.md`
+- `README.md`
+- `.gitignore`
+- `docs/plans/README.md`
+- `docs/plans/0010-browser-workflow-platform.md`
+- `runtimes/README.md`
+- `runtimes/safari-rpa/`
+- `runtimes/safari-extension-boss/`
+- `package.json`
+- `src/main/api/BrowserWorkflowLocalApiServer.ts`
+- `src/main/api/LocalApiTypes.ts`
+- `src/main/api/WorkflowLocalApiRoutes.ts`
+- `src/main/api/KuaishouLocalApiRoutes.ts`
+- `src/shared/workflows/types.ts`
+- `src/main/workflows/WorkflowRegistry.ts`
+- `src/main/workflows/SafariRpaBridge.ts`
+- `src/main/workflows/WorkflowRuntimeService.ts`
+- `src/main/ipc/workflowIpcHandlers.ts`
+- `src/renderer/tools/workflows/WorkflowCatalogPage.tsx`
+- 主进程、preload、本地 API、首页路由相关文件
+
+### 实际修复
+
+- 将 Safari/Python RPA 源码、配置、文档、测试按角色移动到 `runtimes/safari-rpa/`，排除 `.git`、`var`、缓存、日志、数据库和 `.DS_Store`。
+- 将 Boss Safari Extension 原型按角色移动到 `runtimes/safari-extension-boss/`。
+- 新增统一 workflow registry，暴露 Kuaishou、Boss、Twitter 和 Safari Extension prototype descriptors。
+- 本地 API 新增 `GET /api/workflows` 和 `GET /api/workflows/:workflowId`。
+- 本地 API / IPC / preload 新增 Safari RPA 只读 bridge：服务检查、运行时快照、run detail。
+- Safari RPA 运行时快照会读取远端 workflows，并按当前 workflow 过滤 recent runs、reports 和 schedules。
+- Workflow 页面支持点击 Safari RPA recent run 查看只读状态和 artifacts。
+- Workflow 页面支持只读查看 Safari RPA reports 和 schedules，不暴露 create/resume/cancel/schedule 写操作。
+- 本地 HTTP API 入口重命名为 `BrowserWorkflowLocalApiServer`，避免平台 API 继续挂在 Kuaishou 命名下。
+- 本地 HTTP API 入口拆成 shell + route modules：workflow 路由和 Kuaishou 路由分离。
+- 新增 `WorkflowRuntimeService` 用例层，HTTP / IPC 入口不再直接依赖 Safari RPA adapter。
+- preload 新增 `window.appApi.workflows.listWorkflows()`、`checkService()`、`getRuntimeSnapshot()`、`getRunDetail()`。
+- 移除 Boss Zhipin Electron-local 自动化服务、IPC、HTTP `/api/boss/*`、preload API 和 renderer 页面。
+- Electron session profile 收窄为快手；Boss/Twitter 后续执行走 Safari RPA。
+- 构建脚本新增 `clean` / `clean:electron`，避免被删除的旧 Boss Electron 编译产物继续残留在 `dist`。
+
+### 尚未执行的高风险验证
+
+- 未启动 Safari RPA 服务。
+- 未读取真实 Safari RPA reports。
+- 未读取真实 Safari RPA schedules。
+- 未执行 Boss 通信、Twitter 采集、Kuaishou 发布。
+
 ## 快手上传 API 上库前整理记录
 
 ### 本轮实际修改文件
@@ -8,7 +58,7 @@
 - `PROJPLAN.md`
 - `CURRENT_ISSUES.md`
 - `PROGRESS.md`
-- `src/main/api/KuaishouLocalApiServer.ts`
+- `src/main/api/BrowserWorkflowLocalApiServer.ts`
 - `src/main/storage/repositories/UploadTaskRepository.ts`
 - `src/main/video-upload/types.ts`
 - `src/main/video-upload/kuaishou/KuaishouUploadService.ts`

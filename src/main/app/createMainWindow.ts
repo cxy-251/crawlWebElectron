@@ -1,8 +1,7 @@
 import { BaseWindow } from "electron";
-import { KuaishouLocalApiServer } from "../api/KuaishouLocalApiServer";
+import { BrowserWorkflowLocalApiServer } from "../api/BrowserWorkflowLocalApiServer";
 import { createAppShell } from "./createAppShell";
 import { BrowserWorkspace } from "../browser/BrowserWorkspace";
-import { BossZhipinAutomationService } from "../browser-automation/BossZhipinAutomationService";
 import { registerIpcHandlers } from "../ipc/registerIpcHandlers";
 import { SessionManager } from "../session/SessionManager";
 import { Database } from "../storage/Database";
@@ -13,6 +12,8 @@ import { TaskLogRepository } from "../storage/repositories/TaskLogRepository";
 import { UploadTaskRepository } from "../storage/repositories/UploadTaskRepository";
 import { defaultKuaishouElementProfile } from "../video-upload/kuaishou/defaultKuaishouElementProfile";
 import { KuaishouUploadAdapter } from "../video-upload/kuaishou/KuaishouUploadAdapter";
+import { createWorkflowRegistry } from "../workflows/WorkflowRegistry";
+import { WorkflowRuntimeService } from "../workflows/WorkflowRuntimeService";
 
 export function createMainWindow(): BaseWindow {
   const window = new BaseWindow({
@@ -20,7 +21,7 @@ export function createMainWindow(): BaseWindow {
     height: 960,
     minWidth: 1700,
     minHeight: 720,
-    title: "CrawlWebElectron",
+    title: "Browser Workflow Forge",
     backgroundColor: "#f8fafc"
   });
 
@@ -35,6 +36,8 @@ export function createMainWindow(): BaseWindow {
   elementProfileRepository.ensureDefault(defaultKuaishouElementProfile);
 
   const browserWorkspace = new BrowserWorkspace(window, sessionManager);
+  const workflowRegistry = createWorkflowRegistry();
+  const workflowRuntimeService = new WorkflowRuntimeService();
   const repositories = {
     accountRepository,
     elementProfileRepository,
@@ -44,16 +47,19 @@ export function createMainWindow(): BaseWindow {
   };
   registerIpcHandlers({
     browserWorkspace,
-    repositories
+    repositories,
+    workflowRegistry,
+    workflowRuntimeService
   });
-  const apiServer = new KuaishouLocalApiServer(
+  const apiServer = new BrowserWorkflowLocalApiServer(
     new KuaishouUploadAdapter(browserWorkspace, {
       elementProfileRepository,
       uploadTaskRepository,
       taskLogRepository,
       taskArtifactRepository
     }),
-    new BossZhipinAutomationService(browserWorkspace)
+    workflowRegistry,
+    workflowRuntimeService
   );
   apiServer.start();
   window.on("closed", () => {

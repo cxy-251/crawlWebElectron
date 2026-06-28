@@ -1,0 +1,36 @@
+{
+    "manifest_version": 3,
+    "default_locale": "en",
+
+    "name": "Boss Safari Workflow Bridge",
+    "description": "Boss Zhipin Safari workflow bridge prototype",
+    "version": "1.0",
+
+    "icons": {
+        "48": "images/icon-48.png",
+        "96": "images/icon-96.png",
+        "128": "images/icon-128.png",
+        "256": "images/icon-256.png",
+        "512": "images/icon-512.png"
+    },
+
+    "background": {
+        "scripts": [ "background.js" ],
+        "type": "module"
+    },
+
+    "content_scripts": [{
+        "matches": ["https://www.zhipin.com/*"],
+        "js": ["content.js"],
+        "run_at": "document_idle"
+    }],
+
+    "action": {
+        "default_popup": "popup.html",
+        "default_icon": "images/toolbar-icon.svg",
+        "default_title": "Boss Workflow Bridge"
+    },
+
+    "permissions": ["storage", "activeTab", "scripting"],
+    "host_permissions": ["https://www.zhipin.com/*"]
+}

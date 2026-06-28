@@ -1,7 +1,7 @@
 import { app } from "electron";
 import { createMainWindow } from "./app/createMainWindow";
 
-app.setName("CrawlWebElectron");
+app.setName("BrowserWorkflowForge");
 
 if (process.env.CWE_REMOTE_DEBUGGING_PORT) {
   app.commandLine.appendSwitch("remote-debugging-port", process.env.CWE_REMOTE_DEBUGGING_PORT);

@@ -4,10 +4,12 @@ import type { ElementProfileRepository } from "../storage/repositories/ElementPr
 import type { TaskArtifactRepository } from "../storage/repositories/TaskArtifactRepository";
 import type { TaskLogRepository } from "../storage/repositories/TaskLogRepository";
 import type { UploadTaskRepository } from "../storage/repositories/UploadTaskRepository";
-import { registerBrowserAutomationIpcHandlers } from "./browserAutomationIpcHandlers";
+import type { WorkflowRegistry } from "../workflows/WorkflowRegistry";
+import type { WorkflowRuntimeService } from "../workflows/WorkflowRuntimeService";
 import { registerBrowserIpcHandlers } from "./browserIpcHandlers";
 import { registerKuaishouIpcHandlers } from "./kuaishouIpcHandlers";
 import { registerToolIpcHandlers } from "./toolIpcHandlers";
+import { registerWorkflowIpcHandlers } from "./workflowIpcHandlers";
 
 export type IpcContext = {
   browserWorkspace: BrowserWorkspace;
@@ -18,11 +20,13 @@ export type IpcContext = {
     taskLogRepository: TaskLogRepository;
     taskArtifactRepository: TaskArtifactRepository;
   };
+  workflowRegistry: WorkflowRegistry;
+  workflowRuntimeService: WorkflowRuntimeService;
 };
 
 export function registerIpcHandlers(context: IpcContext): void {
   registerBrowserIpcHandlers(context);
-  registerBrowserAutomationIpcHandlers(context);
   registerToolIpcHandlers();
+  registerWorkflowIpcHandlers(context.workflowRegistry, context.workflowRuntimeService);
   registerKuaishouIpcHandlers(context);
 }

@@ -1,0 +1,10 @@
+{
+    "extension_name": {
+        "message": "Boss Safari Workflow Bridge",
+        "description": "The display name for the extension."
+    },
+    "extension_description": {
+        "message": "Boss Zhipin Safari workflow bridge prototype.",
+        "description": "Description of what the extension does."
+    }
+}

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+        <style>
+          body { width: 260px; font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 12px; }
+          button { width: 100%; margin-top: 8px; padding: 8px; }
+          input { width: 100%; box-sizing: border-box; padding: 6px; }
+        </style>
+    <link rel="stylesheet" href="popup.css">
+    <script type="module" src="popup.js"></script>
+</head>
+<body>
+    <h3>BossGreeter</h3>
+    <label>
+      本次最多处理数量
+      <input id="limit" type="number" min="1" max="50" value="10" />
+    </label>
+    <button id="scan">只高亮匹配岗位</button>
+    <button id="start">开始打招呼</button>
+</body>
+</html>

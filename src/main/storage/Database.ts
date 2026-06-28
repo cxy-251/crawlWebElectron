@@ -31,7 +31,7 @@ export class Database {
   constructor() {
     const dataDir = path.join(app.getPath("userData"), "data");
     fs.mkdirSync(dataDir, { recursive: true });
-    this.filePath = path.join(dataDir, "crawl-web-electron.sqlite");
+    this.filePath = path.join(dataDir, "browser-workflow-forge.sqlite");
     runMigrations(this);
   }
 
@@ -67,4 +67,3 @@ export class Database {
     return `'${value.replace(/'/g, "''")}'`;
   }
 }
-

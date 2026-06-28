@@ -1,16 +1,75 @@
-# PROJPLAN.md — 当前唯一任务：快手上传 API 上库前整理
+# PROJPLAN.md — 当前任务：统一浏览器工作流平台
 
-## 1. 当前优先级
+## 1. 当前边界
 
-项目主体只保留 Electron 快手上传工作台和本地 HTTP API 能力：
+`Browser Workflow Forge` 是统一 GitHub-backed 项目。
+
+同仓库内保留三类网页操纵能力：
+
+- 普通网页工作流：Electron `WebContents`、DOM 执行、CDP。
+- 高风险网页工作流：Safari RPA + 真实 Safari profile。
+- 未来 Safari 低延迟 DOM 通道：Safari Web Extension 原型。
+
+## 2. 集成目录
 
 ```txt
-打开快手上传页 -> 真实 DOM 识别页面能力 -> 上传新视频 -> 进入编辑页 -> 写入参数 -> 可选自动发布
+runtimes/safari-rpa/
+runtimes/safari-extension-boss/
 ```
 
-个人批量配置、歌曲目录、任务 JSON、API token 和调用 API 的本地脚本放在 `local-api-usage/`，该目录被 git 忽略，不提交。
+`safari-rpa` 负责 Boss Zhipin 和 Twitter/X 的真实 Safari 工作流源码。`safari-extension-boss` 只作为未来 Safari extension bridge 的参考实现。
 
-## 2. 核心 API 能力
+## 3. Workflow Registry
+
+Electron 主应用暴露统一 workflow registry：
+
+```txt
+GET /api/workflows
+GET /api/workflows/:workflowId
+GET /api/workflows/:workflowId/service-check
+GET /api/workflows/:workflowId/runtime-snapshot
+GET /api/workflows/:workflowId/runs/:runId
+IPC workflows:list
+```
+
+首批工作流：
+
+```txt
+kuaishou.upload-single.v1          electron           available
+boss.search-and-communicate.v1     safari-rpa         external
+twitter.collect-raw.v1             safari-rpa         external
+twitter.clean-prompts.v1           safari-rpa         external
+boss.safari-extension.prototype.v1 safari-extension   prototype
+```
+
+`external` 表示源码已经在本仓库内，但执行仍需要 Safari RPA Python/Safari 服务。
+
+主进程边界：
+
+```txt
+BrowserWorkflowLocalApiServer  本地 HTTP API 入口
+WorkflowLocalApiRoutes         /api/health 和 /api/workflows* 路由
+KuaishouLocalApiRoutes         /api/kuaishou/* 路由
+workflowIpcHandlers            Renderer IPC 入口
+WorkflowRegistry               静态 workflow 描述符
+WorkflowRuntimeService         workflow 运行时用例层
+SafariRpaBridge                Safari RPA loopback API adapter
+```
+
+HTTP shell 不直接承载具体业务路由；新增本地 API 领域时，优先新增 route module。HTTP / IPC 入口不直接调用 Safari RPA adapter；新增 runtime 或新增 workflow 运行态能力时，优先扩展 `WorkflowRuntimeService`，再由入口层复用。
+
+Safari RPA workflow 目前在 Electron 侧只接入只读 runtime bridge：
+
+- 服务健康检查。
+- 远端 workflow 能力列表。
+- 当前 workflow 的最近 runs。
+- 当前 workflow 的 reports。
+- 当前 workflow 的 schedules。
+- 单个 run 的状态和 artifacts。
+
+暂不在 Electron UI 暴露 Safari RPA 的 create/resume/cancel/schedule 等写操作。
+
+## 4. 保留的快手 API
 
 本地 API 默认监听：
 
@@ -18,13 +77,7 @@
 127.0.0.1:3218
 ```
 
-可通过 `CWE_API_PORT` 覆盖端口。设置 `CWE_API_TOKEN` 后要求：
-
-```txt
-Authorization: Bearer <token>
-```
-
-接口：
+保留：
 
 ```txt
 GET  /api/health
@@ -37,89 +90,39 @@ POST /api/kuaishou/upload-single
 GET  /api/kuaishou/tasks/:taskId
 ```
 
-`upload-single` 支持：
+## 5. 已移除边界
 
-```ts
-{
-  videoPath: string;
-  settings: {
-    caption: string;
-    collectionName: string;
-    showInNearby: boolean;
-    publishTimingMode: "scheduled";
-    scheduledPublishTime: "YYYY-MM-DD HH:mm";
-  };
-  confirmPublish?: boolean;
-  uploadIntent?: "new_video" | "continue_current";
-  draftPolicy?: "pause" | "continue";
-}
-```
-
-## 3. 上传新视频路径
-
-默认 `uploadIntent = "new_video"`：
-
-1. 打开上传入口。
-2. 如果检测到未发布草稿或已有可编辑内容，且 `draftPolicy = "pause"`，返回 `DRAFT_CONFLICT` 并进入 `waiting_manual_action`。
-3. 找到视频 `fileInput`。
-4. 设置本地视频文件。
-5. 等待快手进入编辑页。
-6. 写入 dirty 或 API 显式传入的页面参数。
-7. 回读校验。
-8. `confirmPublish = true` 时点击最终发布；否则停在发布前确认。
-
-手动“继续编辑当前视频”保留为 `continue_current` 语义，不用于批量新视频默认路径。
-
-## 4. 页面参数规则
-
-发布前常用字段：
+Boss Zhipin 不再通过 Electron DOM 脚本执行：
 
 ```txt
-caption
-collectionName
-showInNearby
-publishTimingMode
-scheduledPublishTime
+src/main/browser-automation/
+src/main/ipc/browserAutomationIpcHandlers.ts
+src/renderer/tools/browser-automation/
+/api/boss/*
+window.appApi.browserAutomation.*
 ```
 
-其它已识别页面能力继续保留，但未 dirty 不写入网页。
+Boss/Twitter 的后续执行入口应通过 Safari RPA bridge 调用同仓库 `runtimes/safari-rpa`。
 
-`scheduledPublishTime` 必须使用 `YYYY-MM-DD HH:mm`，写入时真实操作快手日期时间控件，并在写入后回读校验；不一致返回 `TIME_WRITE_MISMATCH`。
-
-`collectionName` 必须从页面真实候选中选择；找不到返回 `OPTION_NOT_FOUND`，多候选返回 `OPTION_AMBIGUOUS`。
-
-## 5. 上库边界
-
-提交内容可以包括：
-
-```txt
-Electron 应用代码
-本地 HTTP API
-通用类型和文档
-.gitignore
-```
-
-不提交：
+## 6. 不提交
 
 ```txt
 local-api-usage/
-任务 JSON / state 文件
-个人绝对路径
-API token
-cookies/session/profile 数据
+runtimes/safari-rpa/var/
 dist/
 node_modules/
 .DS_Store
+任务 JSON / state 文件 / JSONL 输出
+SQLite / logs / screenshots / downloads
+API token / cookies / session/profile 数据
+个人绝对路径
 ```
 
-## 6. 验收标准
+## 7. 验收标准
 
 1. `npm run typecheck` 通过。
 2. `npm run build` 通过。
-3. `npm run dev` 能启动 Electron。
-4. `GET /api/health` 正常。
-5. `upload-single` 新视频路径先传视频，再进入编辑页写参数。
-6. `confirmPublish = true` 时自动发布。
-7. 草稿冲突返回 `DRAFT_CONFLICT`，不覆盖旧草稿。
-8. `git status --short` 不显示 `local-api-usage/`、`dist/`、`node_modules/`、`.DS_Store`。
-9. 待提交内容不包含个人绝对路径、token、cookies。
+3. `GET /api/health` 正常。
+4. `GET /api/workflows` 返回首批 workflow descriptors。
+5. 快手上传 UI 和本地 API 保持可用。
+6. 待提交内容不包含运行状态、token、cookies 或个人绝对路径。

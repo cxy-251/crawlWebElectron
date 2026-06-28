@@ -11,5 +11,5 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },
-  "include": ["src/preload/**/*.ts", "src/main/video-upload/types.ts"]
+  "include": ["src/preload/**/*.ts", "src/main/video-upload/types.ts", "src/shared/**/*.ts"]
 }

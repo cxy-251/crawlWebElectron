@@ -78,10 +78,6 @@ export class BrowserWorkspace {
       }
     });
 
-    if (profileId === "boss-zhipin") {
-      view.webContents.setUserAgent(this.sessionManager.getChromeCompatibleUserAgent());
-    }
-
     return view;
   }
 

@@ -1,5 +1,5 @@
 export type ToolInfo = {
-  id: "video-upload" | "browser-automation";
+  id: "video-upload" | "workflows";
   name: string;
   route: string;
   enabled: boolean;
@@ -13,18 +13,6 @@ export type LocalFilePickResult = {
 };
 
 import type {
-  BossZhipinBatchConfig,
-  BossZhipinBatchResult,
-  BossZhipinDetection,
-  BossZhipinFilterOptionsResult,
-  BossZhipinFilterResult,
-  BossZhipinFilters,
-  BossZhipinJobInfo,
-  BossZhipinMessageRunConfig,
-  BossZhipinMessageRunResult,
-  BrowserAutomationActionResult
-} from "../main/browser-automation/types";
-import type {
   ElementTestResult,
   KuaishouElementKey,
   KuaishouElementProfile,
@@ -37,6 +25,7 @@ import type {
   KuaishouUploadTaskResult,
   TaskLog
 } from "../main/video-upload/types";
+import type { WorkflowDescriptor, WorkflowRunDetailSnapshot, WorkflowRuntimeSnapshot, WorkflowServiceCheckResult } from "../shared/workflows/types";
 
 export type AppApi = {
   browser: {
@@ -47,19 +36,11 @@ export type AppApi = {
   tools: {
     listTools(): Promise<ToolInfo[]>;
   };
-  browserAutomation: {
-    boss: {
-      openBossPage(url: string): Promise<{ url: string; title: string }>;
-      openMessagesPage(url?: string): Promise<{ url: string; title: string }>;
-      clickFirstImmediateChat(): Promise<BrowserAutomationActionResult>;
-      detectPage(): Promise<BossZhipinDetection>;
-      readFilterOptions(): Promise<BossZhipinFilterOptionsResult>;
-      applyFilters(filters: BossZhipinFilters): Promise<BossZhipinFilterResult>;
-      collectCurrentJob(): Promise<BossZhipinJobInfo>;
-      runImmediateChatBatch(config: BossZhipinBatchConfig): Promise<BossZhipinBatchResult>;
-      runBatch(config: BossZhipinBatchConfig): Promise<BossZhipinBatchResult>;
-      collectMessageJobs(config: BossZhipinMessageRunConfig): Promise<BossZhipinMessageRunResult>;
-    };
+  workflows: {
+    listWorkflows(): Promise<WorkflowDescriptor[]>;
+    checkService(workflowId: string): Promise<WorkflowServiceCheckResult>;
+    getRuntimeSnapshot(workflowId: string): Promise<WorkflowRuntimeSnapshot>;
+    getRunDetail(workflowId: string, runId: string): Promise<WorkflowRunDetailSnapshot>;
   };
   kuaishou: {
     openHome(): Promise<void>;
