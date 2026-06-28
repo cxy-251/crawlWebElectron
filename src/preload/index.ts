@@ -45,6 +45,9 @@ const appApi: AppApi = {
     async detectPage() {
       return ipcRenderer.invoke("kuaishou:detect-page");
     },
+    async diagnoseDom() {
+      return ipcRenderer.invoke("kuaishou:diagnose-dom");
+    },
     async readPageState() {
       return ipcRenderer.invoke("kuaishou:read-page-state");
     },

@@ -83,12 +83,15 @@ Safari RPA workflow 目前在 Electron 侧只接入只读 runtime bridge：
 GET  /api/health
 POST /api/kuaishou/open-upload-page
 GET  /api/kuaishou/detection
+GET  /api/kuaishou/diagnostics/dom
 GET  /api/kuaishou/page-state
 POST /api/kuaishou/options
 POST /api/kuaishou/apply-settings
 POST /api/kuaishou/upload-single
 GET  /api/kuaishou/tasks/:taskId
 ```
+
+DOM 诊断优先走真实页面只读巡检：`/api/kuaishou/diagnostics/dom` 和 Electron 面板会识别当前 pageType、页面能力、全部 selector 命中结果和 locator attempts，用于处理网页 DOM 漂移。
 
 ## 5. 已移除边界
 

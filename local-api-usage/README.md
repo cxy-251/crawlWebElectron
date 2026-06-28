@@ -55,7 +55,10 @@ curl -s http://127.0.0.1:3218/api/health
 curl -s http://127.0.0.1:3218/api/workflows
 curl -s http://127.0.0.1:3218/api/workflows/boss.search-and-communicate.v1/service-check
 curl -s http://127.0.0.1:3218/api/workflows/boss.search-and-communicate.v1/runtime-snapshot
+curl -s http://127.0.0.1:3218/api/kuaishou/diagnostics/dom
 ```
+
+`/api/kuaishou/diagnostics/dom` is read-only. It detects the current page and tests every selector in the active Kuaishou element profile so DOM drift can be inspected before running upload actions.
 
 When the Safari RPA service is running, `runtime-snapshot` returns the remote Safari RPA workflow list plus recent runs, reports, and schedules for the selected workflow. Run details are read-only:
 

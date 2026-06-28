@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type {
   ElementTestResult,
+  KuaishouDomDiagnostic,
   KuaishouElementKey,
   KuaishouElementProfile,
   KuaishouFormField,
@@ -16,6 +17,7 @@ import type {
 import { useAsyncAction } from "../../shared/hooks/useAsyncAction";
 import { Card } from "../../shared/components/Card";
 import { ElementProfilePanel } from "./ElementProfilePanel";
+import { KuaishouDomDiagnosticsPanel } from "./KuaishouDomDiagnosticsPanel";
 import { KuaishouActionBar } from "./KuaishouActionBar";
 import { KuaishouPageStatePanel } from "./KuaishouPageStatePanel";
 import { KuaishouUploadForm } from "./KuaishouUploadForm";
@@ -79,6 +81,7 @@ export function KuaishouUploadPanel() {
   const [form, setForm] = useState<KuaishouFormState>(initialForm);
   const [snapshot, setSnapshot] = useState<KuaishouPageSnapshot | null>(null);
   const [conflicts, setConflicts] = useState<Conflict[]>([]);
+  const [domDiagnostic, setDomDiagnostic] = useState<KuaishouDomDiagnostic | null>(null);
   const [optionsByField, setOptionsByField] = useState<Partial<Record<KuaishouOptionField, KuaishouOptionsResult>>>({});
   const [lastSyncAt, setLastSyncAt] = useState<number | null>(null);
   const [syncError, setSyncError] = useState("");
@@ -154,6 +157,15 @@ export function KuaishouUploadPanel() {
   async function refreshDetection() {
     await run(async () => {
       await detectAndStore();
+    });
+  }
+
+  async function runDomDiagnostic() {
+    await run(async () => {
+      const result = await window.appApi.kuaishou.diagnoseDom();
+      setDomDiagnostic(result);
+      setDetection(result.detection);
+      setSyncError(result.missingCount > 0 ? `DOM 巡检完成，缺失 ${result.missingCount} 个 selector。` : "DOM 巡检完成，当前 selector 均有命中。");
     });
   }
 
@@ -455,6 +467,7 @@ export function KuaishouUploadPanel() {
         onWaitForEditPage={() => void waitForEditPage()}
       />
       <KuaishouPageStatePanel detection={detection} />
+      <KuaishouDomDiagnosticsPanel diagnostic={domDiagnostic} busy={busy} onRun={() => void runDomDiagnostic()} />
       {conflictPanel}
       <KuaishouUploadForm
         form={form}

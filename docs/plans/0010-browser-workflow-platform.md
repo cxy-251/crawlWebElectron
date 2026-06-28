@@ -70,6 +70,16 @@ Safari RPA is read-only from Electron today:
 
 Electron does not expose Safari RPA create, resume, cancel, schedule install, or schedule delete operations yet.
 
+## DOM Diagnostics
+
+DOM-driven workflows are validated through real-page diagnostics rather than isolated selector assumptions. Kuaishou exposes a read-only diagnostic path:
+
+```txt
+GET /api/kuaishou/diagnostics/dom
+```
+
+The Electron panel and local API report current page detection, active element profile metadata, selector matches, missing selectors, and per-locator attempts.
+
 ## Acceptance
 
 - `npm run typecheck` passes.

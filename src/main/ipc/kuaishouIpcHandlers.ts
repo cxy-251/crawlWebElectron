@@ -30,6 +30,10 @@ export function registerKuaishouIpcHandlers({ browserWorkspace, repositories }: 
     return adapter.detectPage();
   });
 
+  ipcMain.handle("kuaishou:diagnose-dom", async () => {
+    return adapter.diagnoseDom();
+  });
+
   ipcMain.handle("kuaishou:read-page-state", async () => {
     return adapter.readPageState();
   });

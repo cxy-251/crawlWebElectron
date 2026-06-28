@@ -278,6 +278,21 @@ export type ElementTestResult = {
   }>;
 };
 
+export type KuaishouDomDiagnostic = {
+  platform: "kuaishou";
+  profile: {
+    id: string;
+    name: string;
+    version: number;
+    updatedAt: number;
+  };
+  detection: KuaishouPageDetection;
+  elementResults: ElementTestResult[];
+  matchedCount: number;
+  missingCount: number;
+  checkedAt: number;
+};
+
 export type TaskLog = {
   id: string;
   taskId: string;

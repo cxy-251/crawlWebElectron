@@ -52,6 +52,10 @@ export class KuaishouLocalApiRoutes {
       return routeHandled(200, { ok: true, data: await this.adapter.detectPage() });
     }
 
+    if (method === "GET" && url.pathname === "/api/kuaishou/diagnostics/dom") {
+      return routeHandled(200, { ok: true, data: await this.adapter.diagnoseDom() });
+    }
+
     if (method === "GET" && url.pathname === "/api/kuaishou/page-state") {
       return routeHandled(200, { ok: true, data: await this.adapter.readPageState() });
     }

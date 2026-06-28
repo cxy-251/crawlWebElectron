@@ -5,7 +5,10 @@ import type { TaskArtifactRepository } from "../../storage/repositories/TaskArti
 import type { TaskLogRepository } from "../../storage/repositories/TaskLogRepository";
 import type { UploadTaskRepository } from "../../storage/repositories/UploadTaskRepository";
 import type {
+  ElementTestResult,
+  KuaishouDomDiagnostic,
   KuaishouFormState,
+  KuaishouElementKey,
   KuaishouOptionField,
   KuaishouOptionsResult,
   KuaishouPageDetection,
@@ -192,6 +195,40 @@ export class KuaishouUploadAdapter {
     const profile = this.repositories.elementProfileRepository.getActiveKuaishouProfile();
     const driver = new RpaDriver(this.browserWorkspace.webContents);
     return new KuaishouPageDetector(driver, profile).detectPage();
+  }
+
+  async diagnoseDom(): Promise<KuaishouDomDiagnostic> {
+    await this.ensureKuaishouProfile();
+    const profile = this.repositories.elementProfileRepository.getActiveKuaishouProfile();
+    const driver = new RpaDriver(this.browserWorkspace.webContents);
+    const detection = await new KuaishouPageDetector(driver, profile).detectPage();
+    const keys = Object.keys(profile.elements) as KuaishouElementKey[];
+    const elementResults: ElementTestResult[] = [];
+
+    for (const key of keys) {
+      const resolution = await driver.test(profile.elements[key] || []);
+      elementResults.push({
+        ok: resolution.matchedCount > 0,
+        locatorKey: key,
+        matchedCount: resolution.matchedCount,
+        attempts: resolution.attempts
+      });
+    }
+
+    return {
+      platform: "kuaishou",
+      profile: {
+        id: profile.id,
+        name: profile.name,
+        version: profile.version,
+        updatedAt: profile.updatedAt
+      },
+      detection,
+      elementResults,
+      matchedCount: elementResults.filter((result) => result.ok).length,
+      missingCount: elementResults.filter((result) => !result.ok).length,
+      checkedAt: Date.now()
+    };
   }
 
   async readPageState(): Promise<KuaishouPageSnapshot> {

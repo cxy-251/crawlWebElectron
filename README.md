@@ -38,6 +38,7 @@ Useful read-only checks:
 ```bash
 curl -s http://127.0.0.1:3218/api/health
 curl -s http://127.0.0.1:3218/api/workflows
+curl -s http://127.0.0.1:3218/api/kuaishou/diagnostics/dom
 ```
 
 ## Safari RPA
@@ -75,6 +76,15 @@ SafariRpaBridge                Safari RPA loopback adapter
 ```
 
 Add new HTTP domains as route modules. Add runtime state behavior through `WorkflowRuntimeService`; HTTP and IPC entry points should not call runtime adapters directly.
+
+## DOM Diagnostics
+
+For DOM-driven workflows, prefer real-page diagnosis over isolated selector assumptions. The Kuaishou tool exposes a DOM diagnostics panel that:
+
+- detects current page type and capabilities
+- tests every configured selector in the active element profile
+- shows matched and missing controls with per-locator attempts
+- keeps the workflow read-only while diagnosing page drift
 
 ## Local Data
 
