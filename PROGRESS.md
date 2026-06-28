@@ -24,6 +24,7 @@
 - `src/main/ipc/workflowIpcHandlers.ts`
 - `src/renderer/tools/workflows/WorkflowCatalogPage.tsx`
 - `src/renderer/tools/video-upload/KuaishouDomDiagnosticsPanel.tsx`
+- `src/renderer/tools/video-upload/KuaishouFailureContextPanel.tsx`
 - 主进程、preload、本地 API、首页路由相关文件
 
 ### 实际修复
@@ -40,6 +41,7 @@
 - 本地 HTTP API 入口拆成 shell + route modules：workflow 路由和 Kuaishou 路由分离。
 - 新增 `WorkflowRuntimeService` 用例层，HTTP / IPC 入口不再直接依赖 Safari RPA adapter。
 - 新增快手 DOM 诊断：`/api/kuaishou/diagnostics/dom`、IPC/preload `diagnoseDom()`、UI 全量 selector 巡检面板。
+- 新增快手失败上下文面板，展示结构化 page-action 错误、候选项、页面能力和 locator attempts。
 - preload 新增 `window.appApi.workflows.listWorkflows()`、`checkService()`、`getRuntimeSnapshot()`、`getRunDetail()`。
 - 移除 Boss Zhipin Electron-local 自动化服务、IPC、HTTP `/api/boss/*`、preload API 和 renderer 页面。
 - Electron session profile 收窄为快手；Boss/Twitter 后续执行走 Safari RPA。

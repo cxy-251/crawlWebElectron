@@ -86,6 +86,8 @@ For DOM-driven workflows, prefer real-page diagnosis over isolated selector assu
 - shows matched and missing controls with per-locator attempts
 - keeps the workflow read-only while diagnosing page drift
 
+When a page write fails, the Kuaishou tool also surfaces the structured failure context from the main process: failed field, locator key, page type, current URL, candidates, matched capabilities, and locator attempts.
+
 ## Local Data
 
 Do not commit runtime state, credentials, cookies, logs, SQLite files, generated task JSON, screenshots, downloads, or personal absolute paths. `local-api-usage/` is intentionally ignored except for its scripts and README.

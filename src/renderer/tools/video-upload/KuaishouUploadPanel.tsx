@@ -18,6 +18,7 @@ import { useAsyncAction } from "../../shared/hooks/useAsyncAction";
 import { Card } from "../../shared/components/Card";
 import { ElementProfilePanel } from "./ElementProfilePanel";
 import { KuaishouDomDiagnosticsPanel } from "./KuaishouDomDiagnosticsPanel";
+import { formatKuaishouFailureMessage, KuaishouFailureContextPanel, parseKuaishouFailureContext } from "./KuaishouFailureContextPanel";
 import { KuaishouActionBar } from "./KuaishouActionBar";
 import { KuaishouPageStatePanel } from "./KuaishouPageStatePanel";
 import { KuaishouUploadForm } from "./KuaishouUploadForm";
@@ -91,7 +92,9 @@ export function KuaishouUploadPanel() {
 
   const taskId = task?.taskId || "";
   const pageHasEditableContent = Boolean(detection?.capabilities.hasEditableContent);
-  const mergedError = formatActionError(syncError || error);
+  const rawActionMessage = syncError || error;
+  const failureContext = useMemo(() => parseKuaishouFailureContext(rawActionMessage), [rawActionMessage]);
+  const mergedError = failureContext ? formatKuaishouFailureMessage(rawActionMessage) : rawActionMessage;
 
   useEffect(() => {
     void run(async () => {
@@ -467,6 +470,7 @@ export function KuaishouUploadPanel() {
         onWaitForEditPage={() => void waitForEditPage()}
       />
       <KuaishouPageStatePanel detection={detection} />
+      <KuaishouFailureContextPanel details={failureContext} />
       <KuaishouDomDiagnosticsPanel diagnostic={domDiagnostic} busy={busy} onRun={() => void runDomDiagnostic()} />
       {conflictPanel}
       <KuaishouUploadForm
@@ -543,21 +547,6 @@ function fieldLabel(field: KuaishouWebEditableField): string {
   };
 
   return labels[field];
-}
-
-function formatActionError(message: string): string {
-  if (!message) return "";
-
-  try {
-    const details = JSON.parse(message) as { message?: string; code?: string; candidates?: Array<{ label: string }> };
-    if (!details.message) return message;
-    const candidates = details.candidates?.length
-      ? `候选：${details.candidates.map((candidate) => candidate.label).slice(0, 8).join("、")}`
-      : "";
-    return [details.message, candidates].filter(Boolean).join(" ");
-  } catch {
-    return message;
-  }
 }
 
 function formatTaskError(result: KuaishouUploadTaskResult): string {

@@ -80,6 +80,8 @@ GET /api/kuaishou/diagnostics/dom
 
 The Electron panel and local API report current page detection, active element profile metadata, selector matches, missing selectors, and per-locator attempts.
 
+Page-action failures should surface structured context in the renderer instead of collapsing to a single message. The Kuaishou tool displays failed field, locator key, page type, current URL, candidate options, matched capabilities, and locator attempts.
+
 ## Acceptance
 
 - `npm run typecheck` passes.
