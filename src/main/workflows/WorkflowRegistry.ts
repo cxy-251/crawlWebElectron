@@ -24,7 +24,7 @@ const WORKFLOW_DESCRIPTORS: WorkflowDescriptor[] = [
     capabilities: ["safari.real-browser", "safari.dom", "safari.write.click", "ledger", "reports"],
     source: {
       kind: "integrated-python",
-      relativePath: "runtimes/safari-rpa",
+      relativePath: "src/safari-rpa",
       apiBaseUrl: "http://127.0.0.1:3211/api/v1"
     }
   },
@@ -39,7 +39,7 @@ const WORKFLOW_DESCRIPTORS: WorkflowDescriptor[] = [
     capabilities: ["safari.real-browser", "safari.dom", "read-only", "period-artifacts"],
     source: {
       kind: "integrated-python",
-      relativePath: "runtimes/safari-rpa",
+      relativePath: "src/safari-rpa",
       apiBaseUrl: "http://127.0.0.1:3211/api/v1"
     }
   },
@@ -54,7 +54,7 @@ const WORKFLOW_DESCRIPTORS: WorkflowDescriptor[] = [
     capabilities: ["local-llm", "period-ledger", "promptloom"],
     source: {
       kind: "integrated-python",
-      relativePath: "runtimes/safari-rpa",
+      relativePath: "src/safari-rpa",
       apiBaseUrl: "http://127.0.0.1:3211/api/v1"
     }
   },
@@ -69,7 +69,7 @@ const WORKFLOW_DESCRIPTORS: WorkflowDescriptor[] = [
     capabilities: ["safari-extension", "content-script", "native-message-reference"],
     source: {
       kind: "integrated-safari-extension",
-      relativePath: "runtimes/safari-extension-boss"
+      relativePath: "src/safari-extension-boss"
     }
   }
 ];

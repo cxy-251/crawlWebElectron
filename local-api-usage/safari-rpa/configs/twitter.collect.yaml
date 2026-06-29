@@ -1,0 +1,28 @@
+target:
+  # Can be overridden by --input local-api-usage/safari-rpa/configs/twitter-target.json.
+  handle: example
+
+include:
+  replies: false
+  reposts: false
+  quotes: false
+
+period:
+  granularity: week
+  timezone: Asia/Shanghai
+
+limits:
+  # Quantity-first stop rule. The workflow also stops early after several
+  # scrolls without newly discovered tweets.
+  max_tweets: 50
+  max_scrolls: 80
+  max_no_new_rounds: 3
+
+detail:
+  # Twitter/X status pages can briefly show a black/skeleton screen after URL
+  # navigation. The defaults prefer stability over speed.
+  detail_timeout_seconds: 15
+  detail_pause_seconds: 2
+  detail_retry_attempts: 2
+  between_detail_seconds: 2
+  max_consecutive_detail_timeouts: 3

@@ -14,11 +14,12 @@ Browser Workflow Forge keeps one repository and three runtime roles:
 ## Integrated Runtime Layout
 
 ```txt
-runtimes/safari-rpa/
-runtimes/safari-extension-boss/
+src/safari-rpa/
+src/safari-extension-boss/
+local-api-usage/safari-rpa/configs/
 ```
 
-`runtimes/safari-rpa/` owns Boss Zhipin and Twitter/X Safari workflows. `runtimes/safari-extension-boss/` is a prototype reference, not a production runtime path.
+`src/safari-rpa/` owns Boss Zhipin and Twitter/X Safari workflow source. `src/safari-extension-boss/` is a prototype reference, not a production runtime path. Editable Safari RPA configs live under `local-api-usage/safari-rpa/configs/`.
 
 ## Workflow Registry
 

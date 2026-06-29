@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "browser-workflow-safari-rpa"
+version = "0.1.0"
+description = "State-aware Safari browser workflow runtime"
+readme = "../../README.md"
+requires-python = ">=3.14"
+dependencies = [
+  "aiohttp>=3.13,<4",
+  "aiosqlite>=0.22,<1",
+  "PyYAML>=6,<7",
+]
+
+[project.scripts]
+safari-rpa = "macrpa.cli:main"
+macrpa = "macrpa.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+
+[tool.setuptools.package-data]
+"macrpa.adapters.safari" = ["*.applescript"]
+
+[tool.unittest]
+start-directory = "../../tests/safari_rpa"
