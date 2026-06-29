@@ -30,6 +30,8 @@ class BossWorkflow:
                 "limits": {"type": "object"},
                 "ordering": {"type": "object"},
                 "communication": {"type": "object"},
+                "profile": {"type": "string"},
+                "profiles": {"type": "object"},
             },
         },
     )
@@ -261,6 +263,7 @@ class BossWorkflow:
             "experience_mismatch_skipped": experience_mismatch_skipped,
             "skipped": already_communicated + unavailable + experience_mismatch_skipped,
             "daily_completed_before_run": daily_completed,
+            "profile": config["profile"],
             "run_target": config["limits"]["run"],
             "new_target": target_new,
             "city_order": city_order,
@@ -275,6 +278,7 @@ class BossWorkflow:
 
     @staticmethod
     def _config(value: JsonObject) -> JsonObject:
+        value = BossWorkflow._profiled_config(value)
         search = value.get("search")
         if not isinstance(search, dict) or not isinstance(search.get("cities"), list) or not search["cities"]:
             raise RpaError("INVALID_BOSS_CONFIG", "search.cities must be a non-empty list")
@@ -287,6 +291,7 @@ class BossWorkflow:
         criteria = value.get("criteria") if isinstance(value.get("criteria"), dict) else {}
         communication = value.get("communication") if isinstance(value.get("communication"), dict) else {}
         ordering = value.get("ordering") if isinstance(value.get("ordering"), dict) else {}
+        profile = str(value.get("profile") or "legacy").strip() or "legacy"
         daily_limit = max(0, int(limits.get("daily", 110)))
         run_limit = max(0, int(limits.get("run", daily_limit)))
         strategy = str(ordering.get("strategy", "random_rotated"))
@@ -299,6 +304,7 @@ class BossWorkflow:
                 "weekday_keywords": search.get("weekday_keywords", {}),
                 "query_params": search.get("query_params", {}),
             },
+            "profile": profile,
             "limits": {
                 "run": run_limit,
                 "daily": daily_limit,
@@ -318,6 +324,31 @@ class BossWorkflow:
             },
             "communication": {"enabled": bool(communication.get("enabled", False))},
         }
+
+    @staticmethod
+    def _profiled_config(value: JsonObject) -> JsonObject:
+        profiles = value.get("profiles")
+        if not isinstance(profiles, dict):
+            return value
+        selected = str(value.get("profile") or "production").strip() or "production"
+        override = profiles.get(selected)
+        if not isinstance(override, dict):
+            raise RpaError("INVALID_BOSS_CONFIG", f"Boss profile does not exist: {selected}")
+        base = {key: item for key, item in value.items() if key not in {"profile", "profiles"}}
+        resolved = BossWorkflow._deep_merge(base, override)
+        resolved["profile"] = selected
+        return resolved
+
+    @staticmethod
+    def _deep_merge(base: JsonObject, override: JsonObject) -> JsonObject:
+        merged = dict(base)
+        for key, value in override.items():
+            existing = merged.get(key)
+            if isinstance(existing, dict) and isinstance(value, dict):
+                merged[key] = BossWorkflow._deep_merge(existing, value)
+            else:
+                merged[key] = value
+        return merged
 
     @staticmethod
     def _keywords(search: JsonObject) -> list[str]:

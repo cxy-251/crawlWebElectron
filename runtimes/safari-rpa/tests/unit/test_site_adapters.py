@@ -267,22 +267,36 @@ class SiteAdapterTests(unittest.IsolatedAsyncioTestCase):
     def test_boss_profiles_share_cities_keywords_and_daily_ledger(self) -> None:
         root = Path(__file__).resolve().parents[2]
         expected = {
-            "boss.collection.yaml": (110, False),
-            "boss.test.yaml": (10, True),
-            "boss.production.yaml": (110, True),
+            "collection": (110, False),
+            "test": (10, True),
+            "production": (110, True),
         }
+        source = yaml.safe_load((root / "configs" / "boss.production.yaml").read_text(encoding="utf-8"))
+        self.assertEqual("production", source["profile"])
+        self.assertEqual(set(expected), set(source["profiles"]))
         for name, (run_limit, communication) in expected.items():
             with self.subTest(profile=name):
-                config = yaml.safe_load((root / "configs" / name).read_text(encoding="utf-8"))
+                config = BossWorkflow._config({**source, "profile": name})
                 self.assertEqual(11, len(config["search"]["cities"]))
                 self.assertEqual("Python开发工程师", config["search"]["weekday_keywords"]["mon"])
                 self.assertEqual("iOS开发工程师", config["search"]["weekday_keywords"]["sat"])
                 self.assertIn("开发", config["criteria"]["title_allow"])
                 self.assertIn("销售", config["criteria"]["title_deny"])
+                self.assertEqual(name, config["profile"])
                 self.assertEqual(run_limit, config["limits"]["run"])
                 self.assertEqual(110, config["limits"]["daily"])
                 self.assertEqual(10, config["limits"]["per_city"])
                 self.assertEqual(communication, config["communication"]["enabled"])
+
+    def test_boss_unknown_profile_is_rejected(self) -> None:
+        with self.assertRaisesRegex(RpaError, "Boss profile does not exist"):
+            BossWorkflow._config(
+                {
+                    "profile": "missing",
+                    "profiles": {"production": {"communication": {"enabled": True}}},
+                    "search": {"cities": [{"name": "深圳", "code": "101280600"}], "keywords": ["iOS开发工程师"]},
+                }
+            )
 
     def test_boss_title_filter_requires_developer_role(self) -> None:
         config = BossWorkflow._config(

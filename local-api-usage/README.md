@@ -95,6 +95,30 @@ SAFARI_RPA_API_TOKEN=replace-me PYTHONPATH=src conda run -n kwai \
 
 Keep the token outside renderer code and local task JSON. Do not run Boss/Twitter live workflows unless you intend to operate the real Safari account.
 
+Boss uses one maintained config file:
+
+```bash
+cd runtimes/safari-rpa
+
+# Read-only scan/export; does not communicate.
+PYTHONPATH=src conda run -n kwai safari-rpa --home var run \
+  boss.search-and-communicate.v1 --config configs/boss.production.yaml --profile collection
+
+# External-write test; creates at most ten real communications.
+PYTHONPATH=src conda run -n kwai safari-rpa --home var run \
+  boss.search-and-communicate.v1 --config configs/boss.production.yaml --profile test
+
+# Production should normally be installed as a LaunchAgent, not run manually.
+PYTHONPATH=src conda run -n kwai safari-rpa --home var schedule install \
+  --id boss-production-daily \
+  --config configs/boss.production.yaml \
+  --profile production \
+  --at 06:00 \
+  --timezone Asia/Shanghai
+```
+
+Use `collection` for manual inspection. Use `test` or `production` only when the real Boss account should send communications.
+
 ## 4. Generate the task array
 
 ```bash

@@ -25,7 +25,7 @@ class LaunchdScheduler:
 
     async def install_boss(
         self, schedule_id: str, config_path: str | Path, *, daily_at: str = "06:00",
-        timezone: str = "Asia/Shanghai", keep_awake: bool = True,
+        timezone: str = "Asia/Shanghai", keep_awake: bool = True, profile: str = "production",
     ) -> ScheduleRecord:
         hour, minute = self._parse_time(daily_at)
         config = Path(config_path).expanduser().resolve()
@@ -39,6 +39,7 @@ class LaunchdScheduler:
             "ProgramArguments": [
                 sys.executable, "-m", "macrpa", "--home", str(self.runtime_home),
                 "scheduled-run", "boss.search-and-communicate.v1", "--config", str(config),
+                "--profile", profile,
                 "--ready-until", "12:00", "--retry-seconds", "300",
             ],
             "WorkingDirectory": str(self.project_root),
@@ -59,7 +60,7 @@ class LaunchdScheduler:
         return ScheduleRecord(
             schedule_id, "boss.search-and-communicate.v1", str(config), daily_at, timezone,
             True, self.BOSS_LABEL, str(plist_path), keep_awake,
-            {"run_at_load": False, "ready_until": "12:00", "retry_seconds": 300}, now, now,
+            {"run_at_load": False, "ready_until": "12:00", "retry_seconds": 300, "profile": profile}, now, now,
         )
 
     async def install_keep_awake(self) -> Path:

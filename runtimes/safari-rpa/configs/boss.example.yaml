@@ -1,3 +1,5 @@
+profile: collection
+
 search:
   cities:
     - {name: 深圳, code: "101280600"}
@@ -48,3 +50,20 @@ ordering:
 # communicated automatically and verified before the next job starts.
 communication:
   enabled: false
+
+profiles:
+  collection:
+    communication:
+      enabled: false
+    limits:
+      run: 110
+  test:
+    communication:
+      enabled: true
+    limits:
+      run: 10
+  production:
+    communication:
+      enabled: true
+    limits:
+      run: 110

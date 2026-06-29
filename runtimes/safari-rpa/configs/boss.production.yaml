@@ -1,3 +1,5 @@
+profile: production
+
 search:
   cities:
     - {name: 深圳, code: "101280600"}
@@ -36,8 +38,6 @@ criteria:
   allow_unknown: true
 
 limits:
-  # Test-profile communications already completed today are deducted from this
-  # shared allowance.
   run: 110
   daily: 110
   per_city: 10
@@ -48,3 +48,24 @@ ordering:
 
 communication:
   enabled: true
+
+profiles:
+  collection:
+    communication:
+      enabled: false
+    limits:
+      run: 110
+  test:
+    # At most ten new confirmed communications in this run. They count toward
+    # the same 110-per-day ledger used by production.
+    communication:
+      enabled: true
+    limits:
+      run: 10
+  production:
+    # Test-profile communications already completed today are deducted from this
+    # shared allowance.
+    communication:
+      enabled: true
+    limits:
+      run: 110

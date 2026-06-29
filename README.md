@@ -60,6 +60,8 @@ SAFARI_RPA_API_TOKEN=replace-me PYTHONPATH=src conda run -n kwai \
   safari-rpa --home var serve --host 127.0.0.1 --port 3211
 ```
 
+Boss uses one maintained config file, `configs/boss.production.yaml`. Select the run behavior with `--profile`: `collection` is read-only, `test` can create up to ten real communications, and `production` is the full production profile. The production LaunchAgent passes `--profile production` explicitly.
+
 High-risk write actions remain outside the Electron UI until explicitly added behind a reviewed workflow contract.
 
 ## Architecture

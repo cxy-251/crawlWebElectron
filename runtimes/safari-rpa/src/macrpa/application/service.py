@@ -129,6 +129,7 @@ class RpaApplication:
             schedule_id, config_path, daily_at=str(value.get("daily_at") or "06:00"),
             timezone=str(value.get("timezone") or "Asia/Shanghai"),
             keep_awake=bool(value.get("keep_awake", True)),
+            profile=str(value.get("profile") or "production"),
         )
         return await self.store.upsert_schedule(record)
 
@@ -144,6 +145,7 @@ class RpaApplication:
         workflow_id: str,
         config_path: str | Path,
         *,
+        profile: str | None = None,
         ready_until: str = "12:00",
         retry_seconds: int = 300,
     ) -> RunRecord:
@@ -156,7 +158,7 @@ class RpaApplication:
             except Exception as error:
                 last_error = str(error)
                 if datetime.now().astimezone() >= deadline:
-                    config = self._load_mapping(Path(config_path))
+                    config = self._load_mapping(Path(config_path), profile=profile)
                     run = await self.runner.create_run(workflow_id, config, {})
                     await self.store.set_run_status(
                         run.id,
@@ -167,7 +169,7 @@ class RpaApplication:
                     assert blocked is not None
                     return blocked
                 await asyncio.sleep(max(1, retry_seconds))
-        config = self._load_mapping(Path(config_path))
+        config = self._load_mapping(Path(config_path), profile=profile)
         created = await self.create_run(workflow_id, config, {}, background=False)
         return await self.execute_run(created.id)
 
@@ -293,12 +295,14 @@ class RpaApplication:
         return max(deadline, now)
 
     @staticmethod
-    def _load_mapping(path: Path) -> JsonObject:
+    def _load_mapping(path: Path, *, profile: str | None = None) -> JsonObject:
         value = yaml.safe_load(path.expanduser().read_text(encoding="utf-8"))
         if value is None:
-            return {}
+            value = {}
         if not isinstance(value, dict):
             raise RpaError("INVALID_CONFIG", "Configuration root must be an object")
+        if profile:
+            value["profile"] = profile
         return value
 
 

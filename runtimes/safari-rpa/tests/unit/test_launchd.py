@@ -23,11 +23,15 @@ class LaunchdSchedulerTests(unittest.IsolatedAsyncioTestCase):
 
             scheduler._write_and_load = AsyncMock(side_effect=capture)
             record = await scheduler.install_boss("boss-production-daily", config)
+            boss_args = captured[0][1]["ProgramArguments"]
             self.assertEqual({"Hour": 6, "Minute": 0}, captured[0][1]["StartCalendarInterval"])
             self.assertNotIn("RunAtLoad", captured[0][1])
+            self.assertIn("--profile", boss_args)
+            self.assertEqual("production", boss_args[boss_args.index("--profile") + 1])
             self.assertEqual(["/usr/bin/caffeinate", "-s"], captured[1][1]["ProgramArguments"])
             self.assertTrue(captured[1][1]["RunAtLoad"])
             self.assertTrue(record.keep_awake)
+            self.assertEqual("production", record.metadata["profile"])
 
     def test_generated_plist_is_valid_xml(self) -> None:
         value = {"Label": "test", "ProgramArguments": ["/usr/bin/true"], "RunAtLoad": False}

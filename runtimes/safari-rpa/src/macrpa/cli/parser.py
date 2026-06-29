@@ -19,6 +19,7 @@ def build_parser() -> argparse.ArgumentParser:
     run_parser.add_argument("workflow_id")
     run_parser.add_argument("--config", type=Path)
     run_parser.add_argument("--input", type=Path)
+    run_parser.add_argument("--profile", help="Select a named workflow profile from the config")
 
     twitter_parser = subparsers.add_parser("twitter", help="Convenience wrappers for Twitter workflows")
     twitter_subparsers = twitter_parser.add_subparsers(dest="twitter_command", required=True)
@@ -57,6 +58,7 @@ def build_parser() -> argparse.ArgumentParser:
     schedule_install = schedule_subparsers.add_parser("install", help="Install the Boss production schedule")
     schedule_install.add_argument("--id", default="boss-production-daily")
     schedule_install.add_argument("--config", type=Path, default=Path("configs/boss.production.yaml"))
+    schedule_install.add_argument("--profile", default="production")
     schedule_install.add_argument("--at", default="06:00")
     schedule_install.add_argument("--timezone", default="Asia/Shanghai")
     schedule_install.add_argument("--no-keep-awake", action="store_true")
@@ -68,6 +70,7 @@ def build_parser() -> argparse.ArgumentParser:
     scheduled_parser = subparsers.add_parser("scheduled-run", help=argparse.SUPPRESS)
     scheduled_parser.add_argument("workflow_id")
     scheduled_parser.add_argument("--config", type=Path, required=True)
+    scheduled_parser.add_argument("--profile", default="production")
     scheduled_parser.add_argument("--ready-until", default="12:00")
     scheduled_parser.add_argument("--retry-seconds", type=int, default=300)
 
