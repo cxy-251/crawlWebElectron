@@ -45,8 +45,6 @@ class BossPageAdapter:
             const text = document.body?.innerText || '';
             const url = location.href;
             const title = document.title || '';
-            const risk = /验证码|访问异常|账号异常|安全验证|操作频繁|暂时封禁/.test(text) ||
-                /(?:^|\/)403(?:[./?]|$)/.test(new URL(url).pathname) || /403\s*(Forbidden|错误|拒绝访问)/i.test(title);
             const loginPage = /login|passport/.test(url) || /登录后继续|请登录|扫码登录|密码登录/.test(text);
             const loggedIn = !!document.querySelector('.nav-figure,.header-user,.user-nav,[class*=user-nav]');
             const list = !!document.querySelector('ul.rec-job-list a.job-name');
@@ -54,8 +52,40 @@ class BossPageAdapter:
             const empty = /暂无相关职位|没有找到相关职位|暂无职位|没有搜索结果/.test(text);
             const pageType = list && detail ? 'search_detail' : list ? 'search' : detail ? 'detail' :
                 empty ? 'search_empty' : 'unknown';
+            const riskPattern = /验证码|访问异常|账号异常|安全验证|操作频繁|暂时封禁/;
+            const visible = el => {
+                if (!el) return false;
+                const style = getComputedStyle(el);
+                const rect = el.getBoundingClientRect();
+                return style.display !== 'none' && style.visibility !== 'hidden' &&
+                    rect.width > 0 && rect.height > 0;
+            };
+            const blockingSelectors = [
+                '[role=dialog]',
+                '.dialog-wrap',
+                '.boss-dialog',
+                '[class*=dialog]',
+                '[class*=captcha]',
+                '[class*=verify]',
+                '[class*=security]',
+                '[class*=safe]',
+                '.geetest_panel',
+                '.captcha'
+            ].join(',');
+            const blockingNode = Array.from(document.querySelectorAll(blockingSelectors))
+                .filter(visible)
+                .find(el => riskPattern.test(el.innerText || ''));
+            const pageUnavailableRisk = riskPattern.test(text) && pageType === 'unknown';
+            const path403 = /(?:^|\/)403(?:[./?]|$)/.test(new URL(url).pathname);
+            const title403 = /403\s*(Forbidden|错误|拒绝访问)/i.test(title);
+            const risk = !!blockingNode || pageUnavailableRisk || path403 || title403;
+            const riskReason = blockingNode ? 'visible_blocking_node' :
+                pageUnavailableRisk ? 'unavailable_page_text' :
+                path403 ? 'url_403' :
+                title403 ? 'title_403' : '';
+            const riskText = (blockingNode?.innerText || (pageUnavailableRisk ? text : '')).trim().slice(0, 240);
             return {risk, login_required: loginPage || (!loggedIn && pageType === 'unknown'), logged_in: loggedIn,
-                page_type: pageType, has_list:list, has_detail:detail, empty, url};
+                page_type: pageType, has_list:list, has_detail:detail, empty, url, risk_reason: riskReason, risk_text: riskText};
             """
 
     async def open_search(self, page: PageRef, url: str) -> list[dict[str, str]]:

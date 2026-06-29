@@ -9,28 +9,58 @@ from safari_rpa.contracts.safari import ElementState, Locator, PageCondition, Pa
 
 
 class FakeRunner:
-    def __init__(self) -> None:
+    def __init__(self, windows: list[dict] | None = None) -> None:
         self.commands: list[tuple[str, ...]] = []
+        self.windows = windows or [
+            {
+                "window_id": 44,
+                "index": 1,
+                "tabs": [
+                    {
+                        "tab_index": 1,
+                        "url": "https://x.com/",
+                        "title": "X",
+                        "is_current": False,
+                    }
+                ],
+            }
+        ]
 
     async def run(self, command: str, *arguments: object) -> str:
         self.commands.append((command, *(str(value) for value in arguments)))
         if command == "inspect":
-            return json.dumps(
-                [
-                    {
-                        "window_id": 44,
-                        "index": 1,
-                        "tabs": [
-                            {
-                                "tab_index": 1,
-                                "url": "https://x.com/",
-                                "title": "X",
-                                "is_current": False,
-                            }
-                        ],
-                    }
-                ]
+            return json.dumps(self.windows)
+        if command == "create_window":
+            self.windows.append(
+                {
+                    "window_id": 88,
+                    "index": 1,
+                    "tabs": [
+                        {
+                            "tab_index": 1,
+                            "url": str(arguments[0]),
+                            "title": SafariDriver._workspace_title("x.com"),
+                            "is_current": True,
+                        }
+                    ],
+                }
             )
+            return "88"
+        if command == "create_tab":
+            window_id = int(arguments[0])
+            window = next(item for item in self.windows if int(item["window_id"]) == window_id)
+            for tab in window["tabs"]:
+                tab["is_current"] = False
+            tab_index = len(window["tabs"]) + 1
+            window["tabs"].append(
+                {
+                    "tab_index": tab_index,
+                    "url": str(arguments[1]),
+                    "title": "X",
+                    "is_current": True,
+                }
+            )
+            return str(tab_index)
         if command == "activate":
             return "ok"
         if command == "eval":
@@ -64,13 +94,45 @@ class SystemClickRunner(FakeRunner):
 
 
 class SafariDriverTests(unittest.IsolatedAsyncioTestCase):
-    async def test_ensure_site_reuses_existing_matching_tab(self) -> None:
+    async def test_ensure_site_creates_workspace_instead_of_reusing_user_tab(self) -> None:
         runner = FakeRunner()
         driver = SafariDriver(runner=runner, poll_interval=0)
         page = await driver.ensure_site("x.com", "https://x.com/")
-        self.assertEqual(44, page.window_id)
-        self.assertEqual(1, page.tab_index)
+        self.assertEqual(88, page.window_id)
+        self.assertEqual(2, page.tab_index)
         self.assertEqual("x.com", page.expected_origin)
+        commands = [command[0] for command in runner.commands]
+        self.assertIn("create_window", commands)
+        self.assertIn("create_tab", commands)
+        self.assertIn("activate", commands)
+
+    async def test_ensure_site_reuses_existing_workspace_matching_tab(self) -> None:
+        runner = FakeRunner(
+            [
+                {
+                    "window_id": 44,
+                    "index": 1,
+                    "tabs": [
+                        {
+                            "tab_index": 1,
+                            "url": SafariDriver._workspace_url("x.com"),
+                            "title": SafariDriver._workspace_title("x.com"),
+                            "is_current": False,
+                        },
+                        {
+                            "tab_index": 2,
+                            "url": "https://x.com/",
+                            "title": "X",
+                            "is_current": True,
+                        },
+                    ],
+                }
+            ]
+        )
+        driver = SafariDriver(runner=runner, poll_interval=0)
+        page = await driver.ensure_site("x.com", "https://x.com/")
+        self.assertEqual(44, page.window_id)
+        self.assertEqual(2, page.tab_index)
         commands = [command[0] for command in runner.commands]
         self.assertIn("activate", commands)
         self.assertNotIn("create_window", commands)

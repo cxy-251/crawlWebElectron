@@ -17,6 +17,12 @@ Safari RPA Runtime uses Ports & Adapters to keep browser control, workflow logic
 
 The dependency direction is inward toward contracts. Workflows should remain boring: compose ports and site operations, write artifacts, and describe business outcomes.
 
+## Safari workspace ownership
+
+The Safari adapter owns window and tab selection. Workflows and site adapters call the `SafariAutomationPort` and must not assume `window 1` or a manually focused tab.
+
+Each target site runs inside a Safari RPA workspace window identified by a marker tab. The adapter may reuse target-origin tabs inside that workspace, but it must not take over arbitrary user Safari windows just because a matching URL is already open.
+
 ## LLM boundary
 
 `promptloom` is intentionally detachable and named independently from Safari RPA. It must not import `safari_rpa.*`. Safari RPA calls it through an application service implementing `LocalLlmPort`, and workflows receive that port through `WorkflowContextPort`.

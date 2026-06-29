@@ -138,6 +138,14 @@ class SiteAdapterTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("403\\s*(Forbidden", script)
         self.assertIn("new URL(url).pathname", script)
 
+    def test_boss_risk_contract_does_not_block_usable_search_detail_for_hidden_text(self) -> None:
+        script = BossPageAdapter._access_state_script()
+        self.assertIn("pageType === 'unknown'", script)
+        self.assertIn("visible_blocking_node", script)
+        self.assertIn("has_list:list", script)
+        self.assertIn("has_detail:detail", script)
+        self.assertNotIn("const risk = /验证码", script)
+
     async def test_twitter_profile_navigation_normalizes_to_x_handle(self) -> None:
         safari = TwitterSafari()
         page = await TwitterPageAdapter(safari).ensure_profile(profile_url="https://twitter.com/example/status/123")

@@ -4,10 +4,11 @@ This directory is the durable record of accepted implementation plans.
 
 ## Current plan
 
-- [0010-browser-extension-architecture.md](0010-browser-extension-architecture.md) — accepted; browser workflow platform consolidation pending
+- [0011-site-workspace-and-risk-signals.md](0011-site-workspace-and-risk-signals.md) — implemented and verified; site workspace isolation and Boss risk signal hardening
 
 ## Prior plans
 
+- [0010-browser-extension-architecture.md](0010-browser-extension-architecture.md) — accepted; browser workflow platform consolidation pending; supplemented by 0011
 - [0001-foundation.md](0001-foundation.md) — implemented foundation; supplemented by 0002 for live-site contracts
 - [0002-live-site-hardening.md](0002-live-site-hardening.md) — implemented live-site contracts; supplemented by 0003
 - [0003-tools-and-boss-quotas.md](0003-tools-and-boss-quotas.md) — implemented and live-site verified; supplemented by 0004

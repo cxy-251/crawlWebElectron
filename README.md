@@ -10,6 +10,8 @@ Browser Workflow Forge is a local browser workflow workbench. It keeps ordinary 
 - Safari Web Extension work lives in `src/safari-extension-boss/` as a future bridge prototype.
 - Local editable workflow configs live under `local-api-usage/`.
 
+Safari RPA opens and reuses site-specific Safari RPA workspace windows instead of taking over arbitrary user Safari windows. Boss and Twitter runs should stay in their own marked Safari windows, leaving normal Safari windows for manual browsing.
+
 Current workflow IDs:
 
 ```txt

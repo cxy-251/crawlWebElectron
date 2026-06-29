@@ -6,7 +6,7 @@ import time
 import uuid
 from importlib.resources import files
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import quote, urlparse
 
 from safari_rpa.locking import AsyncFileLock
 
@@ -61,6 +61,8 @@ class AppleScriptRunner:
 class SafariDriver:
     """State-aware Safari implementation of the public automation contract."""
 
+    WORKSPACE_TITLE_PREFIX = "Safari RPA Workspace"
+
     def __init__(
         self, runner: AppleScriptRunner | None = None, poll_interval: float = 0.5,
         action_lock_path: str | None = None,
@@ -99,27 +101,25 @@ class SafariDriver:
         marker = f"safari_rpa:{session_id}"
         async with self._lock:
             windows = await self.inspect_windows()
-            matching_tabs = [
-                tab
-                for window in windows
-                for tab in window.tabs
-                if self._url_matches_origin(tab.url, expected_origin)
-            ]
+            workspace = self._workspace_window(windows, expected_origin)
+            if workspace is not None:
+                matching_tabs = [
+                    tab for tab in workspace.tabs if self._url_matches_origin(tab.url, expected_origin)
+                ]
+            else:
+                matching_tabs = []
+
             if matching_tabs:
                 selected = next((tab for tab in matching_tabs if tab.is_current), matching_tabs[0])
                 await self.runner.run("activate", selected.window_id, selected.tab_index)
                 window_id, tab_index = selected.window_id, selected.tab_index
-            elif windows:
-                window_id = windows[0].window_id
+            else:
+                if workspace is None:
+                    window_id = int(await self.runner.run("create_window", self._workspace_url(expected_origin)))
+                else:
+                    window_id = workspace.window_id
                 tab_index = int(await self.runner.run("create_tab", window_id, start_url))
                 await self.runner.run("activate", window_id, tab_index)
-            else:
-                window_id = int(await self.runner.run("create_window", start_url))
-                windows = await self.inspect_windows()
-                created = next((window for window in windows if window.window_id == window_id), None)
-                if not created or not created.tabs:
-                    raise SafariUnavailableError("Safari did not create an automation tab")
-                tab_index = next((tab.tab_index for tab in created.tabs if tab.is_current), created.tabs[0].tab_index)
 
             await self._wait_direct_ready(window_id, tab_index, expected_origin, timeout)
             await self._evaluate_at(
@@ -583,6 +583,37 @@ class SafariDriver:
         except ValueError:
             return False
         return host == origin or host.endswith(f".{origin}")
+
+    @classmethod
+    def _workspace_window(
+        cls, windows: tuple[SafariWindowInfo, ...], expected_origin: str
+    ) -> SafariWindowInfo | None:
+        title = cls._workspace_title(expected_origin)
+        marker_url_prefix = cls._workspace_url_prefix(expected_origin)
+        for window in windows:
+            if any(tab.title == title or tab.url.startswith(marker_url_prefix) for tab in window.tabs):
+                return window
+        return None
+
+    @classmethod
+    def _workspace_title(cls, expected_origin: str) -> str:
+        return f"{cls.WORKSPACE_TITLE_PREFIX}: {expected_origin}"
+
+    @classmethod
+    def _workspace_url_prefix(cls, expected_origin: str) -> str:
+        return "data:text/html;charset=utf-8," + quote(
+            f"<!doctype html><title>{cls._workspace_title(expected_origin)}</title>"
+        )
+
+    @classmethod
+    def _workspace_url(cls, expected_origin: str) -> str:
+        title = cls._workspace_title(expected_origin)
+        html = (
+            "<!doctype html>"
+            f"<title>{title}</title>"
+            f"<body><h1>{title}</h1><p>Reserved for Safari RPA automation.</p></body>"
+        )
+        return "data:text/html;charset=utf-8," + quote(html)
 
     @staticmethod
     def _state_dict(state: PageState | None) -> dict[str, str] | None:
