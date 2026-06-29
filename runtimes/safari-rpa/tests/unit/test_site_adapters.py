@@ -242,7 +242,7 @@ class SiteAdapterTests(unittest.IsolatedAsyncioTestCase):
 
     def test_boss_sample_and_canonical_search_contract(self) -> None:
         root = Path(__file__).resolve().parents[2]
-        config = yaml.safe_load((root / "configs" / "boss.example.yaml").read_text(encoding="utf-8"))
+        config = yaml.safe_load((root / "configs" / "boss.production.yaml").read_text(encoding="utf-8"))
         self.assertEqual(11, len(config["search"]["cities"]))
         self.assertEqual(
             ["深圳", "广州", "杭州", "上海", "成都", "武汉", "南京", "苏州", "东莞", "佛山", "重庆"],

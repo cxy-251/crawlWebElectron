@@ -2,9 +2,9 @@
 
 Before making changes:
 
-1. Read `docs/plans/README.md`.
+1. Read `docs/plans/INDEX.md`.
 2. Read every plan marked current or accepted there.
-3. Read `docs/architecture/README.md` and `docs/architecture/design-principles.md`.
+3. Read `docs/architecture/INDEX.md` and `docs/architecture/design-principles.md`.
 4. Preserve the dependency direction and public contracts in the active plan.
 5. Add a new numbered plan before materially changing architecture or workflow behavior.
 6. When adding a module, identify its layer and keep dependencies within that layer's allowed direction.

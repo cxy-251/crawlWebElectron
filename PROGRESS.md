@@ -7,9 +7,9 @@
 - `PROJPLAN.md`
 - `README.md`
 - `.gitignore`
-- `docs/plans/README.md`
+- `docs/plans/INDEX.md`
 - `docs/plans/0010-browser-workflow-platform.md`
-- `runtimes/README.md`
+- `runtimes/`
 - `runtimes/safari-rpa/`
 - `runtimes/safari-extension-boss/`
 - `package.json`
@@ -96,7 +96,6 @@ local-api-usage/
 constants.mjs
 generate-kuaishou-tasks.mjs
 batch-publish-kuaishou.mjs
-README.md
 ```
 
 脚本使用一个 JSON 数组文件作为批量任务文件，不使用 JSONL。

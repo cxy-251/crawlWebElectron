@@ -20,12 +20,12 @@ PROMPTLOOM_SOURCE = ROOT / "src" / "promptloom"
 
 class ContractAndArchitectureTests(unittest.TestCase):
     def test_plan_archive_points_to_existing_current_plan(self) -> None:
-        index = (ROOT / "docs" / "plans" / "README.md").read_text(encoding="utf-8")
+        index = (ROOT / "docs" / "plans" / "INDEX.md").read_text(encoding="utf-8")
         self.assertIn("0001-foundation.md", index)
         self.assertIn("0009-twitter-two-phase-collection-cleaning.md", index)
         self.assertTrue((ROOT / "docs" / "plans" / "0001-foundation.md").is_file())
         self.assertTrue((ROOT / "docs" / "plans" / "0009-twitter-two-phase-collection-cleaning.md").is_file())
-        self.assertTrue((ROOT / "docs" / "architecture" / "README.md").is_file())
+        self.assertTrue((ROOT / "docs" / "architecture" / "INDEX.md").is_file())
         self.assertTrue((ROOT / "docs" / "architecture" / "design-principles.md").is_file())
         self.assertTrue((ROOT / "AGENTS.md").is_file())
 

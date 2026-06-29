@@ -14,7 +14,6 @@ __pycache__/
 local-api-usage/*
 !local-api-usage/batch-publish-kuaishou.mjs
 !local-api-usage/generate-kuaishou-tasks.mjs
-!local-api-usage/README.md
 *.jsonl
 *.state.json
 tasks.*.json

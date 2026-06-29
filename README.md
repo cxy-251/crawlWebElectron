@@ -42,6 +42,25 @@ curl -s http://127.0.0.1:3218/api/kuaishou/diagnostics/dom
 curl -s -X POST http://127.0.0.1:3218/api/kuaishou/diagnostics/evidence
 ```
 
+## Local API Usage
+
+Local helper scripts live in `local-api-usage/`. The directory is ignored except for script templates, so keep personal paths, generated task JSON, state files, and tokens there.
+
+Edit `local-api-usage/constants.mjs`, then start Electron:
+
+```bash
+pnpm run dev
+```
+
+Generate and run a Kuaishou batch:
+
+```bash
+node local-api-usage/generate-kuaishou-tasks.mjs
+node local-api-usage/batch-publish-kuaishou.mjs
+```
+
+The batch script calls `/api/kuaishou/upload-single`, runs tasks one by one, and only auto-publishes tasks whose JSON item has `confirmPublish: true`.
+
 ## Safari RPA
 
 Install or refresh the local command:
@@ -60,7 +79,84 @@ SAFARI_RPA_API_TOKEN=replace-me PYTHONPATH=src conda run -n kwai \
   safari-rpa --home var serve --host 127.0.0.1 --port 3211
 ```
 
-Boss uses one maintained config file, `configs/boss.production.yaml`. Select the run behavior with `--profile`: `collection` is read-only, `test` can create up to ten real communications, and `production` is the full production profile. The production LaunchAgent passes `--profile production` explicitly.
+Boss uses one maintained config file, `configs/boss.production.yaml`. Select behavior with `--profile`:
+
+```txt
+collection  read-only scan/export; never communicates
+test        real Boss communication, capped at 10 new confirmed communications
+production  full production profile, capped by daily and per-city limits
+```
+
+Validate the workflow before installing any schedule:
+
+```bash
+cd runtimes/safari-rpa
+PYTHONPATH=src conda run -n kwai safari-rpa --home var doctor
+PYTHONPATH=src conda run -n kwai safari-rpa --home var workflows
+
+# Safe manual validation first.
+PYTHONPATH=src conda run -n kwai safari-rpa --home var run \
+  boss.search-and-communicate.v1 --config configs/boss.production.yaml --profile collection
+
+PYTHONPATH=src conda run -n kwai safari-rpa --home var status --limit 10
+PYTHONPATH=src conda run -n kwai safari-rpa --home var reports list --limit 10
+```
+
+Only after the collection run looks correct, use `test` deliberately if the real Boss account should send up to ten communications:
+
+```bash
+PYTHONPATH=src conda run -n kwai safari-rpa --home var run \
+  boss.search-and-communicate.v1 --config configs/boss.production.yaml --profile test
+```
+
+Do not manually run `production` unless an immediate production write is intended.
+
+### Boss Schedule
+
+Install the daily production LaunchAgent only after validation:
+
+```bash
+cd runtimes/safari-rpa
+PYTHONPATH=src conda run -n kwai safari-rpa --home var schedule install \
+  --id boss-production-daily \
+  --config configs/boss.production.yaml \
+  --profile production \
+  --at 06:00 \
+  --timezone Asia/Shanghai
+```
+
+Inspect schedule state:
+
+```bash
+PYTHONPATH=src conda run -n kwai safari-rpa --home var schedule status
+PYTHONPATH=src conda run -n kwai safari-rpa --home var schedule status boss-production-daily
+```
+
+Modify the schedule by running `schedule install` again with the same `--id` and a new value:
+
+```bash
+PYTHONPATH=src conda run -n kwai safari-rpa --home var schedule install \
+  --id boss-production-daily \
+  --config configs/boss.production.yaml \
+  --profile production \
+  --at 07:30 \
+  --timezone Asia/Shanghai
+```
+
+Cancel the schedule:
+
+```bash
+PYTHONPATH=src conda run -n kwai safari-rpa --home var schedule uninstall boss-production-daily
+```
+
+If old `macRpaForge` LaunchAgents still exist, unload and remove them separately:
+
+```bash
+launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.macrpa-forge.boss-production.plist
+launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.macrpa-forge.keep-awake.plist
+rm ~/Library/LaunchAgents/com.macrpa-forge.boss-production.plist
+rm ~/Library/LaunchAgents/com.macrpa-forge.keep-awake.plist
+```
 
 High-risk write actions remain outside the Electron UI until explicitly added behind a reviewed workflow contract.
 
@@ -94,7 +190,7 @@ When a page write fails, the Kuaishou tool also surfaces the structured failure 
 
 ## Local Data
 
-Do not commit runtime state, credentials, cookies, logs, SQLite files, generated task JSON, screenshots, downloads, or personal absolute paths. `local-api-usage/` is intentionally ignored except for its scripts and README.
+Do not commit runtime state, credentials, cookies, logs, SQLite files, generated task JSON, screenshots, downloads, or personal absolute paths. `local-api-usage/` is intentionally ignored except for script templates.
 
 ## Plans
 
