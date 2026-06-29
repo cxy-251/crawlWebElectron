@@ -7,14 +7,14 @@ from argparse import Namespace
 from pathlib import Path
 from unittest.mock import patch
 
-from macrpa.cli import _run
-from macrpa.cli.commands.run import handle_run
-from macrpa.cli.commands.scheduled_run import handle_scheduled_run
-from macrpa.cli.commands.twitter import handle_twitter
-from macrpa.cli.parser import build_parser
-from macrpa.cli.registry import COMMAND_HANDLERS
-from macrpa.contracts.runtime import RunRecord, RunStatus
-from macrpa.paths import default_config_path
+from safari_rpa.cli import _run
+from safari_rpa.cli.commands.run import handle_run
+from safari_rpa.cli.commands.scheduled_run import handle_scheduled_run
+from safari_rpa.cli.commands.twitter import handle_twitter
+from safari_rpa.cli.parser import build_parser
+from safari_rpa.cli.registry import COMMAND_HANDLERS
+from safari_rpa.contracts.runtime import RunRecord, RunStatus
+from safari_rpa.paths import default_config_path
 
 
 class CliTests(unittest.IsolatedAsyncioTestCase):
@@ -55,7 +55,7 @@ class CliTests(unittest.IsolatedAsyncioTestCase):
                 )
 
         app = FakeApplication()
-        config = default_config_path("boss.production.yaml")
+        config = default_config_path("boss/production.yaml")
         arguments = Namespace(
             workflow_id="boss.search-and-communicate.v1",
             config=config,
@@ -63,7 +63,7 @@ class CliTests(unittest.IsolatedAsyncioTestCase):
             ready_until="12:00",
             retry_seconds=300,
         )
-        with patch("macrpa.cli.commands.scheduled_run.result") as output:
+        with patch("safari_rpa.cli.commands.scheduled_run.result") as output:
             code = await handle_scheduled_run(arguments, app)
         self.assertEqual(0, code)
         self.assertEqual(
@@ -121,7 +121,7 @@ class CliTests(unittest.IsolatedAsyncioTestCase):
                     "test",
                 ]
             )
-            with patch("macrpa.cli.commands.run.result"):
+            with patch("safari_rpa.cli.commands.run.result"):
                 code = await handle_run(arguments, app)
         self.assertEqual(0, code)
         self.assertEqual("test", app.created[0][1]["profile"])
@@ -129,7 +129,7 @@ class CliTests(unittest.IsolatedAsyncioTestCase):
     async def test_workflows_command_keeps_json_shape_after_package_split(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             arguments = build_parser().parse_args(["--home", tmp, "workflows"])
-            with patch("macrpa.cli.commands.workflows.success") as output:
+            with patch("safari_rpa.cli.commands.workflows.success") as output:
                 code = await _run(arguments)
         self.assertEqual(0, code)
         output.assert_called_once()
@@ -173,11 +173,11 @@ class CliTests(unittest.IsolatedAsyncioTestCase):
         app = FakeApplication()
         parser = build_parser()
         with tempfile.TemporaryDirectory() as tmp:
-            config_path = Path(tmp) / "twitter.yaml"
+            config_path = Path(tmp) / "twitter-config.yaml"
             input_path = Path(tmp) / "target.json"
             config_path.write_text("target:\n  handle: example\n", encoding="utf-8")
             input_path.write_text('{"profile_url":"https://x.com/example"}', encoding="utf-8")
-            with patch("macrpa.cli.commands.twitter.result") as output:
+            with patch("safari_rpa.cli.commands.twitter.result") as output:
                 collect_args = parser.parse_args(["twitter", "collect", "--config", str(config_path), "--input", str(input_path)])
                 collect_code = await handle_twitter(collect_args, app)
                 clean_args = parser.parse_args(["twitter", "clean", "--config", str(config_path), "--input", str(input_path)])
@@ -192,5 +192,5 @@ class CliTests(unittest.IsolatedAsyncioTestCase):
 
     def test_cli_is_package_not_monolithic_module(self) -> None:
         root = Path(__file__).resolve().parents[3]
-        self.assertFalse((root / "src" / "safari-rpa" / "macrpa" / "cli.py").exists())
-        self.assertTrue((root / "src" / "safari-rpa" / "macrpa" / "cli" / "__init__.py").is_file())
+        self.assertFalse((root / "src" / "safari-rpa" / "safari_rpa" / "cli.py").exists())
+        self.assertTrue((root / "src" / "safari-rpa" / "safari_rpa" / "cli" / "__init__.py").is_file())

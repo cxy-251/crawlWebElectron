@@ -5,7 +5,8 @@ Browser Workflow Forge is a local browser workflow workbench. It keeps ordinary 
 ## Runtime Boundaries
 
 - Electron workflows use `WebContents`, DOM execution, CDP, and local APIs.
-- Safari RPA workflows live in `src/safari-rpa/` and use a real Safari profile.
+- Electron Kuaishou workflow code lives in `src/main/domains/kuaishou/`, with shared contracts in `src/shared/kuaishou/` and UI in `src/renderer/tools/kuaishou/`.
+- Safari RPA workflows live in `src/safari-rpa/safari_rpa/` and use a real Safari profile.
 - Safari Web Extension work lives in `src/safari-extension-boss/` as a future bridge prototype.
 - Local editable workflow configs live under `local-api-usage/`.
 
@@ -47,7 +48,7 @@ curl -s -X POST http://127.0.0.1:3218/api/kuaishou/diagnostics/evidence
 
 ## Local API Usage
 
-Local helper scripts and workflow configs live in `local-api-usage/`. Keep personal paths, generated task JSON, state files, runtime `var/`, and tokens there.
+Local helper scripts and workflow configs live in `local-api-usage/`. Keep personal paths, generated task JSON, state files, runtime `var/`, and tokens there. Safari RPA configs are grouped by site under `local-api-usage/safari-rpa/configs/boss/` and `local-api-usage/safari-rpa/configs/twitter/`.
 
 Edit `local-api-usage/kuaishou/constants.mjs`, then start Electron:
 
@@ -80,7 +81,7 @@ SAFARI_RPA_API_TOKEN=replace-me PYTHONPATH=src/safari-rpa conda run -n kwai \
   safari-rpa --home local-api-usage/safari-rpa/var serve --host 127.0.0.1 --port 3211
 ```
 
-Boss uses one maintained config file, `local-api-usage/safari-rpa/configs/boss.production.yaml`. Select behavior with `--profile`:
+Boss uses one maintained config file, `local-api-usage/safari-rpa/configs/boss/production.yaml`. Select behavior with `--profile`:
 
 ```txt
 collection  read-only scan/export; never communicates
@@ -96,7 +97,7 @@ PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa --home local-api-usage/sa
 
 # Safe manual validation first.
 PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa --home local-api-usage/safari-rpa/var run \
-  boss.search-and-communicate.v1 --config local-api-usage/safari-rpa/configs/boss.production.yaml --profile collection
+  boss.search-and-communicate.v1 --config local-api-usage/safari-rpa/configs/boss/production.yaml --profile collection
 
 PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa --home local-api-usage/safari-rpa/var status --limit 10
 PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa --home local-api-usage/safari-rpa/var reports list --limit 10
@@ -106,7 +107,7 @@ Only after the collection run looks correct, use `test` deliberately if the real
 
 ```bash
 PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa --home local-api-usage/safari-rpa/var run \
-  boss.search-and-communicate.v1 --config local-api-usage/safari-rpa/configs/boss.production.yaml --profile test
+  boss.search-and-communicate.v1 --config local-api-usage/safari-rpa/configs/boss/production.yaml --profile test
 ```
 
 Do not manually run `production` unless an immediate production write is intended.
@@ -118,7 +119,7 @@ Install the daily production LaunchAgent only after validation:
 ```bash
 PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa --home local-api-usage/safari-rpa/var schedule install \
   --id boss-production-daily \
-  --config local-api-usage/safari-rpa/configs/boss.production.yaml \
+  --config local-api-usage/safari-rpa/configs/boss/production.yaml \
   --profile production \
   --at 06:00 \
   --timezone Asia/Shanghai
@@ -136,7 +137,7 @@ Modify the schedule by running `schedule install` again with the same `--id` and
 ```bash
 PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa --home local-api-usage/safari-rpa/var schedule install \
   --id boss-production-daily \
-  --config local-api-usage/safari-rpa/configs/boss.production.yaml \
+  --config local-api-usage/safari-rpa/configs/boss/production.yaml \
   --profile production \
   --at 07:30 \
   --timezone Asia/Shanghai
@@ -166,7 +167,7 @@ Main process boundaries:
 ```txt
 BrowserWorkflowLocalApiServer  local HTTP shell
 WorkflowLocalApiRoutes         /api/health and /api/workflows*
-KuaishouLocalApiRoutes         /api/kuaishou/*
+KuaishouLocalApiRoutes         src/main/domains/kuaishou/api
 workflowIpcHandlers            renderer IPC workflow entry
 WorkflowRegistry               static workflow descriptors
 WorkflowRuntimeService         workflow runtime use-case layer

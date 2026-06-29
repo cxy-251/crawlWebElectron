@@ -1,5 +1,5 @@
 import type { WebContents } from "electron";
-import type { LocatorSpec } from "../video-upload/types";
+import type { LocatorSpec } from "../../shared/kuaishou/types";
 
 function objectScript(specs: LocatorSpec[]): string {
   return `

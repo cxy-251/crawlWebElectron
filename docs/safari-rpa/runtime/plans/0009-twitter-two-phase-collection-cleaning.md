@@ -44,4 +44,4 @@
 - Cleanup now owns only pending ledger reads, `context.llm.run_workflow("prompt.clean.v1", ...)`, `prompts.jsonl`, `failed.jsonl`, and summary updates.
 - Detail reads wait for the target status URL, non-empty primary column, non-skeleton state, and a matching tweet article with visible text; retryable per-tweet failures are recorded without failing the run.
 - Follow-up hardening: the default detail timeout is 15 seconds, detail extraction can fall back to the status page title text, and three consecutive `WAIT_TIMEOUT` details stop collection early with `stop_reason=consecutive_detail_timeouts`.
-- Added `local-api-usage/safari-rpa/configs/twitter.collect.yaml`, `local-api-usage/safari-rpa/configs/twitter.clean.yaml`, and `macrpa twitter collect|clean` convenience commands.
+- Added `local-api-usage/safari-rpa/configs/twitter/collect.yaml`, `local-api-usage/safari-rpa/configs/twitter/clean.yaml`, and `safari-rpa twitter collect|clean` convenience commands.

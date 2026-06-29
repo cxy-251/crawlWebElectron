@@ -4,8 +4,8 @@ import json
 import re
 import unittest
 
-from macrpa.adapters.safari import SafariDriver
-from macrpa.contracts.safari import ElementState, Locator, PageCondition, PageRef, PageState
+from safari_rpa.adapters.safari import SafariDriver
+from safari_rpa.contracts.safari import ElementState, Locator, PageCondition, PageRef, PageState
 
 
 class FakeRunner:

@@ -9,11 +9,11 @@ from zoneinfo import ZoneInfo
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
-from macrpa.contracts.errors import ErrorKind, RpaError
-from macrpa.application import build_application
-from macrpa.application.service import RpaApplication
-from macrpa.contracts.runtime import RetryPolicy, RunStatus, WorkflowDescriptor
-from macrpa.runtime import ArtifactFiles, RunStore, WorkflowRegistry, WorkflowRunner
+from safari_rpa.contracts.errors import ErrorKind, RpaError
+from safari_rpa.application import build_application
+from safari_rpa.application.service import RpaApplication
+from safari_rpa.contracts.runtime import RetryPolicy, RunStatus, WorkflowDescriptor
+from safari_rpa.runtime import ArtifactFiles, RunStore, WorkflowRegistry, WorkflowRunner
 from tests.safari_rpa.fakes import UnusedSafari
 
 
@@ -204,7 +204,7 @@ class RuntimeTests(unittest.IsolatedAsyncioTestCase):
         application = RpaApplication(self.root / "scheduled-var", registry, safari=safari)
         await application.open()
         try:
-            with patch("macrpa.application.service.asyncio.sleep", new_callable=AsyncMock) as sleep:
+            with patch("safari_rpa.application.service.asyncio.sleep", new_callable=AsyncMock) as sleep:
                 run = await application.run_scheduled_workflow(
                     "test.scheduled",
                     config_path,

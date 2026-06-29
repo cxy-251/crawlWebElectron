@@ -13,12 +13,14 @@
 ## 2. 集成目录
 
 ```txt
+src/main/domains/kuaishou/
 src/safari-rpa/
 src/safari-extension-boss/
-local-api-usage/safari-rpa/configs/
+local-api-usage/safari-rpa/configs/boss/
+local-api-usage/safari-rpa/configs/twitter/
 ```
 
-`src/safari-rpa` 负责 Boss Zhipin 和 Twitter/X 的真实 Safari 工作流源码。`src/safari-extension-boss` 只作为未来 Safari extension bridge 的参考实现。Safari RPA 可编辑配置统一放在 `local-api-usage/safari-rpa/configs/`。
+`src/main/domains/kuaishou/` 负责 Electron 快手工作流。`src/safari-rpa` 负责 Boss Zhipin 和 Twitter/X 的真实 Safari 工作流源码。`src/safari-extension-boss` 只作为未来 Safari extension bridge 的参考实现。Safari RPA 可编辑配置统一放在 `local-api-usage/safari-rpa/configs/` 并按站点分组。
 
 ## 3. Workflow Registry
 
@@ -50,7 +52,7 @@ boss.safari-extension.prototype.v1 safari-extension   prototype
 ```txt
 BrowserWorkflowLocalApiServer  本地 HTTP API 入口
 WorkflowLocalApiRoutes         /api/health 和 /api/workflows* 路由
-KuaishouLocalApiRoutes         /api/kuaishou/* 路由
+KuaishouLocalApiRoutes         src/main/domains/kuaishou/api 路由
 workflowIpcHandlers            Renderer IPC 入口
 WorkflowRegistry               静态 workflow 描述符
 WorkflowRuntimeService         workflow 运行时用例层

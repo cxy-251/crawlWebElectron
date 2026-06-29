@@ -136,7 +136,7 @@ src/main/workflows
   electron/KuaishouUploadWorkflow.ts
   external/SafariRpaWorkflowBridge.ts   # future execution bridge
 
-src/main/video-upload/kuaishou
+src/main/domains/kuaishou
   existing Kuaishou page adapter, detector, binding, upload service
 
 src/main/api

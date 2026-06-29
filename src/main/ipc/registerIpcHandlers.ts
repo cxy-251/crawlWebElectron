@@ -7,7 +7,7 @@ import type { UploadTaskRepository } from "../storage/repositories/UploadTaskRep
 import type { WorkflowRegistry } from "../workflows/WorkflowRegistry";
 import type { WorkflowRuntimeService } from "../workflows/WorkflowRuntimeService";
 import { registerBrowserIpcHandlers } from "./browserIpcHandlers";
-import { registerKuaishouIpcHandlers } from "./kuaishouIpcHandlers";
+import { registerKuaishouIpcHandlers } from "../domains/kuaishou/ipc/registerKuaishouIpcHandlers";
 import { registerToolIpcHandlers } from "./toolIpcHandlers";
 import { registerWorkflowIpcHandlers } from "./workflowIpcHandlers";
 

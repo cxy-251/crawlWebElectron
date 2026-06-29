@@ -16,15 +16,15 @@
 - `src/main/api/BrowserWorkflowLocalApiServer.ts`
 - `src/main/api/LocalApiTypes.ts`
 - `src/main/api/WorkflowLocalApiRoutes.ts`
-- `src/main/api/KuaishouLocalApiRoutes.ts`
+- `src/main/domains/kuaishou/api/KuaishouLocalApiRoutes.ts`
 - `src/shared/workflows/types.ts`
 - `src/main/workflows/WorkflowRegistry.ts`
 - `src/main/workflows/SafariRpaBridge.ts`
 - `src/main/workflows/WorkflowRuntimeService.ts`
 - `src/main/ipc/workflowIpcHandlers.ts`
 - `src/renderer/tools/workflows/WorkflowCatalogPage.tsx`
-- `src/renderer/tools/video-upload/KuaishouDomDiagnosticsPanel.tsx`
-- `src/renderer/tools/video-upload/KuaishouFailureContextPanel.tsx`
+- `src/renderer/tools/kuaishou/KuaishouDomDiagnosticsPanel.tsx`
+- `src/renderer/tools/kuaishou/KuaishouFailureContextPanel.tsx`
 - 主进程、preload、本地 API、首页路由相关文件
 
 ### 实际修复
@@ -65,8 +65,8 @@
 - `PROGRESS.md`
 - `src/main/api/BrowserWorkflowLocalApiServer.ts`
 - `src/main/storage/repositories/UploadTaskRepository.ts`
-- `src/main/video-upload/types.ts`
-- `src/main/video-upload/kuaishou/KuaishouUploadService.ts`
+- `src/shared/kuaishou/types.ts`
+- `src/main/domains/kuaishou/service/KuaishouUploadService.ts`
 
 另外创建了 ignored 的本机目录：
 

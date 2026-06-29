@@ -1,6 +1,6 @@
 import type { Database } from "../Database";
 import crypto from "node:crypto";
-import type { TaskArtifact } from "../../video-upload/types";
+import type { TaskArtifact } from "../../../shared/kuaishou/types";
 
 export class TaskArtifactRepository {
   constructor(private readonly db: Database) {}

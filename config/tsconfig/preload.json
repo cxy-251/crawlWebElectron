@@ -13,7 +13,6 @@
   },
   "include": [
     "../../src/preload/**/*.ts",
-    "../../src/main/video-upload/types.ts",
     "../../src/shared/**/*.ts"
   ]
 }

@@ -1,5 +1,5 @@
 import type { WebContents } from "electron";
-import type { LocatorSpec } from "../video-upload/types";
+import type { LocatorSpec } from "../../shared/kuaishou/types";
 
 export type LocatorAttempt = {
   locator: LocatorSpec;

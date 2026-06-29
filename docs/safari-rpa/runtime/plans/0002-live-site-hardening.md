@@ -51,5 +51,5 @@ Safari inspection of the authenticated ChatGPT and Boss Zhipin pages exposed liv
 - The default suite passes 22 tests with four permission/opt-in integrations skipped.
 - The two authenticated live-site tests pass: ChatGPT resolves project `gmail` with `GPT-5.5` and `High`; Boss resolves Shenzhen plus `iOS` as `search_detail` and returns 15 unique list jobs.
 - The Safari inventory and loopback REST integration tests pass when explicitly enabled.
-- `macrpa doctor` confirms Conda `kwai`, Python 3.14.4, Safari, Apple Events, and the runtime directory.
+- `safari-rpa doctor` confirms Conda `kwai`, Python 3.14.4, Safari, Apple Events, and the runtime directory.
 - Neither live-site verification submitted a ChatGPT prompt nor triggered Boss communication.

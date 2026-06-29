@@ -1,5 +1,5 @@
 export type ToolInfo = {
-  id: "video-upload" | "workflows";
+  id: "kuaishou" | "workflows";
   name: string;
   route: string;
   enabled: boolean;
@@ -26,7 +26,7 @@ import type {
   KuaishouUploadTaskInput,
   KuaishouUploadTaskResult,
   TaskLog
-} from "../main/video-upload/types";
+} from "../shared/kuaishou/types";
 import type { WorkflowDescriptor, WorkflowRunDetailSnapshot, WorkflowRuntimeSnapshot, WorkflowServiceCheckResult } from "../shared/workflows/types";
 
 export type AppApi = {

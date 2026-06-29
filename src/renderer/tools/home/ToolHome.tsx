@@ -1,10 +1,10 @@
 import { ArrowRight, Layers, Upload } from "lucide-react";
 
 export function ToolHome({
-  onEnterVideoUpload,
+  onEnterKuaishou,
   onEnterWorkflows
 }: {
-  onEnterVideoUpload: () => void;
+  onEnterKuaishou: () => void;
   onEnterWorkflows: () => void;
 }) {
   return (
@@ -26,7 +26,7 @@ export function ToolHome({
         </div>
         <button
           type="button"
-          onClick={onEnterVideoUpload}
+          onClick={onEnterKuaishou}
           className="mt-4 inline-flex h-9 items-center gap-2 rounded-md bg-slate-900 px-3 text-sm font-medium text-white hover:bg-slate-800"
         >
           进入

@@ -1,4 +1,4 @@
-import type { LocatorSpec } from "../video-upload/types";
+import type { LocatorSpec } from "../../shared/kuaishou/types";
 import { CdpFileInputService } from "./CdpFileInputService";
 import { LocatorEngine } from "./LocatorEngine";
 import { PageArtifactService } from "./PageArtifactService";

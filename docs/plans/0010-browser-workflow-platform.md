@@ -14,12 +14,14 @@ Browser Workflow Forge keeps one repository and three runtime roles:
 ## Integrated Runtime Layout
 
 ```txt
+src/main/domains/kuaishou/
 src/safari-rpa/
 src/safari-extension-boss/
-local-api-usage/safari-rpa/configs/
+local-api-usage/safari-rpa/configs/boss/
+local-api-usage/safari-rpa/configs/twitter/
 ```
 
-`src/safari-rpa/` owns Boss Zhipin and Twitter/X Safari workflow source. `src/safari-extension-boss/` is a prototype reference, not a production runtime path. Editable Safari RPA configs live under `local-api-usage/safari-rpa/configs/`.
+`src/main/domains/kuaishou/` owns the Electron Kuaishou workflow. `src/safari-rpa/` owns Boss Zhipin and Twitter/X Safari workflow source. `src/safari-extension-boss/` is a prototype reference, not a production runtime path. Editable Safari RPA configs live under `local-api-usage/safari-rpa/configs/` grouped by site.
 
 ## Workflow Registry
 
@@ -49,7 +51,7 @@ boss.safari-extension.prototype.v1 safari-extension
 ```txt
 BrowserWorkflowLocalApiServer  local HTTP shell
 WorkflowLocalApiRoutes         /api/health and /api/workflows*
-KuaishouLocalApiRoutes         /api/kuaishou/*
+KuaishouLocalApiRoutes         src/main/domains/kuaishou/api
 workflowIpcHandlers            renderer IPC workflow entry
 WorkflowRegistry               static workflow descriptors
 WorkflowRuntimeService         workflow runtime use-case layer

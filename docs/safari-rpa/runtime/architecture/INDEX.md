@@ -19,7 +19,7 @@ The dependency direction is inward toward contracts. Workflows should remain bor
 
 ## LLM boundary
 
-`promptloom` is intentionally detachable and named independently from Safari RPA. It must not import `macrpa.*`. Safari RPA calls it through an application service implementing `LocalLlmPort`, and workflows receive that port through `WorkflowContextPort`.
+`promptloom` is intentionally detachable and named independently from Safari RPA. It must not import `safari_rpa.*`. Safari RPA calls it through an application service implementing `LocalLlmPort`, and workflows receive that port through `WorkflowContextPort`.
 
 Prompt-oriented behavior belongs inside PromptLoom workflows. Safari RPA workflows pass raw inputs to `context.llm.run_workflow(...)`; they must not define model identities, system prompts, provider clients, or provider HTTP calls.
 

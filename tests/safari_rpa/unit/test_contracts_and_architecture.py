@@ -8,14 +8,14 @@ from pathlib import Path
 
 import yaml
 
-from macrpa.application import build_application
-from macrpa.contracts.errors import RpaError
-from macrpa.transport import create_http_app
+from safari_rpa.application import build_application
+from safari_rpa.contracts.errors import RpaError
+from safari_rpa.transport import create_http_app
 
 
 ROOT = Path(__file__).resolve().parents[3]
 SAFARI_RPA_SOURCE = ROOT / "src" / "safari-rpa"
-SOURCE = SAFARI_RPA_SOURCE / "macrpa"
+SOURCE = SAFARI_RPA_SOURCE / "safari_rpa"
 PROMPTLOOM_SOURCE = SAFARI_RPA_SOURCE / "promptloom"
 CONFIGS = ROOT / "local-api-usage" / "safari-rpa" / "configs"
 
@@ -32,7 +32,7 @@ class ContractAndArchitectureTests(unittest.TestCase):
         self.assertTrue((ROOT / "AGENTS.md").is_file())
 
     def test_local_configs_are_valid(self) -> None:
-        for path in CONFIGS.glob("*.yaml"):
+        for path in CONFIGS.rglob("*.yaml"):
             self.assertIsInstance(yaml.safe_load(path.read_text(encoding="utf-8")), dict)
 
     def test_http_routes_match_versioned_contract(self) -> None:
@@ -82,7 +82,7 @@ class ContractAndArchitectureTests(unittest.TestCase):
                 imports.extend(alias.name for alias in node.names)
             elif isinstance(node, ast.ImportFrom) and node.module:
                 imports.append(node.module)
-        self.assertIn("macrpa.contracts.runtime", imports)
+        self.assertIn("safari_rpa.contracts.runtime", imports)
         self.assertNotIn("aiohttp", imports)
         self.assertNotIn("requests", imports)
         self.assertNotIn("promptloom", imports)
@@ -91,12 +91,12 @@ class ContractAndArchitectureTests(unittest.TestCase):
         self.assertNotIn("system prompt", source.lower())
         self.assertNotIn("你是本地文本清洗器", source)
 
-    def test_promptloom_package_has_no_macrpa_imports(self) -> None:
+    def test_promptloom_package_has_no_safari_rpa_imports(self) -> None:
         failures: list[str] = []
         for path in PROMPTLOOM_SOURCE.rglob("*.py"):
             tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
             for imported in self._imports(tree):
-                if imported == "macrpa" or imported.startswith("macrpa."):
+                if imported == "safari_rpa" or imported.startswith("safari_rpa."):
                     failures.append(f"{path.relative_to(ROOT)} imports {imported}")
         self.assertEqual([], failures)
 
@@ -116,10 +116,10 @@ class ContractAndArchitectureTests(unittest.TestCase):
 
     def test_site_adapters_do_not_import_upper_layers_or_llm(self) -> None:
         forbidden = (
-            "macrpa.runtime",
-            "macrpa.application",
-            "macrpa.workflows",
-            "macrpa.llm",
+            "safari_rpa.runtime",
+            "safari_rpa.application",
+            "safari_rpa.workflows",
+            "safari_rpa.llm",
             "promptloom",
         )
         failures: list[str] = []
@@ -132,10 +132,10 @@ class ContractAndArchitectureTests(unittest.TestCase):
 
     def test_layer_import_boundaries(self) -> None:
         forbidden = {
-            "contracts": ("macrpa.adapters", "macrpa.application", "macrpa.runtime", "macrpa.sites", "macrpa.workflows"),
-            "runtime": ("macrpa.adapters", "macrpa.application", "macrpa.sites", "macrpa.workflows"),
-            "sites": ("macrpa.adapters", "macrpa.application", "macrpa.runtime", "macrpa.workflows"),
-            "workflows": ("macrpa.adapters", "macrpa.application", "macrpa.runtime"),
+            "contracts": ("safari_rpa.adapters", "safari_rpa.application", "safari_rpa.runtime", "safari_rpa.sites", "safari_rpa.workflows"),
+            "runtime": ("safari_rpa.adapters", "safari_rpa.application", "safari_rpa.sites", "safari_rpa.workflows"),
+            "sites": ("safari_rpa.adapters", "safari_rpa.application", "safari_rpa.runtime", "safari_rpa.workflows"),
+            "workflows": ("safari_rpa.adapters", "safari_rpa.application", "safari_rpa.runtime"),
         }
         failures: list[str] = []
         for layer, prefixes in forbidden.items():

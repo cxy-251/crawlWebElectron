@@ -19,7 +19,6 @@
   "include": [
     "../../src/renderer/**/*.ts",
     "../../src/renderer/**/*.tsx",
-    "../../src/main/video-upload/types.ts",
     "../../src/shared/**/*.ts"
   ]
 }

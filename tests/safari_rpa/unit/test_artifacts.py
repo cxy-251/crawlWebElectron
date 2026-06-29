@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from macrpa.runtime import ArtifactFiles
+from safari_rpa.runtime import ArtifactFiles
 
 
 class ArtifactTests(unittest.IsolatedAsyncioTestCase):

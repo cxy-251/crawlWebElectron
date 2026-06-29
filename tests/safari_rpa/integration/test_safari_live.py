@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 import unittest
 
-from macrpa.adapters.safari import SafariDriver
+from safari_rpa.adapters.safari import SafariDriver
 
 
 @unittest.skipUnless(os.environ.get("MACRPA_TEST_SAFARI") == "1", "requires Safari Apple Events permission")

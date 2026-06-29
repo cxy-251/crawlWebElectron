@@ -1,5 +1,5 @@
 import type { Database } from "../Database";
-import type { KuaishouElementProfile } from "../../video-upload/types";
+import type { KuaishouElementProfile } from "../../../shared/kuaishou/types";
 
 type Row = {
   profile_json: string;

@@ -21,8 +21,8 @@ Collect raw tweets first:
 ```bash
 PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa run \
   twitter.collect-raw.v1 \
-  --config local-api-usage/safari-rpa/configs/twitter.collect.yaml \
-  --input local-api-usage/safari-rpa/configs/twitter-target.json
+  --config local-api-usage/safari-rpa/configs/twitter/collect.yaml \
+  --input local-api-usage/safari-rpa/configs/twitter/target.json
 ```
 
 Inspect `var/reports/twitter/<handle>/<period>/raw.jsonl`. If the raw tweets are useful, clean pending raw records:
@@ -30,8 +30,8 @@ Inspect `var/reports/twitter/<handle>/<period>/raw.jsonl`. If the raw tweets are
 ```bash
 PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa run \
   twitter.clean-prompts.v1 \
-  --config local-api-usage/safari-rpa/configs/twitter.clean.yaml \
-  --input local-api-usage/safari-rpa/configs/twitter-target.json
+  --config local-api-usage/safari-rpa/configs/twitter/clean.yaml \
+  --input local-api-usage/safari-rpa/configs/twitter/target.json
 ```
 
 Important config fields:

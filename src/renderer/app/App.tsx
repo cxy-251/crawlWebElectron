@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { AppShell } from "./layout/AppShell";
 import { ToolHome } from "../tools/home/ToolHome";
-import { VideoUploadPage } from "../tools/video-upload/VideoUploadPage";
+import { VideoUploadPage } from "../tools/kuaishou/VideoUploadPage";
 import { WorkflowCatalogPage } from "../tools/workflows/WorkflowCatalogPage";
 
-type Route = "home" | "video-upload" | "workflows";
+type Route = "home" | "kuaishou" | "workflows";
 
 export function App() {
   const [route, setRoute] = useState<Route>("home");
@@ -14,13 +14,13 @@ export function App() {
       toolPane={
         route === "home" ? (
           <ToolHome
-            onEnterVideoUpload={() => setRoute("video-upload")}
+            onEnterKuaishou={() => setRoute("kuaishou")}
             onEnterWorkflows={() => setRoute("workflows")}
           />
-        ) : route === "video-upload" ? (
+        ) : route === "kuaishou" ? (
           <VideoUploadPage onBack={() => setRoute("home")} />
         ) : (
-          <WorkflowCatalogPage onBack={() => setRoute("home")} onOpenVideoUpload={() => setRoute("video-upload")} />
+          <WorkflowCatalogPage onBack={() => setRoute("home")} onOpenKuaishou={() => setRoute("kuaishou")} />
         )
       }
     />

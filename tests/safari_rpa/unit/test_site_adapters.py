@@ -5,11 +5,11 @@ from pathlib import Path
 
 import yaml
 
-from macrpa.contracts.errors import RpaError, UnknownSideEffectError
-from macrpa.contracts.safari import ActionEvidence, ElementState, PageRef, PageState
-from macrpa.sites.boss import BossPageAdapter
-from macrpa.sites.twitter import TwitterPageAdapter
-from macrpa.workflows.boss import BossWorkflow
+from safari_rpa.contracts.errors import RpaError, UnknownSideEffectError
+from safari_rpa.contracts.safari import ActionEvidence, ElementState, PageRef, PageState
+from safari_rpa.sites.boss import BossPageAdapter
+from safari_rpa.sites.twitter import TwitterPageAdapter
+from safari_rpa.workflows.boss import BossWorkflow
 
 
 PAGE = PageRef("session", "marker", "x.com", 1, 1)
@@ -243,7 +243,7 @@ class SiteAdapterTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(100, result["scroll_y"])
 
     def test_boss_sample_and_canonical_search_contract(self) -> None:
-        config = yaml.safe_load((CONFIGS / "boss.production.yaml").read_text(encoding="utf-8"))
+        config = yaml.safe_load((CONFIGS / "boss/production.yaml").read_text(encoding="utf-8"))
         self.assertEqual(11, len(config["search"]["cities"]))
         self.assertEqual(
             ["深圳", "广州", "杭州", "上海", "成都", "武汉", "南京", "苏州", "东莞", "佛山", "重庆"],
@@ -271,7 +271,7 @@ class SiteAdapterTests(unittest.IsolatedAsyncioTestCase):
             "test": (10, True),
             "production": (110, True),
         }
-        source = yaml.safe_load((CONFIGS / "boss.production.yaml").read_text(encoding="utf-8"))
+        source = yaml.safe_load((CONFIGS / "boss/production.yaml").read_text(encoding="utf-8"))
         self.assertEqual("production", source["profile"])
         self.assertEqual(set(expected), set(source["profiles"]))
         for name, (run_limit, communication) in expected.items():

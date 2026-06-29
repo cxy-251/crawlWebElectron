@@ -30,7 +30,7 @@ The machine-readable contract is [openapi-v1.yaml](openapi-v1.yaml). Runs are cr
 
 Electron should treat run status and SSE events as authoritative, keep the bearer token outside renderer code, and display `blocked` or `unknown_side_effect` for human inspection rather than retrying external writes.
 
-Python workflow code receives only `WorkflowContextPort`. Site adapters receive only `SafariAutomationPort`. Workflows that need local model output call `context.llm.run_workflow(...)`; they do not call LM Studio HTTP directly, instantiate provider clients, or define reusable LLM prompt templates. The independent LLM workflow package is `promptloom`, which has no dependency on `macrpa.*`. This boundary is tested by `tests/unit/test_contracts_and_architecture.py`.
+Python workflow code receives only `WorkflowContextPort`. Site adapters receive only `SafariAutomationPort`. Workflows that need local model output call `context.llm.run_workflow(...)`; they do not call LM Studio HTTP directly, instantiate provider clients, or define reusable LLM prompt templates. The independent LLM workflow package is `promptloom`, which has no dependency on `safari_rpa.*`. This boundary is tested by `tests/safari_rpa/unit/test_contracts_and_architecture.py`.
 
 ## Twitter/X and LM Studio
 
@@ -39,13 +39,13 @@ Run Twitter prompt extraction as two explicit phases through the generic run API
 ```bash
 PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa run \
   twitter.collect-raw.v1 \
-  --config local-api-usage/safari-rpa/configs/twitter.collect.yaml \
-  --input local-api-usage/safari-rpa/configs/twitter-target.json
+  --config local-api-usage/safari-rpa/configs/twitter/collect.yaml \
+  --input local-api-usage/safari-rpa/configs/twitter/target.json
 
 PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa run \
   twitter.clean-prompts.v1 \
-  --config local-api-usage/safari-rpa/configs/twitter.clean.yaml \
-  --input local-api-usage/safari-rpa/configs/twitter-target.json
+  --config local-api-usage/safari-rpa/configs/twitter/clean.yaml \
+  --input local-api-usage/safari-rpa/configs/twitter/target.json
 
 # Thin CLI wrappers; these still go through application/runtime/workflow.
 PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa twitter collect

@@ -1,10 +1,10 @@
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
 import { URL } from "node:url";
-import type { KuaishouUploadAdapter } from "../video-upload/kuaishou/KuaishouUploadAdapter";
-import { isKuaishouPageActionError } from "../video-upload/kuaishou/KuaishouPageBinding";
+import type { KuaishouUploadAdapter } from "../domains/kuaishou/service/KuaishouUploadAdapter";
+import { isKuaishouPageActionError } from "../domains/kuaishou/page/KuaishouPageBinding";
 import type { WorkflowRegistry } from "../workflows/WorkflowRegistry";
 import type { WorkflowRuntimeService } from "../workflows/WorkflowRuntimeService";
-import { KuaishouLocalApiRoutes } from "./KuaishouLocalApiRoutes";
+import { KuaishouLocalApiRoutes } from "../domains/kuaishou/api/KuaishouLocalApiRoutes";
 import type { JsonRecord, LocalApiRequest, LocalApiRouteResult } from "./LocalApiTypes";
 import { WorkflowLocalApiRoutes } from "./WorkflowLocalApiRoutes";
 

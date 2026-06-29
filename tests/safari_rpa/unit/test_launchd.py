@@ -6,14 +6,15 @@ import unittest
 from pathlib import Path
 from unittest.mock import AsyncMock
 
-from macrpa.adapters.launchd import LaunchdScheduler
+from safari_rpa.adapters.launchd import LaunchdScheduler
 
 
 class LaunchdSchedulerTests(unittest.IsolatedAsyncioTestCase):
     async def test_boss_schedule_is_0600_without_run_at_load_and_keep_awake_uses_ac_power(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            config = root / "boss.production.yaml"
+            config = root / "boss" / "production.yaml"
+            config.parent.mkdir()
             config.write_text("search: {}\n", encoding="utf-8")
             scheduler = LaunchdScheduler(root / "var", root, root / "src" / "safari-rpa", root / "agents")
             captured: list[tuple[Path, dict]] = []
@@ -27,6 +28,7 @@ class LaunchdSchedulerTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual({"Hour": 6, "Minute": 0}, captured[0][1]["StartCalendarInterval"])
             self.assertNotIn("RunAtLoad", captured[0][1])
             self.assertEqual(str((root / "src" / "safari-rpa").resolve()), captured[0][1]["EnvironmentVariables"]["PYTHONPATH"])
+            self.assertEqual(["-m", "safari_rpa"], boss_args[1:3])
             self.assertIn("--profile", boss_args)
             self.assertEqual("production", boss_args[boss_args.index("--profile") + 1])
             self.assertEqual(["/usr/bin/caffeinate", "-s"], captured[1][1]["ProgramArguments"])

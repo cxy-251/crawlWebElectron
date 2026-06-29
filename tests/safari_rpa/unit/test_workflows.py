@@ -9,13 +9,13 @@ from urllib.parse import parse_qs, urlparse
 
 import yaml
 
-from macrpa.contracts.errors import ErrorKind, RpaError
-from macrpa.contracts.runtime import RunStatus
-from macrpa.contracts.safari import PageRef
-from macrpa.runtime import ArtifactFiles, RunStore, WorkflowRegistry, WorkflowRunner
-from macrpa.sites.twitter import TwitterPageAdapter as RealTwitterPageAdapter
-from macrpa.workflows.boss import BossWorkflow
-from macrpa.workflows.twitter import TwitterCleanPromptsWorkflow, TwitterCollectRawWorkflow, TwitterPromptWorkflow
+from safari_rpa.contracts.errors import ErrorKind, RpaError
+from safari_rpa.contracts.runtime import RunStatus
+from safari_rpa.contracts.safari import PageRef
+from safari_rpa.runtime import ArtifactFiles, RunStore, WorkflowRegistry, WorkflowRunner
+from safari_rpa.sites.twitter import TwitterPageAdapter as RealTwitterPageAdapter
+from safari_rpa.workflows.boss import BossWorkflow
+from safari_rpa.workflows.twitter import TwitterCleanPromptsWorkflow, TwitterCollectRawWorkflow, TwitterPromptWorkflow
 from tests.safari_rpa.fakes import UnusedSafari
 
 
@@ -187,7 +187,7 @@ class WorkflowTests(unittest.IsolatedAsyncioTestCase):
             "limits": {"daily": 10, "per_city": 10, "max_pages": 2},
             "communication": {"enabled": True},
         }
-        with patch("macrpa.workflows.boss.BossPageAdapter", return_value=fake):
+        with patch("safari_rpa.workflows.boss.BossPageAdapter", return_value=fake):
             first = await runner.create_run(workflow.descriptor.id, config, {})
             await runner.execute(first.id)
             second = await runner.create_run(workflow.descriptor.id, config, {})
@@ -204,7 +204,7 @@ class WorkflowTests(unittest.IsolatedAsyncioTestCase):
         fake = FakeBossAdapter(["JOB-1", "JOB-2", "JOB-3"])
         workflow, runner = self._boss_runner()
         config = self._boss_config(run=1, daily=110, per_city=10)
-        with patch("macrpa.workflows.boss.BossPageAdapter", return_value=fake):
+        with patch("safari_rpa.workflows.boss.BossPageAdapter", return_value=fake):
             run = await runner.create_run(workflow.descriptor.id, config, {})
             await runner.execute(run.id)
         completed = await self.store.get_run(run.id)
@@ -216,7 +216,7 @@ class WorkflowTests(unittest.IsolatedAsyncioTestCase):
         fake = FakeBossAdapter(["JOB-1"], preexisting={"101280600-JOB-1"})
         workflow, runner = self._boss_runner()
         config = self._boss_config(run=10, daily=110, per_city=10)
-        with patch("macrpa.workflows.boss.BossPageAdapter", return_value=fake):
+        with patch("safari_rpa.workflows.boss.BossPageAdapter", return_value=fake):
             run = await runner.create_run(workflow.descriptor.id, config, {})
             await runner.execute(run.id)
         completed = await self.store.get_run(run.id)
@@ -235,7 +235,7 @@ class WorkflowTests(unittest.IsolatedAsyncioTestCase):
 
         fake = MismatchAdapter(["JOB-1"])
         workflow, runner = self._boss_runner()
-        with patch("macrpa.workflows.boss.BossPageAdapter", return_value=fake):
+        with patch("safari_rpa.workflows.boss.BossPageAdapter", return_value=fake):
             run = await runner.create_run(workflow.descriptor.id, self._boss_config(run=1, daily=110, per_city=10), {})
             await runner.execute(run.id)
         completed = await self.store.get_run(run.id)
@@ -255,7 +255,7 @@ class WorkflowTests(unittest.IsolatedAsyncioTestCase):
         fake = SalesAdapter(["JOB-1"])
         workflow, runner = self._boss_runner()
         config = self._boss_config(run=1, daily=110, per_city=10)
-        with patch("macrpa.workflows.boss.BossPageAdapter", return_value=fake):
+        with patch("safari_rpa.workflows.boss.BossPageAdapter", return_value=fake):
             run = await runner.create_run(workflow.descriptor.id, config, {})
             await runner.execute(run.id)
         completed = await self.store.get_run(run.id)
@@ -268,12 +268,12 @@ class WorkflowTests(unittest.IsolatedAsyncioTestCase):
         workflow, runner = self._boss_runner()
         test_fake = FakeBossAdapter([f"JOB-{index}" for index in range(10)])
         test_config = self._boss_config(run=10, daily=110, per_city=10)
-        with patch("macrpa.workflows.boss.BossPageAdapter", return_value=test_fake):
+        with patch("safari_rpa.workflows.boss.BossPageAdapter", return_value=test_fake):
             test_run = await runner.create_run(workflow.descriptor.id, test_config, {})
             await runner.execute(test_run.id)
         production_fake = FakeBossAdapter([])
         production_config = self._boss_config(run=110, daily=110, per_city=10)
-        with patch("macrpa.workflows.boss.BossPageAdapter", return_value=production_fake):
+        with patch("safari_rpa.workflows.boss.BossPageAdapter", return_value=production_fake):
             production_run = await runner.create_run(workflow.descriptor.id, production_config, {})
             await runner.execute(production_run.id)
         completed = await self.store.get_run(production_run.id)
@@ -288,8 +288,8 @@ class WorkflowTests(unittest.IsolatedAsyncioTestCase):
         config = self._boss_config(run=1, daily=110, per_city=10)
         config["search"]["cities"].append({"name": "广州", "code": "101280100"})
         with (
-            patch("macrpa.workflows.boss.BossPageAdapter", return_value=fake),
-            patch("macrpa.workflows.boss.random.randrange", return_value=1) as choose,
+            patch("safari_rpa.workflows.boss.BossPageAdapter", return_value=fake),
+            patch("safari_rpa.workflows.boss.random.randrange", return_value=1) as choose,
         ):
             run = await runner.create_run(workflow.descriptor.id, config, {})
             await runner.execute(run.id)
@@ -342,7 +342,7 @@ class WorkflowTests(unittest.IsolatedAsyncioTestCase):
         )
         workflow, runner = self._twitter_runner(TwitterPromptWorkflow(), llm)
         with (
-            patch("macrpa.workflows.twitter.TwitterPageAdapter", TwitterAdapterFactory(adapter)),
+            patch("safari_rpa.workflows.twitter.TwitterPageAdapter", TwitterAdapterFactory(adapter)),
         ):
             run = await runner.create_run(workflow.descriptor.id, self._twitter_config(max_tweets=2), {})
             await runner.execute(run.id)
@@ -377,7 +377,7 @@ class WorkflowTests(unittest.IsolatedAsyncioTestCase):
         adapter = FakeTwitterAdapter([[tweet]])
         llm = FakeLlmClient()
         workflow, runner = self._twitter_runner(TwitterCollectRawWorkflow(), llm)
-        with patch("macrpa.workflows.twitter.TwitterPageAdapter", TwitterAdapterFactory(adapter)):
+        with patch("safari_rpa.workflows.twitter.TwitterPageAdapter", TwitterAdapterFactory(adapter)):
             run = await runner.create_run(workflow.descriptor.id, self._twitter_config(max_tweets=1), {})
             await runner.execute(run.id)
         completed = await self.store.get_run(run.id)
@@ -410,7 +410,7 @@ class WorkflowTests(unittest.IsolatedAsyncioTestCase):
         }
         adapter = FakeTwitterAdapter([[tweet]])
         workflow, runner = self._twitter_runner(TwitterCollectRawWorkflow(), FakeLlmClient())
-        with patch("macrpa.workflows.twitter.TwitterPageAdapter", TwitterAdapterFactory(adapter)):
+        with patch("safari_rpa.workflows.twitter.TwitterPageAdapter", TwitterAdapterFactory(adapter)):
             run = await runner.create_run(workflow.descriptor.id, self._twitter_config(max_tweets=1), {})
             await runner.execute(run.id)
         completed = await self.store.get_run(run.id)
@@ -430,7 +430,7 @@ class WorkflowTests(unittest.IsolatedAsyncioTestCase):
             "text": "Prompt idea",
         }
         collect_workflow, collect_runner = self._twitter_runner(TwitterCollectRawWorkflow(), FakeLlmClient())
-        with patch("macrpa.workflows.twitter.TwitterPageAdapter", TwitterAdapterFactory(FakeTwitterAdapter([[tweet]]))):
+        with patch("safari_rpa.workflows.twitter.TwitterPageAdapter", TwitterAdapterFactory(FakeTwitterAdapter([[tweet]]))):
             collect_run = await collect_runner.create_run(collect_workflow.descriptor.id, self._twitter_config(max_tweets=1), {})
             await collect_runner.execute(collect_run.id)
 
@@ -474,7 +474,7 @@ class WorkflowTests(unittest.IsolatedAsyncioTestCase):
         config = self._twitter_config(max_tweets=3)
         config["limits"]["max_no_new_rounds"] = 1
         with (
-            patch("macrpa.workflows.twitter.TwitterPageAdapter", TwitterAdapterFactory(adapter)),
+            patch("safari_rpa.workflows.twitter.TwitterPageAdapter", TwitterAdapterFactory(adapter)),
         ):
             run = await runner.create_run(workflow.descriptor.id, config, {})
             await runner.execute(run.id)
@@ -496,7 +496,7 @@ class WorkflowTests(unittest.IsolatedAsyncioTestCase):
         adapter = FakeTwitterAdapter([[tweet]])
         llm = FakeLlmClient()
         workflow, runner = self._twitter_runner(TwitterCollectRawWorkflow(), llm)
-        with patch("macrpa.workflows.twitter.TwitterPageAdapter", TwitterAdapterFactory(adapter)):
+        with patch("safari_rpa.workflows.twitter.TwitterPageAdapter", TwitterAdapterFactory(adapter)):
             run = await runner.create_run(workflow.descriptor.id, self._twitter_config(max_tweets=1), {})
             await runner.execute(run.id)
         completed = await self.store.get_run(run.id)
@@ -525,7 +525,7 @@ class WorkflowTests(unittest.IsolatedAsyncioTestCase):
         workflow, runner = self._twitter_runner(TwitterCollectRawWorkflow(), llm)
         config = self._twitter_config(max_tweets=5)
         config["detail"]["max_consecutive_detail_timeouts"] = 3
-        with patch("macrpa.workflows.twitter.TwitterPageAdapter", TwitterAdapterFactory(adapter)):
+        with patch("safari_rpa.workflows.twitter.TwitterPageAdapter", TwitterAdapterFactory(adapter)):
             run = await runner.create_run(workflow.descriptor.id, config, {})
             await runner.execute(run.id)
         completed = await self.store.get_run(run.id)
@@ -548,7 +548,7 @@ class WorkflowTests(unittest.IsolatedAsyncioTestCase):
             "text": "Prompt idea",
         }
         collect_workflow, collect_runner = self._twitter_runner(TwitterCollectRawWorkflow(), FakeLlmClient())
-        with patch("macrpa.workflows.twitter.TwitterPageAdapter", TwitterAdapterFactory(FakeTwitterAdapter([[tweet]]))):
+        with patch("safari_rpa.workflows.twitter.TwitterPageAdapter", TwitterAdapterFactory(FakeTwitterAdapter([[tweet]]))):
             collect_run = await collect_runner.create_run(collect_workflow.descriptor.id, self._twitter_config(max_tweets=1), {})
             await collect_runner.execute(collect_run.id)
 
@@ -577,12 +577,12 @@ class WorkflowTests(unittest.IsolatedAsyncioTestCase):
         collect_workflow, collect_runner = self._twitter_runner(TwitterCollectRawWorkflow(), FakeLlmClient())
         clean_workflow, clean_runner = self._twitter_runner(TwitterCleanPromptsWorkflow(), llm)
         config = self._twitter_config(max_tweets=1)
-        with patch("macrpa.workflows.twitter.TwitterPageAdapter", TwitterAdapterFactory(FakeTwitterAdapter([[tweet]]))):
+        with patch("safari_rpa.workflows.twitter.TwitterPageAdapter", TwitterAdapterFactory(FakeTwitterAdapter([[tweet]]))):
             first = await collect_runner.create_run(collect_workflow.descriptor.id, config, {})
             await collect_runner.execute(first.id)
         first_clean = await clean_runner.create_run(clean_workflow.descriptor.id, config, {})
         await clean_runner.execute(first_clean.id)
-        with patch("macrpa.workflows.twitter.TwitterPageAdapter", TwitterAdapterFactory(FakeTwitterAdapter([[tweet]]))):
+        with patch("safari_rpa.workflows.twitter.TwitterPageAdapter", TwitterAdapterFactory(FakeTwitterAdapter([[tweet]]))):
             second = await collect_runner.create_run(collect_workflow.descriptor.id, config, {})
             await collect_runner.execute(second.id)
         second_clean = await clean_runner.create_run(clean_workflow.descriptor.id, config, {})
@@ -596,8 +596,8 @@ class WorkflowTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(1, len(llm.calls))
 
     def test_twitter_config_preserves_local_model_and_profile_url_input(self) -> None:
-        config = yaml.safe_load((CONFIGS / "twitter.yaml").read_text(encoding="utf-8"))
-        input_data = json.loads((CONFIGS / "twitter-target.json").read_text(encoding="utf-8"))
+        config = yaml.safe_load((CONFIGS / "twitter/default.yaml").read_text(encoding="utf-8"))
+        input_data = json.loads((CONFIGS / "twitter/target.json").read_text(encoding="utf-8"))
         resolved = TwitterPromptWorkflow._config(config, input_data)
         self.assertEqual("gemma-4-12b-qat", resolved["llm"]["model"])
         self.assertEqual("https://x.com/Minahil42298354", resolved["target"]["profile_url"])
@@ -607,9 +607,9 @@ class WorkflowTests(unittest.IsolatedAsyncioTestCase):
         self.assertFalse(resolved["include"]["quotes"])
 
     def test_twitter_two_phase_configs_preserve_target_model_and_detail_defaults(self) -> None:
-        input_data = json.loads((CONFIGS / "twitter-target.json").read_text(encoding="utf-8"))
-        collect_config = yaml.safe_load((CONFIGS / "twitter.collect.yaml").read_text(encoding="utf-8"))
-        clean_config = yaml.safe_load((CONFIGS / "twitter.clean.yaml").read_text(encoding="utf-8"))
+        input_data = json.loads((CONFIGS / "twitter/target.json").read_text(encoding="utf-8"))
+        collect_config = yaml.safe_load((CONFIGS / "twitter/collect.yaml").read_text(encoding="utf-8"))
+        clean_config = yaml.safe_load((CONFIGS / "twitter/clean.yaml").read_text(encoding="utf-8"))
         collect = TwitterCollectRawWorkflow._config(collect_config, input_data)
         clean = TwitterCleanPromptsWorkflow._config(clean_config, input_data)
         self.assertEqual("https://x.com/Minahil42298354", collect["target"]["profile_url"])

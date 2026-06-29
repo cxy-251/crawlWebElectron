@@ -1,6 +1,6 @@
 import type { Database } from "../Database";
 import crypto from "node:crypto";
-import type { TaskLog } from "../../video-upload/types";
+import type { TaskLog } from "../../../shared/kuaishou/types";
 
 type Row = {
   id: string;

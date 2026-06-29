@@ -7,8 +7,8 @@ import unittest
 
 from aiohttp import web
 
-from macrpa.application import build_application
-from macrpa.transport import create_http_app
+from safari_rpa.application import build_application
+from safari_rpa.transport import create_http_app
 
 
 @unittest.skipUnless(os.environ.get("MACRPA_TEST_LOOPBACK") == "1", "requires loopback socket permission")

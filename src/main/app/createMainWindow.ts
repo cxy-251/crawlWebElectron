@@ -10,8 +10,8 @@ import { ElementProfileRepository } from "../storage/repositories/ElementProfile
 import { TaskArtifactRepository } from "../storage/repositories/TaskArtifactRepository";
 import { TaskLogRepository } from "../storage/repositories/TaskLogRepository";
 import { UploadTaskRepository } from "../storage/repositories/UploadTaskRepository";
-import { defaultKuaishouElementProfile } from "../video-upload/kuaishou/defaultKuaishouElementProfile";
-import { KuaishouUploadAdapter } from "../video-upload/kuaishou/KuaishouUploadAdapter";
+import { defaultKuaishouElementProfile } from "../domains/kuaishou/profiles/defaultKuaishouElementProfile";
+import { KuaishouUploadAdapter } from "../domains/kuaishou/service/KuaishouUploadAdapter";
 import { createWorkflowRegistry } from "../workflows/WorkflowRegistry";
 import { WorkflowRuntimeService } from "../workflows/WorkflowRuntimeService";
 

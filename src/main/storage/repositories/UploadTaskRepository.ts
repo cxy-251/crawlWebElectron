@@ -1,5 +1,5 @@
 import type { Database } from "../Database";
-import type { KuaishouPageType, KuaishouUploadTaskInput, KuaishouUploadTaskResult } from "../../video-upload/types";
+import type { KuaishouPageType, KuaishouUploadTaskInput, KuaishouUploadTaskResult } from "../../../shared/kuaishou/types";
 
 type TaskRow = {
   id: string;

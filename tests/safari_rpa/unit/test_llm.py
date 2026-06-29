@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import unittest
 
-from macrpa.application.llm_service import LocalLlmService
-from macrpa.contracts.errors import RpaError
+from safari_rpa.application.llm_service import LocalLlmService
+from safari_rpa.contracts.errors import RpaError
 from promptloom import PromptLoomError, PromptLoomErrorKind, LmStudioClient, LmStudioConfig, WorkflowRuntime
 
 

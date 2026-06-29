@@ -3,10 +3,10 @@ from __future__ import annotations
 import os
 import unittest
 
-from macrpa.adapters.safari import SafariDriver
-from macrpa.sites.boss import BossPageAdapter
-from macrpa.sites.twitter import TwitterPageAdapter
-from macrpa.workflows.boss import BossWorkflow
+from safari_rpa.adapters.safari import SafariDriver
+from safari_rpa.sites.boss import BossPageAdapter
+from safari_rpa.sites.twitter import TwitterPageAdapter
+from safari_rpa.workflows.boss import BossWorkflow
 
 
 class LiveSiteTests(unittest.IsolatedAsyncioTestCase):
