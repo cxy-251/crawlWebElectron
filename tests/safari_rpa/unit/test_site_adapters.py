@@ -136,7 +136,7 @@ class SiteAdapterTests(unittest.IsolatedAsyncioTestCase):
         script = BossPageAdapter._access_state_script()
         self.assertNotIn("|403/", script)
         self.assertIn("403\\s*(Forbidden", script)
-        self.assertIn("new URL(url).pathname", script)
+        self.assertIn("parsedUrl.pathname", script)
 
     def test_boss_risk_contract_does_not_block_usable_search_detail_for_hidden_text(self) -> None:
         script = BossPageAdapter._access_state_script()
@@ -145,6 +145,13 @@ class SiteAdapterTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("has_list:list", script)
         self.assertIn("has_detail:detail", script)
         self.assertNotIn("const risk = /验证码", script)
+
+    def test_boss_login_contract_does_not_block_logged_in_detail_for_incidental_text(self) -> None:
+        script = BossPageAdapter._access_state_script()
+        self.assertIn("const loginRequired = loginUrl || (!loggedIn && (!!visibleLoginNode || pageUnavailableLogin));", script)
+        self.assertIn("login_reason: loginReason", script)
+        self.assertIn("login_text: loginText", script)
+        self.assertNotIn("const loginPage = /login|passport/.test(url) ||", script)
 
     async def test_twitter_profile_navigation_normalizes_to_x_handle(self) -> None:
         safari = TwitterSafari()

@@ -4,6 +4,7 @@ This directory is the durable record of accepted implementation plans.
 
 ## Current plan
 
+- [0012-boss-early-hr-activity-filter.md](0012-boss-early-hr-activity-filter.md) — implemented; Boss early HR activity filter
 - [0011-site-workspace-and-risk-signals.md](0011-site-workspace-and-risk-signals.md) — implemented and verified; site workspace isolation and Boss risk signal hardening
 
 ## Prior plans

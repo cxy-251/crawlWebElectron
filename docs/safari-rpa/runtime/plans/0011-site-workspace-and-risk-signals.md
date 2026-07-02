@@ -1,4 +1,4 @@
-# 0011 — Site workspace windows and Boss risk signals
+# 0011 — Site workspace windows and Boss access signals
 
 ## Status
 
@@ -12,6 +12,7 @@ Live Boss validation showed two runtime issues:
 
 - Safari RPA can reuse a normal user Safari window when a matching site tab exists, so an RPA run can interfere with unrelated manual browsing.
 - Boss can return `BOSS_RISK_CONTROL` while the page is still a usable `search_detail` page with both list and detail content. The current adapter treats any matching risk phrase in whole-page text as blocking, which is too broad for live pages with hidden or unrelated safety text.
+- Boss can return `BOSS_LOGIN_REQUIRED` while the page is a usable logged-in detail page. The current adapter treats any matching login phrase in whole-page text as blocking, which is too broad for live detail pages with incidental login prompts.
 
 The current AppleScript bridge also makes each DOM read a Python-to-AppleScript round trip. This plan does not replace that bridge, but it keeps the window ownership contract explicit so a later Safari extension bridge can reduce high-frequency DOM polling without changing workflow behavior.
 
@@ -24,6 +25,7 @@ The current AppleScript bridge also makes each DOM read a Python-to-AppleScript 
 - If no site workspace window exists, the driver creates a new Safari window with a marker tab, then opens the target site in a separate tab.
 - The driver must not reuse arbitrary user Safari windows merely because they contain a matching site URL.
 - Boss risk detection only blocks on visible blocking UI, full-page unavailable risk states, or explicit 403 URL/title signals. Hidden or incidental safety text on an otherwise usable search/detail page is diagnostic, not blocking.
+- Boss login detection only blocks on login URLs, visible login UI when no logged-in marker is present, or full-page unavailable login states. Incidental login text on an otherwise logged-in search/detail page is diagnostic, not blocking.
 
 ## Non-goals
 
@@ -36,12 +38,12 @@ The current AppleScript bridge also makes each DOM read a Python-to-AppleScript 
 - [x] Update the plan index.
 - [x] Add site workspace window selection to the Safari adapter.
 - [x] Keep marker-tab support in the Python Safari adapter; no AppleScript bridge behavior change was needed.
-- [x] Tighten Boss risk-control detection and diagnostics.
-- [x] Add unit tests for workspace isolation and Boss risk false positives.
+- [x] Tighten Boss risk-control and login-required detection and diagnostics.
+- [x] Add unit tests for workspace isolation and Boss access-signal false positives.
 - [x] Run Conda `kwai` verification.
 
 ## Verification record
 
 - `PYTHONPATH=src/safari-rpa conda run -n kwai python -m unittest tests.safari_rpa.unit.test_safari_driver -v` — passed.
 - `PYTHONPATH=src/safari-rpa conda run -n kwai python -m unittest tests.safari_rpa.unit.test_site_adapters -v` — passed.
-- `PYTHONPATH=src/safari-rpa conda run -n kwai python -m unittest discover -s tests/safari_rpa -v` — passed, 85 tests with 4 explicit opt-in integrations skipped.
+- `PYTHONPATH=src/safari-rpa conda run -n kwai python -m unittest discover -s tests/safari_rpa -v` — passed, 86 tests with 4 explicit opt-in integrations skipped.

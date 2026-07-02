@@ -45,7 +45,7 @@ class BossPageAdapter:
             const text = document.body?.innerText || '';
             const url = location.href;
             const title = document.title || '';
-            const loginPage = /login|passport/.test(url) || /登录后继续|请登录|扫码登录|密码登录/.test(text);
+            const parsedUrl = new URL(url);
             const loggedIn = !!document.querySelector('.nav-figure,.header-user,.user-nav,[class*=user-nav]');
             const list = !!document.querySelector('ul.rec-job-list a.job-name');
             const detail = !!document.querySelector('.job-sec-text,.job-detail,.job-detail-box');
@@ -72,11 +72,33 @@ class BossPageAdapter:
                 '.geetest_panel',
                 '.captcha'
             ].join(',');
+            const loginPattern = /登录后继续|请登录|扫码登录|密码登录/;
+            const loginSelectors = [
+                '[role=dialog]',
+                '.dialog-wrap',
+                '.boss-dialog',
+                '[class*=dialog]',
+                '[class*=login]',
+                '[class*=passport]',
+                '.login-box',
+                '.sign-wrap'
+            ].join(',');
             const blockingNode = Array.from(document.querySelectorAll(blockingSelectors))
                 .filter(visible)
                 .find(el => riskPattern.test(el.innerText || ''));
+            const visibleLoginNode = Array.from(document.querySelectorAll(loginSelectors))
+                .filter(visible)
+                .find(el => loginPattern.test(el.innerText || ''));
             const pageUnavailableRisk = riskPattern.test(text) && pageType === 'unknown';
-            const path403 = /(?:^|\/)403(?:[./?]|$)/.test(new URL(url).pathname);
+            const loginUrl = /(^|\.)login\.zhipin\.com$/.test(parsedUrl.hostname) ||
+                /\/(?:web\/user|login|passport)(?:[/?#]|$)/.test(parsedUrl.pathname);
+            const pageUnavailableLogin = !loggedIn && pageType === 'unknown' && loginPattern.test(text);
+            const loginRequired = loginUrl || (!loggedIn && (!!visibleLoginNode || pageUnavailableLogin));
+            const loginReason = loginUrl ? 'login_url' :
+                !loggedIn && visibleLoginNode ? 'visible_login_node' :
+                pageUnavailableLogin ? 'unavailable_page_text' : '';
+            const loginText = (visibleLoginNode?.innerText || (pageUnavailableLogin ? text : '')).trim().slice(0, 240);
+            const path403 = /(?:^|\/)403(?:[./?]|$)/.test(parsedUrl.pathname);
             const title403 = /403\s*(Forbidden|错误|拒绝访问)/i.test(title);
             const risk = !!blockingNode || pageUnavailableRisk || path403 || title403;
             const riskReason = blockingNode ? 'visible_blocking_node' :
@@ -84,8 +106,9 @@ class BossPageAdapter:
                 path403 ? 'url_403' :
                 title403 ? 'title_403' : '';
             const riskText = (blockingNode?.innerText || (pageUnavailableRisk ? text : '')).trim().slice(0, 240);
-            return {risk, login_required: loginPage || (!loggedIn && pageType === 'unknown'), logged_in: loggedIn,
-                page_type: pageType, has_list:list, has_detail:detail, empty, url, risk_reason: riskReason, risk_text: riskText};
+            return {risk, login_required: loginRequired, logged_in: loggedIn,
+                page_type: pageType, has_list:list, has_detail:detail, empty, url,
+                risk_reason: riskReason, risk_text: riskText, login_reason: loginReason, login_text: loginText};
             """
 
     async def open_search(self, page: PageRef, url: str) -> list[dict[str, str]]:
@@ -116,7 +139,16 @@ class BossPageAdapter:
                 const href = `${parsed.origin}/job_detail/${match[1]}.html`;
                 const card = anchor.closest('li.job-card-box') || anchor;
                 const title = (card.querySelector('.job-name,.job-title')?.innerText || anchor.innerText || '').split('\n')[0].trim();
-                return {job_id:match[1],title,url:href};
+                const cardText = card.innerText || '';
+                const activeTimeMatch = cardText.match(/(刚刚活跃|今日活跃|当前在线|\d+日内活跃|本周活跃|本月活跃|\d+个月内活跃|近半年活跃|半年前活跃)/);
+                const hrActiveTime = activeTimeMatch ? activeTimeMatch[1] : '';
+                
+                // 在提取链接的阶段直接过滤掉活跃时间超过一周的
+                if (/(本月|月内|半年|年前)/.test(hrActiveTime)) {
+                    return null;
+                }
+                
+                return {job_id:match[1],title,url:href,hr_active_time:hrActiveTime};
             }).filter(Boolean);
             """,
         )
@@ -127,6 +159,7 @@ class BossPageAdapter:
                 "job_id": str(item.get("job_id") or ""),
                 "title": str(item.get("title") or ""),
                 "url": str(item.get("url") or ""),
+                "hr_active_time": str(item.get("hr_active_time") or ""),
             }
             for item in value
             if isinstance(item, dict) and item.get("url")
@@ -330,7 +363,7 @@ class BossPageAdapter:
     def _actionable_page_condition() -> str:
         return """
             const text=document.body?.innerText||'';
-            return !!document.querySelector('ul.rec-job-list a.job-name,.job-sec-text,.job-detail,.job-detail-box') ||
+            return !!document.querySelector('ul.rec-job-list a.job-name,.job-sec-text,.job-detail,.job-detail-box,#header,.header-user,.user-nav,[class*=user-nav]') ||
                 /暂无相关职位|没有找到相关职位|暂无职位|验证码|访问异常|安全验证|登录/.test(text);
         """
 
