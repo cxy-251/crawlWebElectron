@@ -4,22 +4,23 @@
 The Boss Zhipin workflow frequently attempts to engage with jobs posted by HRs who have not been active recently (e.g., inactive for a month, half a year, etc.). Loading the job detail page (JD) for these inactive postings wastes time and API quotas.
 
 ## Goal
-Avoid processing jobs from HRs who have not been active within the last week. Filter them out as early as possible—specifically during the extraction of the job list on the search results page—to bypass loading their job detail pages entirely.
+Avoid processing jobs from HRs who have not been active within the last week. The check is performed at the job detail page (JD) level to ensure accuracy, since external search cards frequently hide or omit the HR active tag.
 
 ## Supplements
-Supplements `0011-site-workspace-and-risk-signals.md` by refining the Boss search extraction logic.
+Supplements `0011-site-workspace-and-risk-signals.md` by refining the Boss search extraction and matching logic.
 
 ## Architecture & Implementation
 1. **Frontend JS Extraction (`adapter.py`)**:
-   - In `BossPageAdapter.open_search`, update the JavaScript evaluation block that parses the search results list (`li.job-card-box`).
-   - Extract the entire text of each job card and match against known active time phrases using regex: `/(刚刚活跃|今日活跃|当前在线|\d+日内活跃|本周活跃|本月活跃|\d+个月内活跃|近半年活跃|半年前活跃)/`.
-   - Before returning the parsed object, explicitly test if the active time contains keywords indicating inactivity exceeding a week (`本月`, `月内`, `半年`, `年前`).
-   - If the HR is deemed inactive, return `null`. The `.filter(Boolean)` step will instantly discard these entries before the array is serialized and returned to Python.
+   - In `BossPageAdapter.read_job`, read the text from the HR info section (`.boss-info` or body).
+   - Extract the active time using regex: `/(刚刚活跃|今日活跃|当前在线|\d+日内活跃|本周活跃|本月活跃|\d+个?月内活跃|近半年活跃|半年(?:前|以前)?活跃|半年前)/`.
+   - Add the extracted `hr_active_time` to the return dictionary.
+   - The list page extraction (`open_search`) remains untouched and solely collects links.
 
 2. **Python Workflow (`boss.py`)**:
-   - No new rejection handling logic is needed in Python because the inactive jobs are discarded at the browser layer and are never received by the Python `execute` loop.
-   - The workflow naturally receives a cleaner, pre-filtered list of links, focusing purely on recently active HR posts.
+   - In `BossWorkflow._match`, extract `hr_active_time`.
+   - Reject the job (add `hr_not_active_recently`) if the time contains any keywords indicating inactivity exceeding a week (`本月`, `月内`, `半年`, `年前`).
+   - If rejected, the workflow skips clicking the communicate button and drops the job.
 
 ## Verification
-- Code changes have been applied.
-- Next steps: Verify that the search extraction correctly drops inactive jobs and that Python logs show a higher quality (recent) subset of jobs.
+- Code changes have been applied to `adapter.py` and `boss.py`.
+- Next steps: Verify that the workflow successfully opens JDs, catches inactive HRs, and records the rejection reason accurately.

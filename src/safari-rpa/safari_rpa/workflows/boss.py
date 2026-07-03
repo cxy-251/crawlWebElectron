@@ -152,7 +152,13 @@ class BossWorkflow:
                             decision = self._match(job, config["criteria"])
                             await context.emit(
                                 "boss.job_evaluated",
-                                {"job_id": job.get("job_id"), "matched": decision["matched"], "reasons": decision["reasons"]},
+                                {
+                                    "job_id": job.get("job_id"),
+                                    "matched": decision["matched"],
+                                    "reasons": decision["reasons"],
+                                    "hr_active_time": job.get("hr_active_time", ""),
+                                    "hr_boss_raw": job.get("hr_boss_raw", ""),
+                                },
                             )
                             if not decision["matched"]:
                                 rejected += 1
@@ -321,6 +327,8 @@ class BossWorkflow:
                 "salary_min_k": max(0, int(criteria.get("salary_min_k", 0))),
                 "salary_max_k": max(0, int(criteria.get("salary_max_k", 0))),
                 "allow_unknown": bool(criteria.get("allow_unknown", True)),
+                "hr_active_allow": [str(item) for item in criteria.get("hr_active_allow", [])],
+                "hr_title_deny": [str(item) for item in criteria.get("hr_title_deny", [])],
             },
             "communication": {"enabled": bool(communication.get("enabled", False))},
         }
@@ -408,6 +416,22 @@ class BossWorkflow:
                 reasons.append(f"salary_above_range:{salary}")
         elif (criteria["salary_min_k"] or criteria["salary_max_k"]) and not unknown_allowed:
             reasons.append("salary_unknown")
+            
+        hr_active_time = str(job.get("hr_active_time") or "")
+        hr_active_allow = [str(item) for item in criteria.get("hr_active_allow", []) if str(item).strip()]
+        if hr_active_allow:
+            if not hr_active_time:
+                reasons.append("hr_active_time_unknown")
+            elif not any(token in hr_active_time for token in hr_active_allow):
+                reasons.append(f"hr_not_active_recently:{hr_active_time}")
+                
+        hr_title = str(job.get("hr_title") or "")
+        hr_title_deny = [str(item) for item in criteria.get("hr_title_deny", []) if str(item).strip()]
+        if hr_title_deny and hr_title:
+            denied_title = next((token for token in hr_title_deny if token in hr_title), "")
+            if denied_title:
+                reasons.append(f"hr_title_denied:{denied_title}")
+            
         return {"matched": not reasons, "reasons": reasons}
 
     @staticmethod
@@ -427,6 +451,8 @@ class BossWorkflow:
             "city_code",
             "url",
             "jd",
+            "hr_active_time",
+            "hr_title",
             "confirmed",
             "performed",
             "button_text",

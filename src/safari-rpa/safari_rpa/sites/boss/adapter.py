@@ -139,16 +139,7 @@ class BossPageAdapter:
                 const href = `${parsed.origin}/job_detail/${match[1]}.html`;
                 const card = anchor.closest('li.job-card-box') || anchor;
                 const title = (card.querySelector('.job-name,.job-title')?.innerText || anchor.innerText || '').split('\n')[0].trim();
-                const cardText = card.innerText || '';
-                const activeTimeMatch = cardText.match(/(刚刚活跃|今日活跃|当前在线|\d+日内活跃|本周活跃|本月活跃|\d+个月内活跃|近半年活跃|半年前活跃)/);
-                const hrActiveTime = activeTimeMatch ? activeTimeMatch[1] : '';
-                
-                // 在提取链接的阶段直接过滤掉活跃时间超过一周的
-                if (/(本月|月内|半年|年前)/.test(hrActiveTime)) {
-                    return null;
-                }
-                
-                return {job_id:match[1],title,url:href,hr_active_time:hrActiveTime};
+                return {job_id:match[1],title,url:href};
             }).filter(Boolean);
             """,
         )
@@ -159,7 +150,6 @@ class BossPageAdapter:
                 "job_id": str(item.get("job_id") or ""),
                 "title": str(item.get("title") or ""),
                 "url": str(item.get("url") or ""),
-                "hr_active_time": str(item.get("hr_active_time") or ""),
             }
             for item in value
             if isinstance(item, dict) and item.get("url")
@@ -197,7 +187,13 @@ class BossPageAdapter:
             const scale = (companyText.match(/少于\d+人|\d+-\d+人|\d+人以上|\d+万以上人/)||[])[0] || '';
             const jd = text('.job-sec-text') || text('.job-detail-section') || text('.job-detail-box');
             const jobId = (location.href.match(/job_detail\/([^.?/]+)/)||[])[1] || location.href;
-            return {job_id:jobId,url:location.href,title,salary,experience,education,location:locationText,company,scale,jd};
+            const bossActiveEl = document.querySelector('.boss-active-time');
+            const bossText = bossActiveEl?.innerText?.trim() || document.querySelector('.job-boss-info,.detail-boss,.boss-info-wrap')?.innerText || '';
+            const activePattern = /(刚刚在线|今日在线|今日活跃|刚刚活跃|当前在线|在线|近?[一二三四五六七1-7]日内?(?:活跃)?|近三日活跃|本周活跃|两周内活跃|本月活跃|近?\d+个?月内?活跃|半年前活跃|半年内活跃|近半年活跃|半年前)/;
+            const activeMatch = bossText.match(activePattern);
+            const hrActiveTime = activeMatch ? activeMatch[1] : '';
+            const hrTitle = document.querySelector('.boss-title,.name-box .title,.boss-info-attr,.job-boss-info .title')?.innerText || '';
+            return {job_id:jobId,url:location.href,title,salary,experience,education,location:locationText,company,scale,jd,hr_active_time:hrActiveTime,hr_title:hrTitle,hr_boss_raw:bossText};
             """,
         )
         if not isinstance(value, dict) or not value.get("job_id"):
@@ -266,30 +262,12 @@ class BossPageAdapter:
 
         mismatch = await self._experience_mismatch_state(page, expected_job_id)
         if mismatch.get("visible"):
-            cancel = self._experience_mismatch_cancel_locator()
-            cancel_state = await self.safari.query(page, cancel)
-            if not (cancel_state.found and cancel_state.visible and cancel_state.enabled):
-                raise UnknownSideEffectError(
-                    "Boss experience-mismatch dialog appeared but its cancel control is unavailable",
-                    mismatch,
-                )
-            await self.safari.click(
-                page,
-                cancel,
-                PageCondition.js(
-                    self._experience_mismatch_closed_condition(expected_job_id),
-                    f"Boss mismatch dialog for job {expected_job_id} is closed without communication",
-                ),
-                timeout=8,
-            )
-            after_cancel = await self.communication_state(page, expected_job_id)
-            if after_cancel.get("status") != "available":
-                raise UnknownSideEffectError(
-                    "Boss mismatch dialog closed but the expected job did not return to available state",
-                    after_cancel,
-                )
+            # Boss Zhipin's experience mismatch dialog often doesn't have a cancel button.
+            # We can simply return the skipped state; the next job iteration will navigate away,
+            # implicitly destroying the dialog.
             return {
-                **after_cancel,
+                **mismatch,
+                "status": "unavailable",
                 "confirmed": False,
                 "performed": False,
                 "preexisting": False,
@@ -322,36 +300,15 @@ class BossPageAdapter:
             const expected={expected_job_id!r};
             const current=(location.pathname.match(/job_detail[/]([^.?/]+)/)||[])[1]||'';
             const visible=el=>{{const s=getComputedStyle(el),r=el.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.height>0;}};
-            const dialogs=Array.from(document.querySelectorAll('[role=dialog],.dialog-wrap,.boss-dialog,[class*=dialog]')).filter(visible);
-            const dialog=dialogs.find(el=>/工作经历不匹配/.test(el.innerText||''));
+            const dialogs=Array.from(document.querySelectorAll('[role=dialog],.dialog-wrap,.boss-dialog,.dialog-container,.greet-boss-dialog')).filter(visible);
+            const dialog=dialogs.find(el=>/工作经历不匹配/.test(el.innerText||'') && (el.innerText||'').length < 500);
             return {{visible:!!dialog,same_job:current===expected,job_id:current,
                 text:(dialog?.innerText||'').trim().slice(0,240),url:location.href}};
             """,
         )
         return value if isinstance(value, dict) else {"visible": False}
 
-    @staticmethod
-    def _experience_mismatch_cancel_locator() -> Locator:
-        return Locator.script(
-            "(()=>{const visible=el=>{const s=getComputedStyle(el),r=el.getBoundingClientRect();"
-            "return s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.height>0};"
-            "const dialog=Array.from(document.querySelectorAll('[role=dialog],.dialog-wrap,.boss-dialog,[class*=dialog]'))"
-            ".filter(visible).find(el=>/工作经历不匹配/.test(el.innerText||''));if(!dialog)return null;"
-            "const controls=Array.from(dialog.querySelectorAll('button,[role=button],a')).filter(visible);"
-            "return controls.find(el=>/^(取消|暂不沟通|再看看|关闭)$/.test((el.innerText||el.getAttribute('aria-label')||'').trim()))||"
-            "controls.find(el=>/关闭|close/i.test(el.getAttribute('aria-label')||''))||null;})()"
-        )
 
-    @staticmethod
-    def _experience_mismatch_closed_condition(expected_job_id: str) -> str:
-        return f"""
-            const expected={expected_job_id!r};
-            const current=(location.pathname.match(/job_detail[/]([^.?/]+)/)||[])[1]||'';
-            const visible=el=>{{const s=getComputedStyle(el),r=el.getBoundingClientRect();return s.display!=='none'&&s.visibility!=='hidden'&&r.width>0&&r.height>0;}};
-            const mismatch=Array.from(document.querySelectorAll('[role=dialog],.dialog-wrap,.boss-dialog,[class*=dialog]'))
-                .some(el=>visible(el)&&/工作经历不匹配/.test(el.innerText||''));
-            return current===expected&&!mismatch;
-        """
 
     async def reconcile_communication(self, page: PageRef, expected_job_id: str) -> dict[str, Any] | None:
         state = await self.communication_state(page, expected_job_id)

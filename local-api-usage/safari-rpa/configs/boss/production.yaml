@@ -10,17 +10,17 @@ search:
     - {name: 武汉, code: "101200100"}
     - {name: 南京, code: "101190100"}
     - {name: 苏州, code: "101190400"}
-    - {name: 东莞, code: "101281601"}
-    - {name: 佛山, code: "101280800"}
-    - {name: 重庆, code: "101040100"}
+    - {name: 长沙, code: "101250100"}
+    - {name: 西安, code: "101110100"}
+    - {name: 厦门, code: "101230200"}
   weekday_keywords:
-    mon: Python开发工程师
-    tue: AI应用开发工程师
-    wed: C++开发工程师
-    thu: Web前端开发工程师
-    fri: Android开发工程师
-    sat: iOS开发工程师
-    sun: HarmonyOS开发工程师
+    mon: Python开发
+    tue: AI应用开发
+    wed: C++开发
+    thu: Web前端开发
+    fri: Android开发
+    sat: iOS开发
+    sun: HarmonyOS开发
   query_params:
     scale: "304,305,306"
     experience: "102,103,104,108"
@@ -28,14 +28,16 @@ search:
     salary: "405"
 
 criteria:
-  title_allow: [开发, 前端, 后端, 客户端, 软件工程师, 算法, AI, Python, C++, Android, 安卓, iOS, HarmonyOS, 鸿蒙, Java, Golang, Go, 全栈, 测试开发]
-  title_deny: [销售, 运营, 产品经理, 客服, 讲师, 教师, 助教, 培训, 人事, 行政, 市场, 商务, 项目经理, 实施顾问]
+  title_allow: [软件开发, 系统开发, 框架, 架构, 程序, 前端, 后端, 客户端, 软件工程师, 算法, AI开发, AI工程师, 大模型, LLM, 机器学习, 深度学习, NLP, MLOps, Python, C++, Android, 安卓, iOS, HarmonyOS, 鸿蒙, 全栈, 测试开发, Flutter, Swift, ArkTS, TypeScript, JavaScript]
+  title_deny: [销售, 渠道, 客户, 采购, 运营, 产品经理, 客服, 讲师, 教师, 助教, 培训, 人事, 行政, 市场, 商务, 项目经理, 实施顾问]
   experience_allow: [经验不限, 在校/应届, 1年以内, 1-3年]
-  education_deny: [硕士, 博士]
+  education_deny: [大专, 硕士, 博士]
   company_size_min: 500
   salary_min_k: 10
   salary_max_k: 20
   allow_unknown: true
+  hr_active_allow: [刚刚在线, 今日在线, 在线, 当前在线, 刚刚活跃, 今日活跃, 一日内活跃, 二日内活跃, 三日内活跃, 近三日活跃, 3日内活跃, 四日内活跃, 五日内活跃, 六日内活跃, 七日内活跃, 本周活跃]
+  hr_title_deny: [猎头, 代招]
 
 limits:
   run: 110
