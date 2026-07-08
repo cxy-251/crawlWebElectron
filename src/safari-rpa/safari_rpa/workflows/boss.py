@@ -94,7 +94,9 @@ class BossWorkflow:
             city_order = [dict(city) for city in order_data.get("cities", []) if isinstance(city, dict)]
 
             stop_run = False
-            for city in city_order:
+            # Iterate up to 3 passes as requested to find new jobs
+            for idx, city in enumerate(city_order * 3):
+                scan_pass = idx // max(1, len(city_order))
                 if stop_run:
                     break
                 city_code = str(city["code"])
@@ -103,10 +105,11 @@ class BossWorkflow:
                     await context.emit("boss.city_skipped", {"city": city["name"], "reason": "daily_city_limit"})
                     continue
                 city_confirmed = 0
-                page_signatures: set[tuple[str, ...]] = set()
                 for keyword in keywords:
                     if stop_run or (config["communication"]["enabled"] and city_confirmed >= city_remaining):
                         break
+                    page_signatures: set[tuple[str, ...]] = set()
+                    keyword_seen: set[str] = set()
                     for page_number in range(1, config["limits"]["max_pages"] + 1):
                         await context.check_cancelled()
                         if config["communication"]["enabled"] and (
@@ -115,10 +118,13 @@ class BossWorkflow:
                             stop_run = newly_confirmed >= target_new
                             break
                         search_url = self._search_url(keyword, city, page_number, config["search"]["query_params"])
-                        search_key = f"search.{self._key(keyword)}.{city_code}.page-{page_number}"
+                        search_key = f"search.pass-{scan_pass}.{self._key(keyword)}.{city_code}.page-{page_number}"
 
-                        async def search(url: str = search_url) -> list[dict[str, str]]:
-                            return await adapter.open_search(page, url)
+                        async def search(page_num: int = page_number, url: str = search_url) -> list[dict[str, str]]:
+                            if page_num == 1:
+                                return await adapter.open_search(page, url)
+                            else:
+                                return await adapter.next_page(page)
 
                         jobs = await context.step(search_key, search, retry=RetryPolicy(max_attempts=2))
                         if not jobs:
@@ -137,11 +143,30 @@ class BossWorkflow:
                                 stop_run = newly_confirmed >= target_new
                                 break
                             url = str(listed.get("url") or "")
+                            if not url:
+                                continue
                             provisional_id = self._job_id(url)
-                            if not url or provisional_id in seen:
+                            if provisional_id not in keyword_seen:
+                                new_on_page += 1
+                                keyword_seen.add(provisional_id)
+                            if provisional_id in seen:
                                 continue
                             seen.add(provisional_id)
-                            new_on_page += 1
+
+                            effect_key = f"communicate.{provisional_id}"
+                            prior_effect = await context.completed_side_effect(effect_key)
+                            if prior_effect is not None:
+                                if prior_effect.output.get("outcome") == "skipped_experience_mismatch":
+                                    experience_mismatch_skipped += 1
+                                else:
+                                    already_communicated += 1
+                                continue
+
+                            reject_key = f"reject.{provisional_id}"
+                            if await context.completed_side_effect(reject_key):
+                                rejected += 1
+                                continue
+
                             scanned += 1
                             detail_key = f"job.{provisional_id}.detail"
 
@@ -162,6 +187,9 @@ class BossWorkflow:
                             )
                             if not decision["matched"]:
                                 rejected += 1
+                                async def mark_reject(reasons: list[str] = decision["reasons"]) -> JsonObject:
+                                    return {"reasons": reasons}
+                                await context.step(reject_key, mark_reject, side_effect=True)
                                 continue
                             matched += 1
                             record = {
@@ -176,16 +204,6 @@ class BossWorkflow:
                                 continue
 
                             job_id = str(job["job_id"])
-                            effect_key = f"communicate.{self._key(job_id)}"
-                            prior_effect = await context.completed_side_effect(effect_key)
-                            if prior_effect is not None:
-                                if prior_effect.output.get("outcome") == "skipped_experience_mismatch":
-                                    experience_mismatch_skipped += 1
-                                elif prior_effect.output.get("confirmed") and not prior_effect.output.get("preexisting"):
-                                    already_communicated += 1
-                                else:
-                                    already_communicated += 1
-                                continue
                             preflight = await adapter.communication_state(page, job_id)
                             if preflight.get("status") == "communicated":
                                 already_communicated += 1
@@ -366,8 +384,10 @@ class BossWorkflow:
         weekday = datetime.now().strftime("%a").lower()[:3]
         mapping = search.get("weekday_keywords", {})
         selected = mapping.get(weekday) if isinstance(mapping, dict) else None
+        if isinstance(selected, list):
+            return [str(item).strip() for item in selected if str(item).strip()]
         if selected:
-            return [str(selected)]
+            return [str(selected).strip()]
         raise RpaError("INVALID_BOSS_CONFIG", "Configure search.keywords or weekday_keywords for today")
 
     @staticmethod

@@ -91,7 +91,7 @@ export function WorkflowDetail({
         <Card title="Safari RPA Service">
           <div className="space-y-3">
             <pre className="overflow-auto rounded-md bg-slate-950 p-3 text-xs leading-5 text-slate-100">
-{`SAFARI_RPA_API_TOKEN=replace-me PYTHONPATH=src/safari-rpa conda run -n kwai \\
+{`SAFARI_RPA_API_TOKEN=replace-me uv run --package browser-workflow-safari-rpa \\
   safari-rpa --home local-api-usage/safari-rpa/var serve --host 127.0.0.1 --port 3211`}
             </pre>
             <Button onClick={onCheckService} disabled={checking}>

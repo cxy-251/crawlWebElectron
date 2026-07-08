@@ -7,7 +7,7 @@ name = "browser-workflow-safari-rpa"
 version = "0.1.0"
 description = "State-aware Safari browser workflow runtime"
 readme = { text = "State-aware Safari browser workflow runtime for Browser Workflow Forge.", content-type = "text/markdown" }
-requires-python = ">=3.14"
+requires-python = ">=3.12"
 dependencies = [
   "aiohttp>=3.13,<4",
   "aiosqlite>=0.22,<1",

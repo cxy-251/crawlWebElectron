@@ -124,12 +124,45 @@ class BossPageAdapter:
         state = await self.assert_access(page)
         if state.get("page_type") not in {"search", "search_detail", "search_empty"}:
             raise RpaError("BOSS_SEARCH_PAGE_INVALID", "Boss did not expose a search result surface", details=state)
+        import asyncio
+        for _ in range(5):
+            await self.safari.evaluate(
+                page,
+                r"""
+                const cards = document.querySelectorAll('.job-card-wrapper, .job-card-box, li.job-card');
+                if (cards.length > 0) {
+                    cards[cards.length - 1].scrollIntoView({block: "end"});
+                }
+                window.scrollBy(0, 2000);
+                """
+            )
+            await asyncio.sleep(0.8)
+
+        return await self._extract_search_jobs(page)
+
+    async def next_page(self, page: PageRef) -> list[dict[str, str]]:
+        import asyncio
+        # Infinite scroll (waterfall) mode: just scroll down repeatedly
+        for _ in range(6):
+            await self.safari.evaluate(
+                page,
+                r"""
+                const cards = document.querySelectorAll('.job-card-wrapper, .job-card-box, li.job-card');
+                if (cards.length > 0) {
+                    cards[cards.length - 1].scrollIntoView({block: "end"});
+                }
+                window.scrollBy(0, 2000);
+                """
+            )
+            await asyncio.sleep(1.0)
+            
+        return await self._extract_search_jobs(page)
+
+    async def _extract_search_jobs(self, page: PageRef) -> list[dict[str, str]]:
         value = await self.safari.evaluate(
             page,
             r"""
-            const list = document.querySelector('ul.rec-job-list');
-            if (!list) return [];
-            const anchors = Array.from(list.querySelectorAll('a.job-name[href*="/job_detail/"]'));
+            const anchors = Array.from(document.querySelectorAll('.job-card-wrapper a[href*="/job_detail/"], a.job-name[href*="/job_detail/"]'));
             const seen = new Set();
             return anchors.map(anchor => {
                 const parsed = new URL(anchor.getAttribute('href') || anchor.href, location.origin);

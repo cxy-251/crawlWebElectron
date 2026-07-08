@@ -24,3 +24,6 @@ Supplements `0011-site-workspace-and-risk-signals.md` by refining the Boss searc
 ## Verification
 - Code changes have been applied to `adapter.py` and `boss.py`.
 - Next steps: Verify that the workflow successfully opens JDs, catches inactive HRs, and records the rejection reason accurately.
+
+
+conda管理包 改成 uv管理 所有 conda run -n kwai 都换成 uv run

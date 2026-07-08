@@ -20,7 +20,7 @@ search:
     thu: Web前端开发
     fri: Android开发
     sat: iOS开发
-    sun: HarmonyOS开发
+    sun: HarmonyOS开发、鸿蒙开发、测试开发
   query_params:
     scale: "304,305,306"
     experience: "102,103,104,108"
@@ -28,8 +28,8 @@ search:
     salary: "405"
 
 criteria:
-  title_allow: [软件开发, 系统开发, 框架, 架构, 程序, 前端, 后端, 客户端, 软件工程师, 算法, AI开发, AI工程师, 大模型, LLM, 机器学习, 深度学习, NLP, MLOps, Python, C++, Android, 安卓, iOS, HarmonyOS, 鸿蒙, 全栈, 测试开发, Flutter, Swift, ArkTS, TypeScript, JavaScript]
-  title_deny: [销售, 渠道, 客户, 采购, 运营, 产品经理, 客服, 讲师, 教师, 助教, 培训, 人事, 行政, 市场, 商务, 项目经理, 实施顾问]
+  title_allow: [软件开发, 系统开发, 框架, 架构, 程序, 前端, 后端, 客户端, 软件工程师, 算法, AI开发, AI工程师, 大模型, LLM, 机器学习, 深度学习, NLP, MLOps, Python, C++, Android, 安卓, iOS, HarmonyOS, 鸿蒙, 全栈, 测试开发, Flutter, Swift, ArkTS, TypeScript, JavaScript, Linux]
+  title_deny: [销售, 嵌入式, 渠道, 客户, 采购, 运营, 产品经理, 客服, 讲师, 教师, 助教, 培训, 人事, 行政, 市场, 商务, 项目经理, 实施顾问]
   experience_allow: [经验不限, 在校/应届, 1年以内, 1-3年]
   education_deny: [大专, 硕士, 博士]
   company_size_min: 500

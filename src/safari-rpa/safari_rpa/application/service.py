@@ -189,8 +189,7 @@ class RpaApplication:
         return await self.runner.cancel(run_id)
 
     async def doctor(self) -> JsonObject:
-        environment_name = os.environ.get("CONDA_DEFAULT_ENV", "")
-        environment_ok = environment_name == "kwai" or "/envs/kwai/" in sys.executable
+        environment_ok = self._is_virtual_environment()
         checks: list[JsonObject] = [
             {
                 "name": "platform",
@@ -199,14 +198,14 @@ class RpaApplication:
                 "required": True,
             },
             {
-                "name": "conda_environment",
+                "name": "python_environment",
                 "ok": environment_ok,
-                "value": environment_name or sys.executable,
+                "value": sys.executable,
                 "required": True,
             },
             {
                 "name": "python",
-                "ok": sys.version_info >= (3, 14),
+                "ok": sys.version_info >= (3, 12),
                 "value": platform.python_version(),
                 "required": True,
             },
@@ -305,6 +304,10 @@ class RpaApplication:
         if profile:
             value["profile"] = profile
         return value
+
+    @staticmethod
+    def _is_virtual_environment() -> bool:
+        return sys.prefix != getattr(sys, "base_prefix", sys.prefix)
 
 
 def default_home() -> Path:

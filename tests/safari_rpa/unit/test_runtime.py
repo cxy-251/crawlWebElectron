@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import tempfile
 import time
+import sys
 import unittest
 import asyncio
 from datetime import datetime
@@ -194,6 +195,20 @@ class RuntimeTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(2, len(Path(report.path).read_text(encoding="utf-8-sig").splitlines()))
         finally:
             await application.close()
+
+    async def test_doctor_accepts_uv_virtual_environment_and_python_312(self) -> None:
+        application_home = self.root / "doctor-var"
+        application_home.mkdir()
+        application = RpaApplication(application_home, WorkflowRegistry(), safari=ReadinessSafari())
+        result = await application.doctor()
+
+        checks = {check["name"]: check for check in result["checks"]}
+        self.assertTrue(result["ok"], result)
+        self.assertIn("python_environment", checks)
+        self.assertNotIn("conda_environment", checks)
+        self.assertTrue(checks["python_environment"]["ok"], checks["python_environment"])
+        self.assertEqual(sys.executable, checks["python_environment"]["value"])
+        self.assertTrue(checks["python"]["ok"], checks["python"])
 
     async def test_scheduled_workflow_retries_readiness_then_executes(self) -> None:
         config_path = self.root / "scheduled.yaml"

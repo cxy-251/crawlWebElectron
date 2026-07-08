@@ -22,7 +22,7 @@ Layer callers depend on the public contract directly below them. A website adapt
 Start the service with a loopback-only bearer token:
 
 ```bash
-SAFARI_RPA_API_TOKEN=replace-me PYTHONPATH=src/safari-rpa conda run -n kwai \
+SAFARI_RPA_API_TOKEN=replace-me PYTHONPATH=src/safari-rpa uv run \
   safari-rpa --home local-api-usage/safari-rpa/var serve --host 127.0.0.1 --port 3211
 ```
 
@@ -37,19 +37,19 @@ Python workflow code receives only `WorkflowContextPort`. Site adapters receive 
 Run Twitter prompt extraction as two explicit phases through the generic run API or CLI:
 
 ```bash
-PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa run \
+PYTHONPATH=src/safari-rpa uv run safari-rpa run \
   twitter.collect-raw.v1 \
   --config local-api-usage/safari-rpa/configs/twitter/collect.yaml \
   --input local-api-usage/safari-rpa/configs/twitter/target.json
 
-PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa run \
+PYTHONPATH=src/safari-rpa uv run safari-rpa run \
   twitter.clean-prompts.v1 \
   --config local-api-usage/safari-rpa/configs/twitter/clean.yaml \
   --input local-api-usage/safari-rpa/configs/twitter/target.json
 
 # Thin CLI wrappers; these still go through application/runtime/workflow.
-PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa twitter collect
-PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa twitter clean
+PYTHONPATH=src/safari-rpa uv run safari-rpa twitter collect
+PYTHONPATH=src/safari-rpa uv run safari-rpa twitter clean
 ```
 
 Safari must already be logged in to X/Twitter if the profile is not publicly readable. `twitter.collect-raw.v1` is read-only and stops at `limits.max_tweets`, with scroll safety limits. By default it keeps only target-author original tweets and groups them into the current Asia/Shanghai ISO week. Detail pages are throttled through `detail.detail_pause_seconds`, `detail.detail_timeout_seconds`, `detail.detail_retry_attempts`, and `detail.between_detail_seconds`; single status-detail failures write `raw-failures.jsonl` and do not enter the LLM cleanup queue. If `WAIT_TIMEOUT` repeats for `detail.max_consecutive_detail_timeouts` consecutive status details, collection stops early with `stop_reason=consecutive_detail_timeouts`.

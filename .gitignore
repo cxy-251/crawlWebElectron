@@ -5,6 +5,7 @@ dist/
 .env.*
 !.env.example
 *.log
+.venv
 *.sqlite
 *.sqlite-shm
 *.sqlite-wal

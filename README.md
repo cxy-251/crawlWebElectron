@@ -72,14 +72,14 @@ The batch script calls `/api/kuaishou/upload-single`, runs tasks one by one, and
 Install or refresh the local command:
 
 ```bash
-conda run -n kwai python -m pip install -e src/safari-rpa --no-deps
-conda run -n kwai safari-rpa --help
+uv run python -m pip install -e src/safari-rpa --no-deps
+uv run safari-rpa --help
 ```
 
 Start the loopback API only when Boss or Twitter workflows need Safari runtime state:
 
 ```bash
-SAFARI_RPA_API_TOKEN=replace-me PYTHONPATH=src/safari-rpa conda run -n kwai \
+SAFARI_RPA_API_TOKEN=replace-me PYTHONPATH=src/safari-rpa uv run \
   safari-rpa --home local-api-usage/safari-rpa/var serve --host 127.0.0.1 --port 3211
 ```
 
@@ -94,21 +94,21 @@ production  full production profile, capped by daily and per-city limits
 Validate the workflow before installing any schedule:
 
 ```bash
-PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa --home local-api-usage/safari-rpa/var doctor
-PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa --home local-api-usage/safari-rpa/var workflows
+PYTHONPATH=src/safari-rpa uv run safari-rpa --home local-api-usage/safari-rpa/var doctor
+PYTHONPATH=src/safari-rpa uv run safari-rpa --home local-api-usage/safari-rpa/var workflows
 
 # Safe manual validation first.
-PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa --home local-api-usage/safari-rpa/var run \
+PYTHONPATH=src/safari-rpa uv run safari-rpa --home local-api-usage/safari-rpa/var run \
   boss.search-and-communicate.v1 --config local-api-usage/safari-rpa/configs/boss/production.yaml --profile collection
 
-PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa --home local-api-usage/safari-rpa/var status --limit 10
-PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa --home local-api-usage/safari-rpa/var reports list --limit 10
+PYTHONPATH=src/safari-rpa uv run safari-rpa --home local-api-usage/safari-rpa/var status --limit 10
+PYTHONPATH=src/safari-rpa uv run safari-rpa --home local-api-usage/safari-rpa/var reports list --limit 10
 ```
 
 Only after the collection run looks correct, use `test` deliberately if the real Boss account should send up to ten communications:
 
 ```bash
-PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa --home local-api-usage/safari-rpa/var run \
+PYTHONPATH=src/safari-rpa uv run safari-rpa --home local-api-usage/safari-rpa/var run \
   boss.search-and-communicate.v1 --config local-api-usage/safari-rpa/configs/boss/production.yaml --profile test
 ```
 
@@ -119,7 +119,7 @@ Do not manually run `production` unless an immediate production write is intende
 Install the daily production LaunchAgent only after validation:
 
 ```bash
-PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa --home local-api-usage/safari-rpa/var schedule install \
+PYTHONPATH=src/safari-rpa uv run safari-rpa --home local-api-usage/safari-rpa/var schedule install \
   --id boss-production-daily \
   --config local-api-usage/safari-rpa/configs/boss/production.yaml \
   --profile production \
@@ -130,14 +130,14 @@ PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa --home local-api-usage/sa
 Inspect schedule state:
 
 ```bash
-PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa --home local-api-usage/safari-rpa/var schedule status
-PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa --home local-api-usage/safari-rpa/var schedule status boss-production-daily
+PYTHONPATH=src/safari-rpa uv run safari-rpa --home local-api-usage/safari-rpa/var schedule status
+PYTHONPATH=src/safari-rpa uv run safari-rpa --home local-api-usage/safari-rpa/var schedule status boss-production-daily
 ```
 
 Modify the schedule by running `schedule install` again with the same `--id` and a new value:
 
 ```bash
-PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa --home local-api-usage/safari-rpa/var schedule install \
+PYTHONPATH=src/safari-rpa uv run safari-rpa --home local-api-usage/safari-rpa/var schedule install \
   --id boss-production-daily \
   --config local-api-usage/safari-rpa/configs/boss/production.yaml \
   --profile production \
@@ -148,7 +148,7 @@ PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa --home local-api-usage/sa
 Cancel the schedule:
 
 ```bash
-PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa --home local-api-usage/safari-rpa/var schedule uninstall boss-production-daily
+PYTHONPATH=src/safari-rpa uv run safari-rpa --home local-api-usage/safari-rpa/var schedule uninstall boss-production-daily
 ```
 
 If old `macRpaForge` LaunchAgents still exist, unload and remove them separately:

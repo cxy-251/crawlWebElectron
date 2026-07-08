@@ -40,7 +40,7 @@ SELECT id, enabled, daily_at, timezone, plist_path FROM schedules;
 Rebuild a daily CSV from SQLite rather than editing it:
 
 ```bash
-PYTHONPATH=src/safari-rpa conda run -n kwai safari-rpa --home local-api-usage/safari-rpa/var \
+PYTHONPATH=src/safari-rpa uv run safari-rpa --home local-api-usage/safari-rpa/var \
   reports rebuild --date 2026-06-20
 ```
 
