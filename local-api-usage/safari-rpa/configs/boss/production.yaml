@@ -14,13 +14,13 @@ search:
     - {name: 西安, code: "101110100"}
     - {name: 厦门, code: "101230200"}
   weekday_keywords:
-    mon: Python开发
-    tue: AI应用开发
-    wed: C++开发
-    thu: Web前端开发
-    fri: Android开发
-    sat: iOS开发
-    sun: HarmonyOS开发、鸿蒙开发、测试开发
+    mon: [Python开发, Python工程师, 后端开发, AI应用开发, 大模型应用开发]
+    tue: [AI应用开发, 大模型应用开发, LLM应用开发, 机器学习工程师, Python开发]
+    wed: [C++开发, C++工程师, 系统开发, Linux开发, 客户端开发]
+    thu: [Web前端开发, 前端开发, TypeScript开发, JavaScript开发, 全栈开发]
+    fri: [Android开发, 安卓开发, 客户端开发, Flutter开发, 移动端开发]
+    sat: [iOS开发, Swift开发, 客户端开发, Flutter开发, 移动端开发]
+    sun: [HarmonyOS开发, 鸿蒙开发, ArkTS开发, 测试开发, 客户端开发]
   query_params:
     scale: "304,305,306"
     experience: "102,103,104,108"
@@ -36,12 +36,15 @@ criteria:
   salary_min_k: 10
   salary_max_k: 20
   allow_unknown: true
+  allow_unknown_hr_activity: true
   hr_active_allow: [刚刚在线, 今日在线, 在线, 当前在线, 刚刚活跃, 今日活跃, 一日内活跃, 二日内活跃, 三日内活跃, 近三日活跃, 3日内活跃, 四日内活跃, 五日内活跃, 六日内活跃, 七日内活跃, 本周活跃]
   hr_title_deny: [猎头, 代招]
 
 limits:
   run: 110
   daily: 110
+  # Initial balancing quota. The overflow phase may exceed it while the shared
+  # run and daily limits remain below 110.
   per_city: 10
   max_pages: 10
 
