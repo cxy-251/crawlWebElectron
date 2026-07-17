@@ -36,8 +36,9 @@ Supplements `0013-boss-daily-target-replenishment.md`. Keyword rotation, two-pha
 
 ## Verification
 
-- Parse the updated YAML.
-- Confirm each weekday resolves to five code-first keywords.
-- Confirm generic robot software and firmware are absent from the rotation.
-- Confirm automotive and industrial-software title terms are not blocked by deny-list substrings.
+- The updated file was accepted by GitHub's contents API and fetched back from `main` with all expected sections intact.
+- Every weekday contains exactly five code-first search keywords.
+- Generic robot software, firmware, generic embedded development, and generic front-end searches are absent from the weekday rotation.
+- Static substring-conflict checking found no overlap between the configured allow and deny terms, including client, automotive, graphics, and industrial-software titles.
+- The experience query now includes the 3–5 year and 5–10 year filter codes alongside the existing unrestricted and junior filters.
 - Live Boss collection verification remains required because search ranking and title wording depend on the logged-in account and current postings.
