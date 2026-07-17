@@ -35,8 +35,8 @@ Supplements `0012-boss-early-hr-activity-filter.md`. The one-week HR activity ru
    - The result reports the selected keyword order, target shortfall, completed scan phases, and a concrete stop reason.
 
 ## Verification
-- Validate Python syntax for `boss.py`.
-- Confirm weekday keyword lists resolve to unique non-empty values.
-- Confirm the balanced phase applies the city cap and the overflow phase removes it.
-- Confirm all communication paths still stop at the shared daily limit.
+- `python -m py_compile` passed for the updated `boss.py` implementation before publication.
+- The updated Boss YAML parsed successfully and every weekday resolves to five non-empty keywords.
+- Unit coverage was added for date rotation, city rotation, and unknown HR activity handling.
+- The repository exposes no commit status checks for this direct-main update, so the full test suite was not executed through GitHub Actions.
 - Live Boss verification remains required because selectors, risk controls, and available candidate volume depend on the logged-in account.
