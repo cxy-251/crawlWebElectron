@@ -13,29 +13,36 @@ search:
     - {name: 长沙, code: "101250100"}
     - {name: 西安, code: "101110100"}
     - {name: 厦门, code: "101230200"}
+
+  # Code-first sectors are rotated by date and city. Generic robot, firmware,
+  # hardware, and field-integration searches are intentionally excluded.
   weekday_keywords:
-    mon: [Linux开发, C++开发, 系统软件工程师, 内核开发, 驱动开发]
-    tue: [图形开发, 渲染开发, GPU开发, OpenGL开发, Vulkan开发]
-    wed: [音视频开发, 多媒体开发, 编解码开发, 图像处理, 计算机视觉]
-    thu: [HarmonyOS开发, 鸿蒙开发, Android开发, 客户端开发, Qt开发]
-    fri: [AI应用开发, 大模型应用开发, Python开发, 后端开发, 自动化开发]
-    sat: [嵌入式Linux开发, 嵌入式软件, 固件开发, 机器人软件, C++开发]
-    sun: [WebGL开发, Three.js开发, WebGPU开发, 前端开发, TypeScript开发]
+    mon: [Linux系统开发, C++开发, 基础软件开发, 分布式系统开发, 中间件开发]
+    tue: [AI应用开发, 大模型应用开发, AI平台开发, 推理引擎开发, 模型部署工程师]
+    wed: [汽车软件开发, 智能座舱开发, 车载系统开发, AUTOSAR开发, QNX开发]
+    thu: [图形开发, 渲染开发, GPU开发, OpenGL开发, Vulkan开发]
+    fri: [工业软件开发, CAD开发, CAE开发, 仿真软件开发, 几何算法]
+    sat: [HarmonyOS开发, Android开发, 客户端开发, Qt开发, 桌面端开发]
+    sun: [音视频开发, 编解码开发, 计算机视觉, 图像处理, 多媒体开发]
+
   query_params:
     scale: "304,305,306"
-    experience: "102,103,104,108"
+    # Include unrestricted/junior filters plus 3-5 and 5-10 year software roles.
+    experience: "102,103,104,105,106,108"
     degree: "203,202,201,208"
     salary: "405"
 
 criteria:
-  # Software directions that fit the user's systems, graphics, client, AI,
-  # embedded-software, computer-vision, and web-graphics background.
+  # A title must describe software product, platform, algorithm, runtime, client,
+  # graphics, automotive-software, or industrial-software development.
   title_allow:
     - 软件开发
     - 软件工程师
     - 研发工程师
     - 系统开发
     - 系统软件
+    - 基础软件
+    - 基础架构
     - Linux
     - 内核开发
     - 驱动开发
@@ -44,14 +51,25 @@ criteria:
     - Python
     - 后端开发
     - 服务端开发
+    - 分布式系统
+    - 中间件
+    - 云原生
+    - 数据库内核
+    - 存储引擎
+    - 高性能计算
+    - 运维开发
+    - SRE
     - 客户端开发
     - 桌面端开发
     - Qt
-    - 前端开发
-    - Web前端
-    - 全栈开发
-    - TypeScript
-    - JavaScript
+    - Android
+    - 安卓
+    - iOS
+    - HarmonyOS
+    - 鸿蒙
+    - ArkTS
+    - Flutter
+    - Swift
     - 图形开发
     - 图形图像
     - 计算机图形
@@ -72,33 +90,49 @@ criteria:
     - 计算机视觉
     - 视觉算法
     - OpenCV
-    - Android
-    - 安卓
-    - iOS
-    - HarmonyOS
-    - 鸿蒙
-    - ArkTS
-    - Flutter
-    - Swift
     - AI应用
     - AI工程师
+    - AI平台
     - 大模型应用
     - 大模型开发
     - LLM
+    - 推理引擎
+    - 模型推理
+    - 模型部署
+    - 训练框架
+    - MLOps
     - 机器学习工程师
     - 深度学习工程师
     - NLP工程师
-    - MLOps
-    - 测试开发
-    - 自动化测试
-    - 自动化开发
+    - 汽车软件
+    - 车载软件
+    - 智能座舱
+    - 车机开发
+    - 车载系统
+    - AUTOSAR
+    - QNX
+    - 自动驾驶软件
+    - 车载嵌入式
+    - 工业软件
+    - CAD开发
+    - CAE开发
+    - CAM开发
+    - EDA开发
+    - 仿真软件
+    - 几何算法
+    - 几何内核
+    - 科学计算
+    - 数值计算
+    - CFD开发
+    - PLM开发
+    - PDM开发
     - 嵌入式软件
     - 嵌入式Linux
-    - 固件开发
-    - 机器人软件
+    - 测试开发
+    - 自动化测试
 
-  # Use role phrases instead of broad substrings. In particular, never deny
-  # the standalone word “客户”, because it also appears in “客户端开发”.
+  # Deny concrete non-coding roles rather than broad substrings. The standalone
+  # word “客户” is forbidden here because it would reject “客户端开发”.
   title_deny:
     - 销售
     - 销售工程师
@@ -134,6 +168,20 @@ criteria:
     - 电路设计
     - 电气工程师
     - PLC
+    - 机器人调试
+    - 现场调试
+    - 设备调试
+    - 系统集成
+    - 仿真分析
+    - CAE应用
+    - CAD应用
+    - 有限元分析
+    - 结构仿真
+    - 汽车测试
+    - 整车测试
+    - 标定工程师
+    - 功能测试
+    - 硬件测试
 
   experience_allow: [经验不限, 1-3年, 3-5年, 5-10年]
   education_deny: [硕士, 博士]
