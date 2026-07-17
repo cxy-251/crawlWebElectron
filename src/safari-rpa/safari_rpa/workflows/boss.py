@@ -39,17 +39,21 @@ class BossWorkflow:
     async def execute(self, context: WorkflowContextPort) -> JsonObject:
         config = self._config(context.config)
         adapter = BossPageAdapter(context.safari)
-        today = datetime.now().astimezone().replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
+        local_now = datetime.now().astimezone()
+        today = local_now.replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
+        report_date = local_now.strftime("%Y-%m-%d")
         initial_effects = await context.list_completed_side_effects("communicate.", today)
         initial_confirmed = self._confirmed_effects(initial_effects)
-        report_date = datetime.now().astimezone().strftime("%Y-%m-%d")
         report_id = f"boss-confirmed-daily-{report_date}"
 
         async def materialize_daily_report() -> tuple[Any, list[JsonObject]]:
             effects = await context.list_completed_side_effects("communicate.", today)
             records = [self._ledger_record(effect, output) for effect, output in self._confirmed_effects(effects)]
             report = await context.write_daily_report(
-                report_id, report_date, self._csv(records), record_count=len(records),
+                report_id,
+                report_date,
+                self._csv(records),
+                record_count=len(records),
                 metadata={"date": report_date, "source": "confirmed_side_effects"},
             )
             return report, records
@@ -76,6 +80,7 @@ class BossWorkflow:
         newly_confirmed = 0
         seen: set[str] = set()
         city_order: list[JsonObject] = []
+        completed_phases: list[str] = []
 
         should_scan = not config["communication"]["enabled"] or target_new > 0
         if should_scan:
@@ -93,164 +98,283 @@ class BossWorkflow:
             order_data = await context.step("plan.city_order", plan_city_order, retry=RetryPolicy(max_attempts=1))
             city_order = [dict(city) for city in order_data.get("cities", []) if isinstance(city, dict)]
 
-            stop_run = False
-            # Iterate up to 3 passes as requested to find new jobs
-            for idx, city in enumerate(city_order * 3):
-                scan_pass = idx // max(1, len(city_order))
-                if stop_run:
-                    break
-                city_code = str(city["code"])
-                city_remaining = max(0, config["limits"]["per_city"] - prior_by_city.get(city_code, 0))
-                if config["communication"]["enabled"] and city_remaining == 0:
-                    await context.emit("boss.city_skipped", {"city": city["name"], "reason": "daily_city_limit"})
-                    continue
-                city_confirmed = 0
-                for keyword in keywords:
-                    if stop_run or (config["communication"]["enabled"] and city_confirmed >= city_remaining):
-                        break
-                    page_signatures: set[tuple[str, ...]] = set()
-                    keyword_seen: set[str] = set()
-                    for page_number in range(1, config["limits"]["max_pages"] + 1):
-                        await context.check_cancelled()
+            async def scan_phase(phase_name: str, phase_index: int, city_cap: int | None) -> None:
+                nonlocal matched
+                nonlocal rejected
+                nonlocal already_communicated
+                nonlocal unavailable
+                nonlocal experience_mismatch_skipped
+                nonlocal scanned
+                nonlocal newly_confirmed
+                nonlocal daily_report
+
+                for city_index, city in enumerate(city_order):
+                    if config["communication"]["enabled"] and newly_confirmed >= target_new:
+                        return
+                    city_code = str(city["code"])
+                    if city_cap is None:
+                        city_remaining = max(0, target_new - newly_confirmed)
+                    else:
+                        city_remaining = max(0, city_cap - prior_by_city.get(city_code, 0))
+                    if config["communication"]["enabled"] and city_remaining == 0:
+                        await context.emit(
+                            "boss.city_skipped",
+                            {"city": city["name"], "reason": "phase_city_limit", "phase": phase_name},
+                        )
+                        continue
+
+                    city_confirmed = 0
+                    city_keywords = self._rotate(keywords, city_index + phase_index)
+                    for keyword in city_keywords:
                         if config["communication"]["enabled"] and (
                             newly_confirmed >= target_new or city_confirmed >= city_remaining
                         ):
-                            stop_run = newly_confirmed >= target_new
                             break
-                        search_url = self._search_url(keyword, city, page_number, config["search"]["query_params"])
-                        search_key = f"search.pass-{scan_pass}.{self._key(keyword)}.{city_code}.page-{page_number}"
-
-                        async def search(page_num: int = page_number, url: str = search_url) -> list[dict[str, str]]:
-                            if page_num == 1:
-                                return await adapter.open_search(page, url)
-                            else:
-                                return await adapter.next_page(page)
-
-                        jobs = await context.step(search_key, search, retry=RetryPolicy(max_attempts=2))
-                        if not jobs:
-                            await context.emit("boss.city_page_stopped", {"city": city["name"], "page": page_number, "reason": "empty"})
-                            break
-                        signature = tuple(self._job_id(str(item.get("url") or "")) for item in jobs)
-                        if signature in page_signatures:
-                            await context.emit("boss.city_page_stopped", {"city": city["name"], "page": page_number, "reason": "repeated_page"})
-                            break
-                        page_signatures.add(signature)
-                        new_on_page = 0
-                        for listed in jobs:
+                        page_signatures: set[tuple[str, ...]] = set()
+                        consecutive_no_new_pages = 0
+                        for page_number in range(1, config["limits"]["max_pages"] + 1):
+                            await context.check_cancelled()
                             if config["communication"]["enabled"] and (
                                 newly_confirmed >= target_new or city_confirmed >= city_remaining
                             ):
-                                stop_run = newly_confirmed >= target_new
                                 break
-                            url = str(listed.get("url") or "")
-                            if not url:
-                                continue
-                            provisional_id = self._job_id(url)
-                            if provisional_id not in keyword_seen:
-                                new_on_page += 1
-                                keyword_seen.add(provisional_id)
-                            if provisional_id in seen:
-                                continue
-                            seen.add(provisional_id)
+                            search_url = self._search_url(keyword, city, page_number, config["search"]["query_params"])
+                            search_key = f"search.{phase_name}.{self._key(keyword)}.{city_code}.page-{page_number}"
 
-                            effect_key = f"communicate.{provisional_id}"
-                            prior_effect = await context.completed_side_effect(effect_key)
-                            if prior_effect is not None:
-                                if prior_effect.output.get("outcome") == "skipped_experience_mismatch":
+                            async def search(
+                                page_num: int = page_number,
+                                url: str = search_url,
+                            ) -> list[dict[str, str]]:
+                                if page_num == 1:
+                                    return await adapter.open_search(page, url)
+                                return await adapter.next_page(page)
+
+                            jobs = await context.step(search_key, search, retry=RetryPolicy(max_attempts=2))
+                            if not jobs:
+                                await context.emit(
+                                    "boss.city_page_stopped",
+                                    {
+                                        "city": city["name"],
+                                        "keyword": keyword,
+                                        "phase": phase_name,
+                                        "page": page_number,
+                                        "reason": "empty",
+                                    },
+                                )
+                                break
+                            signature = tuple(self._job_id(str(item.get("url") or "")) for item in jobs)
+                            if signature in page_signatures:
+                                await context.emit(
+                                    "boss.city_page_stopped",
+                                    {
+                                        "city": city["name"],
+                                        "keyword": keyword,
+                                        "phase": phase_name,
+                                        "page": page_number,
+                                        "reason": "repeated_page",
+                                    },
+                                )
+                                break
+                            page_signatures.add(signature)
+                            new_on_page = 0
+
+                            for listed in jobs:
+                                if config["communication"]["enabled"] and (
+                                    newly_confirmed >= target_new or city_confirmed >= city_remaining
+                                ):
+                                    break
+                                url = str(listed.get("url") or "")
+                                if not url:
+                                    continue
+                                provisional_id = self._job_id(url)
+                                if provisional_id in seen:
+                                    continue
+                                seen.add(provisional_id)
+                                new_on_page += 1
+
+                                confirmed_marker_key = f"communicated.{provisional_id}"
+                                if await context.completed_side_effect(confirmed_marker_key):
+                                    already_communicated += 1
+                                    continue
+
+                                effect_key = f"communicate.{provisional_id}"
+                                prior_effect = await context.completed_side_effect(effect_key)
+                                if prior_effect is not None:
+                                    prior_output = prior_effect.output if isinstance(prior_effect.output, dict) else {}
+                                    if prior_output.get("confirmed") or prior_output.get("preexisting"):
+                                        already_communicated += 1
+                                        continue
+                                    if prior_output.get("outcome") == "skipped_experience_mismatch":
+                                        effect_key = f"communicate.retry.{report_date}.{provisional_id}"
+                                        retry_effect = await context.completed_side_effect(effect_key)
+                                        if retry_effect is not None:
+                                            experience_mismatch_skipped += 1
+                                            continue
+                                    else:
+                                        already_communicated += 1
+                                        continue
+
+                                reject_key = f"reject.{report_date}.{provisional_id}"
+                                if await context.completed_side_effect(reject_key):
+                                    rejected += 1
+                                    continue
+
+                                scanned += 1
+                                detail_key = f"job.{provisional_id}.detail"
+
+                                async def detail(job_url: str = url) -> JsonObject:
+                                    return await adapter.read_job(page, job_url)
+
+                                job = await context.step(detail_key, detail, retry=RetryPolicy(max_attempts=2))
+                                decision = self._match(job, config["criteria"])
+                                await context.emit(
+                                    "boss.job_evaluated",
+                                    {
+                                        "job_id": job.get("job_id"),
+                                        "matched": decision["matched"],
+                                        "reasons": decision["reasons"],
+                                        "hr_active_time": job.get("hr_active_time", ""),
+                                        "hr_boss_raw": job.get("hr_boss_raw", ""),
+                                        "keyword": keyword,
+                                        "city": city["name"],
+                                        "phase": phase_name,
+                                    },
+                                )
+                                if not decision["matched"]:
+                                    rejected += 1
+
+                                    async def mark_reject(
+                                        reasons: list[str] = decision["reasons"],
+                                    ) -> JsonObject:
+                                        return {"reasons": reasons, "date": report_date}
+
+                                    await context.step(reject_key, mark_reject, side_effect=True)
+                                    continue
+
+                                matched += 1
+                                record = {
+                                    **job,
+                                    "keyword": keyword,
+                                    "city": city["name"],
+                                    "city_code": city_code,
+                                    "decision": decision,
+                                }
+                                if not config["communication"]["enabled"]:
+                                    collection_records.append(record)
+                                    continue
+
+                                job_id = str(job["job_id"])
+                                preflight = await adapter.communication_state(page, job_id)
+                                if preflight.get("status") == "communicated":
+                                    already_communicated += 1
+
+                                    async def mark_preexisting(
+                                        existing_job_id: str = job_id,
+                                    ) -> JsonObject:
+                                        return {"job_id": existing_job_id, "outcome": "preexisting"}
+
+                                    await context.step(
+                                        confirmed_marker_key,
+                                        mark_preexisting,
+                                        side_effect=True,
+                                    )
+                                    await context.emit(
+                                        "boss.communication_skipped",
+                                        {"job_id": job_id, "reason": "preexisting"},
+                                    )
+                                    continue
+                                if preflight.get("status") != "available":
+                                    unavailable += 1
+                                    await context.emit(
+                                        "boss.communication_skipped",
+                                        {
+                                            "job_id": job_id,
+                                            "reason": "unavailable",
+                                            "state": preflight,
+                                        },
+                                    )
+                                    continue
+
+                                async def communicate(
+                                    job_record: JsonObject = record,
+                                    expected: str = job_id,
+                                ) -> JsonObject:
+                                    evidence = await adapter.communicate(page, expected)
+                                    return {**job_record, **evidence}
+
+                                async def reconcile(
+                                    job_record: JsonObject = record,
+                                    expected: str = job_id,
+                                ) -> JsonObject | None:
+                                    evidence = await adapter.reconcile_communication(page, expected)
+                                    return {**job_record, **evidence} if evidence is not None else None
+
+                                result = await context.step(
+                                    effect_key,
+                                    communicate,
+                                    side_effect=True,
+                                    reconcile=reconcile,
+                                    retry=RetryPolicy(max_attempts=1),
+                                )
+                                if result.get("confirmed") and result.get("performed") and not result.get("preexisting"):
+                                    newly_confirmed += 1
+                                    city_confirmed += 1
+                                    prior_by_city[city_code] += 1
+
+                                    async def mark_confirmed(
+                                        confirmed_job_id: str = job_id,
+                                    ) -> JsonObject:
+                                        return {"job_id": confirmed_job_id, "outcome": "confirmed"}
+
+                                    await context.step(
+                                        confirmed_marker_key,
+                                        mark_confirmed,
+                                        side_effect=True,
+                                    )
+                                    await context.emit(
+                                        "boss.communication_confirmed",
+                                        {
+                                            "job_id": job_id,
+                                            "city": city["name"],
+                                            "keyword": keyword,
+                                            "phase": phase_name,
+                                            "city_confirmed": city_confirmed,
+                                            "run_confirmed": run_completed + newly_confirmed,
+                                            "daily_confirmed": daily_completed + newly_confirmed,
+                                        },
+                                    )
+                                    daily_report, _ = await materialize_daily_report()
+                                elif result.get("outcome") == "skipped_experience_mismatch":
                                     experience_mismatch_skipped += 1
+                                    await context.emit(
+                                        "boss.communication_skipped",
+                                        {"job_id": job_id, "reason": "experience_mismatch"},
+                                    )
                                 else:
                                     already_communicated += 1
-                                continue
 
-                            reject_key = f"reject.{provisional_id}"
-                            if await context.completed_side_effect(reject_key):
-                                rejected += 1
-                                continue
-
-                            scanned += 1
-                            detail_key = f"job.{provisional_id}.detail"
-
-                            async def detail(job_url: str = url) -> JsonObject:
-                                return await adapter.read_job(page, job_url)
-
-                            job = await context.step(detail_key, detail, retry=RetryPolicy(max_attempts=2))
-                            decision = self._match(job, config["criteria"])
-                            await context.emit(
-                                "boss.job_evaluated",
-                                {
-                                    "job_id": job.get("job_id"),
-                                    "matched": decision["matched"],
-                                    "reasons": decision["reasons"],
-                                    "hr_active_time": job.get("hr_active_time", ""),
-                                    "hr_boss_raw": job.get("hr_boss_raw", ""),
-                                },
-                            )
-                            if not decision["matched"]:
-                                rejected += 1
-                                async def mark_reject(reasons: list[str] = decision["reasons"]) -> JsonObject:
-                                    return {"reasons": reasons}
-                                await context.step(reject_key, mark_reject, side_effect=True)
-                                continue
-                            matched += 1
-                            record = {
-                                **job,
-                                "keyword": keyword,
-                                "city": city["name"],
-                                "city_code": city_code,
-                                "decision": decision,
-                            }
-                            if not config["communication"]["enabled"]:
-                                collection_records.append(record)
-                                continue
-
-                            job_id = str(job["job_id"])
-                            preflight = await adapter.communication_state(page, job_id)
-                            if preflight.get("status") == "communicated":
-                                already_communicated += 1
-                                await context.emit("boss.communication_skipped", {"job_id": job_id, "reason": "preexisting"})
-                                continue
-                            if preflight.get("status") != "available":
-                                unavailable += 1
-                                await context.emit("boss.communication_skipped", {"job_id": job_id, "reason": "unavailable", "state": preflight})
-                                continue
-
-                            async def communicate(job_record: JsonObject = record, expected: str = job_id) -> JsonObject:
-                                evidence = await adapter.communicate(page, expected)
-                                return {**job_record, **evidence}
-
-                            async def reconcile(job_record: JsonObject = record, expected: str = job_id) -> JsonObject | None:
-                                evidence = await adapter.reconcile_communication(page, expected)
-                                return {**job_record, **evidence} if evidence is not None else None
-
-                            result = await context.step(
-                                effect_key,
-                                communicate,
-                                side_effect=True,
-                                reconcile=reconcile,
-                                retry=RetryPolicy(max_attempts=1),
-                            )
-                            if result.get("confirmed") and result.get("performed") and not result.get("preexisting"):
-                                newly_confirmed += 1
-                                city_confirmed += 1
-                                prior_by_city[city_code] += 1
-                                await context.emit(
-                                    "boss.communication_confirmed",
-                                    {"job_id": job_id, "city": city["name"], "city_confirmed": city_confirmed,
-                                     "run_confirmed": run_completed + newly_confirmed,
-                                     "daily_confirmed": daily_completed + newly_confirmed},
-                                )
-                                daily_report, _ = await materialize_daily_report()
-                            elif result.get("outcome") == "skipped_experience_mismatch":
-                                experience_mismatch_skipped += 1
-                                await context.emit(
-                                    "boss.communication_skipped",
-                                    {"job_id": job_id, "reason": "experience_mismatch"},
-                                )
+                            if new_on_page == 0:
+                                consecutive_no_new_pages += 1
+                                if consecutive_no_new_pages >= 2:
+                                    await context.emit(
+                                        "boss.city_page_stopped",
+                                        {
+                                            "city": city["name"],
+                                            "keyword": keyword,
+                                            "phase": phase_name,
+                                            "page": page_number,
+                                            "reason": "no_new_jobs",
+                                        },
+                                    )
+                                    break
                             else:
-                                already_communicated += 1
-                        if new_on_page == 0:
-                            await context.emit("boss.city_page_stopped", {"city": city["name"], "page": page_number, "reason": "no_new_jobs"})
-                            break
+                                consecutive_no_new_pages = 0
+
+            await scan_phase("balanced", 0, config["limits"]["per_city"])
+            completed_phases.append("balanced")
+            if config["communication"]["enabled"] and newly_confirmed < target_new:
+                await scan_phase("overflow", 1, None)
+                completed_phases.append("overflow")
 
         final_effects = await context.list_completed_side_effects("communicate.", today)
         final_confirmed = self._confirmed_effects(final_effects)
@@ -275,6 +399,17 @@ class BossWorkflow:
                 "boss_matches_csv",
                 {"records": len(collection_records)},
             )
+
+        shortfall = max(0, target_new - newly_confirmed)
+        if not config["communication"]["enabled"]:
+            stop_reason = "collection_complete"
+        elif target_new == 0:
+            stop_reason = "daily_limit_already_reached"
+        elif shortfall == 0:
+            stop_reason = "target_reached"
+        else:
+            stop_reason = "candidate_pool_exhausted"
+
         return {
             "matched": matched,
             "rejected": rejected,
@@ -290,6 +425,10 @@ class BossWorkflow:
             "profile": config["profile"],
             "run_target": config["limits"]["run"],
             "new_target": target_new,
+            "shortfall": shortfall,
+            "stop_reason": stop_reason,
+            "keyword_order": keywords,
+            "completed_phases": completed_phases,
             "city_order": city_order,
             "artifact_id": run_artifact.id,
             "artifact_path": run_artifact.path,
@@ -345,6 +484,7 @@ class BossWorkflow:
                 "salary_min_k": max(0, int(criteria.get("salary_min_k", 0))),
                 "salary_max_k": max(0, int(criteria.get("salary_max_k", 0))),
                 "allow_unknown": bool(criteria.get("allow_unknown", True)),
+                "allow_unknown_hr_activity": bool(criteria.get("allow_unknown_hr_activity", True)),
                 "hr_active_allow": [str(item) for item in criteria.get("hr_active_allow", [])],
                 "hr_title_deny": [str(item) for item in criteria.get("hr_title_deny", [])],
             },
@@ -380,15 +520,29 @@ class BossWorkflow:
     def _keywords(search: JsonObject) -> list[str]:
         direct = [str(item).strip() for item in search.get("keywords", []) if str(item).strip()]
         if direct:
-            return direct
-        weekday = datetime.now().strftime("%a").lower()[:3]
-        mapping = search.get("weekday_keywords", {})
-        selected = mapping.get(weekday) if isinstance(mapping, dict) else None
-        if isinstance(selected, list):
-            return [str(item).strip() for item in selected if str(item).strip()]
-        if selected:
-            return [str(selected).strip()]
-        raise RpaError("INVALID_BOSS_CONFIG", "Configure search.keywords or weekday_keywords for today")
+            values = direct
+        else:
+            weekday = datetime.now().strftime("%a").lower()[:3]
+            mapping = search.get("weekday_keywords", {})
+            selected = mapping.get(weekday) if isinstance(mapping, dict) else None
+            if isinstance(selected, list):
+                values = [str(item).strip() for item in selected if str(item).strip()]
+            elif selected:
+                values = [str(selected).strip()]
+            else:
+                raise RpaError("INVALID_BOSS_CONFIG", "Configure search.keywords or weekday_keywords for today")
+        unique = list(dict.fromkeys(values))
+        if len(unique) < 2:
+            return unique
+        offset = datetime.now().astimezone().toordinal() % len(unique)
+        return BossWorkflow._rotate(unique, offset)
+
+    @staticmethod
+    def _rotate(values: list[Any], offset: int) -> list[Any]:
+        if not values:
+            return []
+        start = offset % len(values)
+        return values[start:] + values[:start]
 
     @staticmethod
     def _search_url(keyword: str, city: JsonObject, page: int, query_params: JsonObject) -> str:
@@ -436,22 +590,22 @@ class BossWorkflow:
                 reasons.append(f"salary_above_range:{salary}")
         elif (criteria["salary_min_k"] or criteria["salary_max_k"]) and not unknown_allowed:
             reasons.append("salary_unknown")
-            
+
         hr_active_time = str(job.get("hr_active_time") or "")
         hr_active_allow = [str(item) for item in criteria.get("hr_active_allow", []) if str(item).strip()]
         if hr_active_allow:
-            if not hr_active_time:
+            if not hr_active_time and not criteria.get("allow_unknown_hr_activity", True):
                 reasons.append("hr_active_time_unknown")
-            elif not any(token in hr_active_time for token in hr_active_allow):
+            elif hr_active_time and not any(token in hr_active_time for token in hr_active_allow):
                 reasons.append(f"hr_not_active_recently:{hr_active_time}")
-                
+
         hr_title = str(job.get("hr_title") or "")
         hr_title_deny = [str(item) for item in criteria.get("hr_title_deny", []) if str(item).strip()]
         if hr_title_deny and hr_title:
             denied_title = next((token for token in hr_title_deny if token in hr_title), "")
             if denied_title:
                 reasons.append(f"hr_title_denied:{denied_title}")
-            
+
         return {"matched": not reasons, "reasons": reasons}
 
     @staticmethod
