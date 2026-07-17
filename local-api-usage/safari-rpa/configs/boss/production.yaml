@@ -14,13 +14,13 @@ search:
     - {name: 西安, code: "101110100"}
     - {name: 厦门, code: "101230200"}
   weekday_keywords:
-    mon: [Python开发, Python工程师, 后端开发, AI应用开发, 大模型应用开发]
-    tue: [AI应用开发, 大模型应用开发, LLM应用开发, 机器学习工程师, Python开发]
-    wed: [C++开发, C++工程师, 系统开发, Linux开发, 客户端开发]
-    thu: [Web前端开发, 前端开发, TypeScript开发, JavaScript开发, 全栈开发]
-    fri: [Android开发, 安卓开发, 客户端开发, Flutter开发, 移动端开发]
-    sat: [iOS开发, Swift开发, 客户端开发, Flutter开发, 移动端开发]
-    sun: [HarmonyOS开发, 鸿蒙开发, ArkTS开发, 测试开发, 客户端开发]
+    mon: [Linux开发, C++开发, 系统软件工程师, 内核开发, 驱动开发]
+    tue: [图形开发, 渲染开发, GPU开发, OpenGL开发, Vulkan开发]
+    wed: [音视频开发, 多媒体开发, 编解码开发, 图像处理, 计算机视觉]
+    thu: [HarmonyOS开发, 鸿蒙开发, Android开发, 客户端开发, Qt开发]
+    fri: [AI应用开发, 大模型应用开发, Python开发, 后端开发, 自动化开发]
+    sat: [嵌入式Linux开发, 嵌入式软件, 固件开发, 机器人软件, C++开发]
+    sun: [WebGL开发, Three.js开发, WebGPU开发, 前端开发, TypeScript开发]
   query_params:
     scale: "304,305,306"
     experience: "102,103,104,108"
@@ -28,10 +28,115 @@ search:
     salary: "405"
 
 criteria:
-  title_allow: [软件开发, 系统开发, 框架, 架构, 程序, 前端, 后端, 客户端, 软件工程师, 算法, AI开发, AI工程师, 大模型, LLM, 机器学习, 深度学习, NLP, MLOps, Python, C++, Android, 安卓, iOS, HarmonyOS, 鸿蒙, 全栈, 测试开发, Flutter, Swift, ArkTS, TypeScript, JavaScript, Linux]
-  title_deny: [销售, 嵌入式, 渠道, 客户, 采购, 运营, 产品经理, 客服, 讲师, 教师, 助教, 培训, 人事, 行政, 市场, 商务, 项目经理, 实施顾问]
-  experience_allow: [经验不限, 在校/应届, 1年以内, 1-3年]
-  education_deny: [大专, 硕士, 博士]
+  # Software directions that fit the user's systems, graphics, client, AI,
+  # embedded-software, computer-vision, and web-graphics background.
+  title_allow:
+    - 软件开发
+    - 软件工程师
+    - 研发工程师
+    - 系统开发
+    - 系统软件
+    - Linux
+    - 内核开发
+    - 驱动开发
+    - C++
+    - C语言
+    - Python
+    - 后端开发
+    - 服务端开发
+    - 客户端开发
+    - 桌面端开发
+    - Qt
+    - 前端开发
+    - Web前端
+    - 全栈开发
+    - TypeScript
+    - JavaScript
+    - 图形开发
+    - 图形图像
+    - 计算机图形
+    - GPU
+    - 渲染开发
+    - OpenGL
+    - Vulkan
+    - Metal
+    - WebGPU
+    - WebGL
+    - Three.js
+    - 游戏引擎
+    - 引擎开发
+    - 音视频开发
+    - 多媒体开发
+    - 编解码
+    - 图像处理
+    - 计算机视觉
+    - 视觉算法
+    - OpenCV
+    - Android
+    - 安卓
+    - iOS
+    - HarmonyOS
+    - 鸿蒙
+    - ArkTS
+    - Flutter
+    - Swift
+    - AI应用
+    - AI工程师
+    - 大模型应用
+    - 大模型开发
+    - LLM
+    - 机器学习工程师
+    - 深度学习工程师
+    - NLP工程师
+    - MLOps
+    - 测试开发
+    - 自动化测试
+    - 自动化开发
+    - 嵌入式软件
+    - 嵌入式Linux
+    - 固件开发
+    - 机器人软件
+
+  # Use role phrases instead of broad substrings. In particular, never deny
+  # the standalone word “客户”, because it also appears in “客户端开发”.
+  title_deny:
+    - 销售
+    - 销售工程师
+    - 渠道销售
+    - 客户经理
+    - 大客户经理
+    - 客户成功
+    - 客服
+    - 商务拓展
+    - 商务经理
+    - 市场营销
+    - 采购
+    - 运营
+    - 产品经理
+    - 项目经理
+    - 交付经理
+    - 实施顾问
+    - 售前
+    - 售后
+    - 技术支持
+    - 讲师
+    - 教师
+    - 助教
+    - 培训
+    - 人事
+    - 招聘专员
+    - 行政
+    - 机械设计
+    - 结构工程师
+    - 工艺工程师
+    - 硬件工程师
+    - PCB
+    - 电路设计
+    - 电气工程师
+    - PLC
+
+  experience_allow: [经验不限, 1-3年, 3-5年, 5-10年]
+  education_deny: [硕士, 博士]
   company_size_min: 500
   salary_min_k: 10
   salary_max_k: 20
