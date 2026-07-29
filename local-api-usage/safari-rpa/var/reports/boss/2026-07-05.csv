@@ -1,0 +1,1177 @@
+﻿job_id,title,company,scale,salary,experience,education,location,keyword,city,city_code,url,jd,hr_active_time,hr_title,confirmed,performed,button_text,confirmed_at,source_run_id
+bc1ece8753d80da70nF-09u8EFZV,软件开发工程师（L2）,迈普通信,,15-30K·14薪,1-3年,本科,成都武侯区迈普通信技术股份有限公司,HarmonyOS开发,成都,101270100,https://www.zhipin.com/job_detail/bc1ece8753d80da70nF-09u8EFZV.html,"岗位职责：  
+1. 负责交换机、路由器等产品L2协议软件开发；  
+2. 参与分布式通信、FDB、Qos、Vxlan等相关功能的设计、编码与调试；  
+3. 独立完成嵌入式软件系统的方案设计、代码实现及问题排查；  
+4. 使用gdb⼯具进⾏软件调试，保障系统稳定性与性能优化。  
+任职要求：  
+1. 具备扎实的C编程经验；  
+2. 深⼊理解嵌入式软件系统，熟练掌握gdb使用⽅法；  
+3. 具有独立完成方案设计、编码及调试的能力；  
+4. 具备较强的团队协作意识，能够承受工作压力；  
+5. 有分布式通信、FDB、Qos、Vxlan等开发经验者优先。",刚刚活跃,"迈普通信
+·
+产品业务开发处经理",True,True,继续沟通,1783213956.7830982,4349e8cc360a4ecf9f22be1fb44c1946
+07fc431fc7c494600nB82NS6FFdY,flutter开发工程师,丰疆智能,,15-30K,1-3年,本科,武汉江夏区当代梦工场7号楼,HarmonyOS开发,武汉,101200100,https://www.zhipin.com/job_detail/07fc431fc7c494600nB82NS6FFdY.html,"岗位职责
+1. 基于 Flutter 框架（Dart 语言）进行跨平台应用开发，满足测量类⼯具在移动端的数据⾤集、可视化、控制与配置等需求；
+2. 针对 **Android 平台**进⾏性能优化与兼容性适配，处理不同设备、系统版本在运行效率、稳定性与交互体验上的差异；
+3. 负责与硬件设备（测量仪器、蓝牙模块、传感器等）的通信逻辑开发，完成 Flutter 与 Android 原⽣模块的插件开发与集成；
+4. 参与业务工具类产品的需求分析、方案设计、功能开发和版本迭代，从架构、性能、稳定性角度提出改进方案；
+5. 负责应用在 Google Play 等渠道的打包发布、更新维护及运行状态监控，支持全球用户使用；
+6. 与嵌入式开发、产品、测试等团队紧密协作，参与项目联调、问题定位与跨端协议对接。
+ 岗位要求
+硬性要求：
+1. 全日制本科及以上学历，计算机相关专业；
+2. 1 年及以上 Flutter 跨平台开发经验，1 年及以上 Android 原生开发经验；
+3. 熟练掌握 Java / Kotlin / Dart 等主流语言，具备良好的编程习惯和工程化思维；
+4. 熟悉 Android 应用架构设计，掌握 UI 构建、网络通信（Tcp/Udp、Http 协议）、性能调优、数据存储、本地权限管理、蓝牙通信等核心技能；
+5. 熟练掌握 Flutter 插件开发、状态管理（Provider、Riverpod、Bloc 等），理解 Flutter 与 Android 原生通信机制（MethodChannel / EventChannel）；
+6. 熟悉 Android 系统特性及机型适配技巧，有 Google Play 发布流程经验。
+AI Coding 能力：
+7. 在实际项目中使用过 AI Coding 工具（如 Cursor、Copilot、Claude Code 等）完成 Flutter / Android 功能开发、代码重构、测试生成或问题排查，对 AI 生成代码有审查意识，能判断其质量和适用边界。
+沟通与协作：
+8. 具备主动沟通意识和清晰的逻辑表达能力——能在技术方案讨论中讲清取舍和风险，在需求冲突时用数据和事实推动共识；
+9. 能与产品经理、嵌入式工程师、测试等跨角色高效协作，独立推动项目进展。
+ 优先项（非硬性要求）
+- 有 GIS、GNSS、测量测绘行业应用开发经验；
+- 有完整项目从 0 到 1 架构设计、核心模块重构、复杂设备通信架构设计经验；
+- 熟悉 BLE 蓝牙协议栈，有测量仪器通信协议开发和嵌入式设备联调经验；
+- 有 Java → Flutter 混合栈渐进式迁移的实战经验。",3日内活跃,"丰疆智能
+·
+HRBP",True,True,继续沟通,1783214071.113121,4349e8cc360a4ecf9f22be1fb44c1946
+5672a39bee94c12f0nB70tS7GVtW,Android开发工程师-武汉 (MJ001190),丰疆智能,,15-30K,1-3年,本科,武汉江夏区当代梦工场7号楼6层602,HarmonyOS开发,武汉,101200100,https://www.zhipin.com/job_detail/5672a39bee94c12f0nB70tS7GVtW.html,"【工作职责】:
+1、负责Android客户端功能设计&amp;开发；
+2、负责对App各项基础性能指标进行优化；
+3、基于Android平台的重点项目，负责难点技术的攻坚以及相关新技术。
+【岗位要求】:
+1、本科以上学历，计算机相关专业；
+2、3年以上Android项目开发经验，有扎实的Java语⾔基础；
+3、熟悉android系统运⾏机制，对系统源码，尤其是ActivityManager、PackageManager有了解；
+4、精通Android平台的UI组件、图像动画、数据库、⽂件系统、多线程等模块的使用与开发;
+5、有常规的app性能优化经验，熟悉常见的启动速度、包大⼩、卡顿等方面的优化手段；
+6、有代码洁癖，了解常见Code Smell，重视高质量代码，有代码CR习惯；
+7、有智能硬件产品、GIS/GNSS相关应用开发、OpenGL开发经验者优先。",3日内活跃,"丰疆智能
+·
+招聘者",True,True,继续沟通,1783214142.1984692,4349e8cc360a4ecf9f22be1fb44c1946
+ba9a040d2cc0f10a0nF409y0GFBY,Android全栈开发工程师,安道光电,,11-20K,1-3年,本科,深圳龙华区尚美时代广场,HarmonyOS开发,深圳,101280600,https://www.zhipin.com/job_detail/ba9a040d2cc0f10a0nF409y0GFBY.html,"岗位职责：
+一、Android端核心开发：
+1.负责Android端应用的需求分析、架构设计、功能开发及测试维护，确保交付高质量、可维护的代码。
+2.精通Android四⼤组件、UI/性能优化、Jetpack组件（ViewModel, LiveData, Room, Navigation），并熟练运⽤MVVM/MVP等架构模式。
+3.负责解决开发过程中的技术难题与Bug修复，持续优化应⽤性能与用户体验。
+二、全栈服务端开发（⽀撑）：
+1.参与产品需求分析，基于业务需求独立完成后端API接口的设计与开发，支撑Android端的数据交互与业务逻辑。
+2.负责服务集成、数据处理、权限控制、日志监控及服务的部署运维等工作，保障全链路的高可用性。
+三、工程化与提效：
+1.深度参与代码评审与技术分享，推动团队工程化体系建设。
+2.积极使用AI编程工具、设计工具及自动化工作流（如代码助手、Agent工作流），持续提升研发效率与交付质量。
+多端扩展能力（加分）：
+视业务需求，参与或主导跨平台/桌面端应用的开发，实现技术能力的跨端复用。
+任职要求
+基本条件：
+1.本科及以上学历，计算机相关专业优先，2年以上Android开发经验。
+2.扎实的Android基础：精通Java、Kotlin，熟悉Android SDK及Android Studio；深刻理解四大组件、生命周期、UI绘制原理及性能优化。
+3.成熟的架构能力：熟悉Jetpack组件及MVVM/MVP架构，具备模块化、组件化开发经验。
+4.网络与通讯：扎实的网络编程能力，熟悉Retrofit、OkHttp、RxJava等框架；了解SQLite数据库及串口、USB通讯开发。
+5.全栈意识：具备一定的后端开发能力（如Java/Spring Boot、Python或Node.js），能参与接口设计、服务集成与基础运维工作。
+6.AI驱动开发：熟悉并善于利用AI编程工具、代码助手或自动化工作流提升开发效率，对新技术有强烈好奇心。
+7.具备良好的问题分析能力与责任心，能快速推动需求落地，注重代码质量与团队协作。
+加分项：
+1.有Flutter跨平台开发经验。
+2.有MDM（移动设备管理）、物联网相关产品开发经验。
+3.有桌面端应用开发经验，熟悉Electron或Qt框架，能独立完成跨平台（Windows/macOS/Linux）桌面应用开发与打包。
+4.有独立上线并维护过完整的Android + 后端项目。",3日内活跃,"安道光电
+·
+HRBP",True,True,继续沟通,1783214602.650589,4349e8cc360a4ecf9f22be1fb44c1946
+6aa8daa2fa4fa4910nF-3Nu7E1dU,Android开发工程师(A75711),华林证券,,15-28K·16薪,1-3年,本科,深圳南山区金地威新软件科技园金地威新软件园5号楼3A层,HarmonyOS开发,深圳,101280600,https://www.zhipin.com/job_detail/6aa8daa2fa4fa4910nF-3Nu7E1dU.html,"岗位职责：
+1.参与Android平台客户端软件架构设计，负责客户端应用开发及优化；
+2.独立完成模块编码、自测与维护工作；
+3.遵循编码规范，编写可读性强、结构清晰的代码；
+4.协助修复App运⾏中的Bug，优化⽤户体验；配合测试团队完成功能验证与问题修复；
+5.学习并掌握团队使⽤的技术栈与开发流程。
+任职要求：
+1.统招本科及以上学历，计算机、软件工程或相关专业，1年以上Android开发经验；
+2.精通Java语言或者Kotlin语⾔，熟悉面向对象程序设计思想；
+3.对内存、多线程、算法、数据结构等有较深的理解，熟悉网络编程；
+4.熟悉Android开发框架及各种特性，熟悉XML、JSON、SQLite、JNI等技术；
+5.有强烈的技术追求、良好的代码习惯，具备一定的分析解决问题能力；
+6.具有较强的团队意识和良好的沟通能力，高度责任感，对工作积极严谨，有较强的学习能力；
+7.拥抱AI，有金融行业相关经验优先。",3日内活跃,"华林证券
+·
+招聘管理岗",True,True,继续沟通,1783214611.59618,4349e8cc360a4ecf9f22be1fb44c1946
+5fca92253b20334b0nR639q5ElNX,软件开发工程师 深圳,锐捷网络,,15-20K·15薪,1-3年,本科,深圳南山区前海颐都大厦1902室,HarmonyOS开发,深圳,101280600,https://www.zhipin.com/job_detail/5fca92253b20334b0nR639q5ElNX.html,"【岗位职责】
+1. 负责交换机驱动软件需求分析、设计、编码与集成测试，快速提供高品质的软件产品；
+2. 负责交换机软件的升级和维护工作，及时快速定位和解决客户问题，保障客户对我司产品的信任。
+【任职要求】
+1. 计算机/软件/电子/通信相关专业，本科及以上学历，1年及以上工作经验。 
+2. 掌握C/C++语⾔，熟悉Linux操作系统，有相关的开发经验。
+3. 熟悉常⽤数据结构和算法, 程序结构设计良好。
+4. 计算机⽹络/操作系统/计算机组成原理等计算机核心专业基础知识扎实。
+5. 熟悉嵌入式系统开发的专业知识及基础⽹络知识。
+6. 有交换机/路由器等网络设备操作系统开发经验者优先。
+7. 良好的沟通和团队合作能力，能够快速学习新技术，勇于挑战高目标者优先。
+8. 良好的英文读写能力，能够阅读英文技术文档者优先。
+9. 熟悉Linux内核、驱动编程开发领域的优先。
+10. 熟悉SPI、I2C、UART、PCIE、EMMC、ETH、SWITCH、FLASH等常用接口总线外设驱动的优先。
+11. 有常用交换芯片(BCM/CTC等)驱动调试经验者优先。",在线,"锐捷网络
+·
+HRBP",True,True,继续沟通,1783214662.77682,4349e8cc360a4ecf9f22be1fb44c1946
+437ce6b39de1a7c503192tW1FlFX,机器人软件开发工程师,帕西尼感知科技,,18-20K·14薪,1-3年,本科,深圳宝安区帕西尼感知科技(深圳)有限公司,HarmonyOS开发,深圳,101280600,https://www.zhipin.com/job_detail/437ce6b39de1a7c503192tW1FlFX.html,"岗位职责：
+1.负责机器人软件研发工具链的构建与优化，涵盖 Docker 镜像管理、软件包管理、版本控制与刷写工具、出厂及测试⼯具的开发、维护与部署。
+2.协同算法、硬件及应⽤团队，参与核⼼系统框架的设计、开发与维护，完成各类算法的集成、调试与封装。
+3.编写高质量技术文档、API ⽂档及示例代码，提升产品的易用性与开发效率。
+4.开发自动化测试工具，实现各软件模块在多工况下的 Benchmark 指标评估，并提供版本间直观的性能对比，保障软件稳定性。
+5.持续优化系统框架与工具链，提升系统性能与研发效率，支撑产品快速迭代。
+岗位要求：
+1.本科及以上学历，计算机、机器人、自动化等相关专业背景。
+2.1-5年 C++ 或 Python 开发经验。
+3.熟悉 CMake 或 Bazel 构建工具，了解 ROS 及常用开源通信中间件，熟练使用各类系统分析工具排查内存、崩溃及网络通信等问题。
+4.熟悉主流自动化测试框架，能够高效开发自动化工具，提升研发与测试效率。
+5.具备良好的 SDK/API 设计与封装能力，编码规范，文档习惯良好。
+6.具备全局研发效能意识，能够识别并推动解决研发流程中的效率瓶颈。
+7.具备优秀的问题解决能力、团队协作精神、自驱力和责任感。
+8.具备扎实的软件工程能力与工程化思维，能为大型软件系统的优化提供有效建议。
+加分项：
+1.有机器人系统、自动驾驶开发相关经验
+2.工具链开发，自研系统监控工具，量产工具等",刚刚活跃,"帕西尼感知科技
+·
+HR",True,True,继续沟通,1783214671.781143,4349e8cc360a4ecf9f22be1fb44c1946
+af5477199a416d3c0nd-3tm7EltQ,大模型应用开发工程师,一博科技,,15-25K,1-3年,本科,深圳宝安区中运泰科技工业园三栋三楼西边,HarmonyOS开发,深圳,101280600,https://www.zhipin.com/job_detail/af5477199a416d3c0nd-3tm7EltQ.html,"一、岗位职责 
+1. 负责基于大模型（LLM）的智能应用、Agent 系统的设计、开发与落地，包括但不限于智能助手、⾃动化⼯作流、深度搜索系统等。
+2. 参与 Agent 架构设计，实现⼯具调用、规划推理、记忆管理、反思机制、多 Agent 协作等核心能⼒。
+3. 负责大模型应用的后端服务开发、接口封装、性能优化与稳定性保障。
+4. 跟踪前沿 LLM / Agent 技术，落地 RAG、、智能体、微调等能力。
+ 
+二、基本要求 
+1. 本科及以上学历，计算机、软件工程、AI 相关专业优先。
+2. 有实际大模型应用/Agent 项目经验优先。
+3. 熟练使用 Python/Java/Go 至少一种，具备良好工程化能力：代码规范、接口设计、调试与测试。
+4. 熟悉常见 Web 框架（FastAPI/Flask/SpringBoot 等），能独立开发 API 服务。
+5. 良好的需求理解、文档撰写与团队协作能力，能快速迭代并交付可用产品。
+三、专业技能要求 
+1. 深入理解大模型基本原理、上下文管理、提示词工程，具备复杂 Prompt 设计与结构化输出经验。
+2. 熟悉 RAG 全流程：文档解析、向量库、检索增强、召回优化、重排序等。
+3. 了解向量数据库（Chroma/Pinecone/FAISS/Milvus）、知识库构建与优化优先。
+4. 熟悉主流 Agent 架构，了解 LangChain等 Agent 开发框架。
+5. 有模型微调（SFT/DPO/QLoRA）、本地模型部署（vLLM/TGI/LLaMA Factory）经验加分。
+6. 具备较强的问题拆解与逻辑推理能力，能将复杂业务转化为可执行的 Agent 任务流程。",今日活跃,"一博科技
+·
+人事",True,True,继续沟通,1783214680.779795,4349e8cc360a4ecf9f22be1fb44c1946
+cb28d9e9ce8c53050nF53Nm_EVRW,AI全栈开发工程师,悦智人工智能,,15-20K,1-3年,本科,深圳南山区李宁中心(松日鼎盛大厦店),HarmonyOS开发,深圳,101280600,https://www.zhipin.com/job_detail/cb28d9e9ce8c53050nF53Nm_EVRW.html,"岗位职责：
+1. 负责悦溪AI产品后端核心开发、大模型能力集成、接口封装与版本迭代落地
+2. 负责RAG、向量数据库、知识图谱等AI应用链路搭建与性能优化，保障服务稳定⾼效
+3. 参与架构优化、性能调优及线上问题排查，持续提升系统稳定性
+4. 配合跨团队联调交付，沉淀通⽤组件，⽀撑产品快速迭代
+任职要求：
+1. 3-5年左右后端开发经验，熟练掌握Python技术栈、精通AI编程，熟悉后端常用框架、数据库与服务部署，有AI产品落地经验优先
+2. 熟悉大模型应⽤、RAG、向量数据库、知识图谱，具备开源AI项目二次开发与落地优化经验
+3. 具备独立后端开发、问题排查与性能优化能力，适配快速迭代节奏
+4. 了解Vue/React前端技术栈，可完成基础联调开发
+5. 逻辑清晰、责任心强，具备良好的跨团队协作与项目落地能力",刚刚活跃,"悦智人工智能
+·
+人事专员",True,True,继续沟通,1783214693.5517418,4349e8cc360a4ecf9f22be1fb44c1946
+31a6863e1de976421nZ-3di4GVBY,Java软件开发工程师,招银,,15-25K·14薪,1-3年,本科,深圳南山区科技中一路招行研发中心000,HarmonyOS开发,深圳,101280600,https://www.zhipin.com/job_detail/31a6863e1de976421nZ-3di4GVBY.html,"职责描述：
+1）负责各类银行业务系统的设计、开发（JAVA方向）工作。
+任职要求：
+1）大学本科及以上学历，计算机相关专业；
+2）精通Java语言，J2EE架构及重用轻量级开源架构，精通面向对象系统架构设计，并熟悉一种以上数据库；
+3）1年以上开发工作经验，并参与过大型JAVA项目的设计、开发工作经验者优先；
+4）具备良好的沟通力、表达力、团队协作力以及责任心；
+5）熟悉金融或者企业财务相关的业务，有参与金融系统开发经验者优先。",3日内活跃,"招银
+·
+HR",True,True,继续沟通,1783214702.512668,4349e8cc360a4ecf9f22be1fb44c1946
+f56629dde8bc2fbc0nF53d-1EVBR,上位机软件开发工程师,深圳普门科技,,15-25K,1-3年,本科,深圳龙华区普门科技总部大厦,HarmonyOS开发,深圳,101280600,https://www.zhipin.com/job_detail/f56629dde8bc2fbc0nF53d-1EVBR.html,"工作职责：
+1、负责IVD产品上位机软件开发、代码优化以及维护工作，参与软件方案设计以及评审；
+2、负责对所编写的模块进行调试和单元测试，保证发布版本的软件质量；
+3、参与软件应⽤平台模块设计，参与新技术、新平台的应⽤等平台化⼯作。
+任职要求：
+1、本科及以上学历，计算机、生物医学工程、软件⼯程、电子信息等相关专业；
+2、2年以上IVD相关产品开发经验，参与过10万行以上代码规模项目开发；
+3、熟练掌握C++、Qt编程，熟悉多线程、TCP\UDP、数据库编程；
+4、有较好的面向对象的编程经验，熟悉常用的设计模式，具备一定的软件工程知识",今日活跃,"深圳普门科技
+·
+软件开发",True,True,继续沟通,1783214711.623224,4349e8cc360a4ecf9f22be1fb44c1946
+b2659f23284c00ec0nB_0ty7EFtS,测试开发工程师（电池）,影石Insta360,,14-20K·14薪,1-3年,本科,深圳宝安区前海人寿金融中心T1,HarmonyOS开发,深圳,101280600,https://www.zhipin.com/job_detail/b2659f23284c00ec0nB_0ty7EFtS.html,"职位描述
+1. 根据产品需求、软件功能list，输出并维护产品测试用例，组织测试用例评审；
+2. 根据测试用例执行电池及充电产品功能、性能测试，输出测试报告及组织评审；
+3. 结合AI⼤模型，主导开发⾃动化测试⼯具及上位机软件，并推动项目落地，提升测试效率和覆盖率；
+4. 针对测试发现的问题及时提单到jira系统，跟进并推动问题分析及解决；
+5. 学习业内先进测试方法、测试管理系统、测试设备并定期输出技术分享，保证团队测试能⼒的先进性；
+职位要求
+1. 电子/通信/电气/自动化类相关专业本科及以上学历，具备3年以上电池测试或硬件产品测试经验；
+2. 熟悉基础的电池BMS功能和常见化学体系电芯的基础特性，具备独立制定测试方案和独立完成电池测试任务的能力；
+3. 有较强的编程能力，熟悉python、labview、C/C++或其他至少一种自动化常用开发语言，有AI辅助开发经验优先；
+4. 具备直流电源，直流负载，POWER-Z，逻辑分析仪，示波器，电池充放电柜等仪器仪表的操作经验；
+5. 有较强的责任感和自驱力，善于沟通，做事细心严谨，良好的团队合作精神及较强的抗压能力。",3日内活跃,"影石Insta360
+·
+招聘专员",True,True,继续沟通,1783214724.968459,4349e8cc360a4ecf9f22be1fb44c1946
+023af8178fbb63220nF70tu7EFVS,Mobile developer(HarmonyOS Next),恩士迅,,11-20K,1-3年,本科,广州黄埔区恩士迅(NCS)广州,HarmonyOS开发,广州,101280100,https://www.zhipin.com/job_detail/023af8178fbb63220nF70tu7EFVS.html,"【公司介绍】
+NCS集团是亚太和中东地区领先的信息技术和通信工程服务提供商，总部位于新加坡，是新加坡电信集团旗下的全资子公司。
+【工作职责】
+•	1-3 years of mobile development experience, including 1+ year of hands-on project development with Pure HarmonyOS (HarmonyOS NEXT) (published app or working demo required)
+· Have experience in Kotlin with complete project experience using Android, Swift, or typescript
+· Knowledge in mobile development design pattern, eg. MVVM architecture
+· Capable of directly participating in English meetings
+· Willing to learn new programming language
+•	HarmonyOS (Core)
+· Responsible for architecture design, development, and performance optimization of a Pure HarmonyOS app from scratch
+· Resolve compatibility and security hardening issues (e.g., code obfuscation, anti-reverse engineering) in the HarmonyOS distributed environment
+· Keep up with HarmonyOS NEXT version updates and complete SDK adaptation
+•	Android & iOS
+· Maintain and iterate on existing Android apps using Kotlin
+· Maintain and iterate on existing iOS apps using Swift, addressing memory leaks, multi-threading, and other performance issues
+· Participate in the design of shared component libraries and cross-platform solutions across all three platforms (HarmonyOS/Android/iOS)
+•	Security & Quality
+· Collaborate with the security team to complete RASP, reinforcement, vulnerability scanning, and other detection tasks, fixing identified risks
+· Write unit tests and integration tests to ensure code maintainability
+工作时间：朝九晚六，上下班可弹性半⼩时 
+⾯试流程：须⽤电脑，线上视频面试，
+项目长期稳定，核⼼项目，技术提升快
+外企项目，英语口语良好",3日内活跃,"恩士迅
+·
+招聘专员",True,True,继续沟通,1783214767.14146,4349e8cc360a4ecf9f22be1fb44c1946
+a2ba4077323c28190nF70927EFpS,Mobile developer/Android(HarmonyOS Next),恩士迅信息科技上海,,10-14K,1-3年,本科,广州黄埔区恩士迅(NCS)广州,HarmonyOS开发,广州,101280100,https://www.zhipin.com/job_detail/a2ba4077323c28190nF70927EFpS.html,"•	1-3 years of mobile development experience, including 1+ year of hands-on project development with Pure HarmonyOS (HarmonyOS NEXT) (published app or working demo required)
+· Have experience in Kotlin with complete project experience using Android, Swift, or typescript
+· Knowledge in mobile development design pattern, eg. MVVM architecture
+· Capable of directly participating in English meetings
+· Willing to learn new programming language
+•	HarmonyOS (Core)
+· Responsible for architecture design, development, and performance optimization of a Pure HarmonyOS app from scratch
+· Resolve compatibility and security hardening issues (e.g., code obfuscation, anti-reverse engineering) in the HarmonyOS distributed environment
+· Keep up with HarmonyOS NEXT version updates and complete SDK adaptation
+•	Android & iOS
+· Maintain and iterate on existing Android apps using Kotlin
+· Maintain and iterate on existing iOS apps using Swift, addressing memory leaks, multi-threading, and other performance issues
+· Participate in the design of shared component libraries and cross-platform solutions across all three platforms (HarmonyOS/Android/iOS)
+•	Security & Quality
+· Collaborate with the security team to complete RASP, reinforcement, vulnerability scanning, and other detection tasks, fixing identified risks
+· Write unit tests and integration tests to ensure code maintainability",今日活跃,"恩士迅信息科技上海
+·
+高级招聘专员",True,True,继续沟通,1783214839.925758,4349e8cc360a4ecf9f22be1fb44c1946
+7fd3045a0f06604a0nB43tu9EVNU,高级flutter开发工程师（MJ002073）,挖财,,15-20K,1-3年,本科,杭州西湖区云谷福地中心北7楼,HarmonyOS开发,杭州,101210100,https://www.zhipin.com/job_detail/7fd3045a0f06604a0nB43tu9EVNU.html,"岗位职责：
+1、参与并负责移动端 Flutter 跨平台技术相关产品的系统设计与开发工作；
+2、关注产品用户体验并持续优化，产出可复用组件及框架工具等；
+任职资格：
+1、⾄少2年以上的移动应⽤开发经验， 熟悉Flutter 框架及其⽣态系统，具有至少1年的Flutter 开发经验。
+2、精通Dart编程语言，并能够编写⾼质量、可维护的代码。
+3、熟练使用版本控制系统和项目管理工具。
+4、具备良好的设计意识，能够与设计师密切合作实现优秀的用户界面。
+5、良好的沟通能力和团队协作精神。
+-热爱技术，持续学习新技术并愿意分享知识。",今日活跃,"挖财
+·
+招聘专家",True,True,继续沟通,1783214865.2160609,4349e8cc360a4ecf9f22be1fb44c1946
+bca7d539dd9d6a490nB43Ny5FlRQ,后端开发工程师,杭州福斯特,,12-18K·13薪,1-3年,本科,杭州临安区云安小镇1,HarmonyOS开发,杭州,101210100,https://www.zhipin.com/job_detail/bca7d539dd9d6a490nB43Ny5FlRQ.html,"岗位职责：
+1、负责公司自研软件的BUG与操作问题处理
+2、负责公司自研软件的用户的应急开发需求对接,
+3、负责公司自研软件的应急开发代码编程实现与上线;
+4、协助公司⾃研软件的功能测试与操作⼿册编制:
+5、完成团队需要其他⼯作任务。
+任职要求：
+1、全日制本科，计算机科学与技术或软件工程专业毕业；
+2、2年以上软件开发经验；
+3、熟练掌握 JAVA 或者 C# 其中⼀门语言。JAVA，深入理解 JVM 原理，熟练运用主流开发框架如 Spring Boot、Spring Cloud，对微服务架构有清晰的认知和实践经验。C#，熟练使用.NET Core 框架，熟悉 ASP.NET MVC、Web API ，对 Entity Framework 等数据访问技术有应用经验。
+4、 熟练掌握关系型数据库如 MySQL、Oracle 或 SQL Server 的设计与开发，具备数据库索引优化、查询优化及存储过程编写能力，熟悉 Redis、MongoDB 的应用场景并能进行相应开发工作。
+5、熟悉 Linux 或 Windows Server 操作系统，熟练使用 Tomcat或 IIS等应用服务器，掌握消息队列如 Kafka、RabbitMQ 的使用，了解分布式缓存技术如 Redis，会使用 Nginx 进行反向代理与负载均衡配置。
+6、深入理解面向对象设计原则，熟练掌握常用设计模式如工厂模式、单例模式、观察者模式等，对系统架构有良好的设计能力，包括分层架构、微服务架构等。
+职位亮点：
+1、各类假期：周末双休、各类带薪假期、法定节假日齐全，加班可自主选择调休或算加班工资；
+2、基础设施：免费班车、免费工作餐、精装修单人公寓；
+3、激励机制：年度和半年度奖金、项目专项奖、技术进步奖、管理创新、合理化奖励等；
+4、基本福利：五险一金（公积金双边1500元/月）、健康体检、节假日福利、周年福利、生日福利；
+5、团队氛围：青春俱乐部、兴趣协会（乒乓球、羽毛球、台球、钓鱼、篮球）、工会活动、冬夏季运动会、文娱活动、部门团建；
+6、其他福利：工会积分兑奖、生日盲盒、人才补贴；
+7、高端制造：制造业民营500强，全球胶膜龙头企业，全球市场占有率超50%。",3日内活跃,"杭州福斯特
+·
+招聘HR",True,True,继续沟通,1783214909.1164029,4349e8cc360a4ecf9f22be1fb44c1946
+b4c20e383625ab0c0nB73NW6F1dZ,软件开发工程师,美国道富,,15-20K,1-3年,本科,杭州杭州高新区火炬创新中心5幢9-16层,HarmonyOS开发,杭州,101210100,https://www.zhipin.com/job_detail/b4c20e383625ab0c0nB73NW6F1dZ.html,"分析、设计、开发、调试业务及技术领域中大型复杂软件的功能增强与解决方案，包括对核心框架及其他关键系统基础设施的修改
+· 与业务分析师和产品经理紧密协作，针对复杂问题提供简洁、可持续的软件解决方案
+· 使⽤ Java 及Springboot框架开发、测试、调试和实施软件程序、应⽤及项⽬，并保持开放学习和运用所需技术语言的态度
+· 参与迁移现有私有云系统⾄AWS公有云的项目。
+· 规划并协调跨团队活动，推动任务完成
+·
+任职要求
+学历要求：
+· 计算机科学、工程或其他理工科相关专业本科学历，硕士学历优先
+核心技能要求：
+· 扎实的核心 Java、服务端 Java 技术及 Spring 框架能力。
+· 有较强的SQL 能力(Oracle, PostgreSQL为佳)，有PL/SQL T/SQL等经验尤佳
+· 有较强的英语读写能力，适应英语开发工作环境，有沟通能力尤佳
+· 掌握NodeJs,熟悉React等前端框架，掌握浏览器调试经验。
+加分项：
+· 有Python编程经验者
+· 有AWS/AZURE云平台开发部署经验，了解Jenkins, Kubernetes,docker等组件
+· 熟悉AI Agent，如copilot等。
+· 有大数据平台开发经验（Databricks,snowflake,Hadoop）
+· 具备 Kafka等消息列后端技术经验
+· 有金融服务行业财富管理领域解决方案开发经验",3日内活跃,"美国道富
+·
+Recruiter",True,True,继续沟通,1783214918.474198,4349e8cc360a4ecf9f22be1fb44c1946
+aea609eb6497f7700nF609i8GFRS,前端开发工程师-杭州,领星,,15-25K·14薪,1-3年,本科,杭州西湖区黄龙国际中心7号楼9层03单元,HarmonyOS开发,杭州,101210100,https://www.zhipin.com/job_detail/aea609eb6497f7700nF609i8GFRS.html,"岗位职责：
+ 1、负责前端业务的需求开发、用户体验提升。
+ 2、准确理解把握业务逻辑和产品需求，与后端协作开发，高质高效响应项目需求。 
+3、参与前端组件库的维护，编写相关的技术⽂档，对产品质量负责。
+ 岗位要求： 
+1、统招全⽇制本科及以上学历。
+ 2、1 年以上前端开发经验，熟练使⽤ Vue3 前端开发框架，熟练掌握 HTML，CSS，JavaScript 等前端技术。
+ 3、准确理解业务和产品逻辑，关注用户体验，有较好的问题分析解决能力和团队沟通能⼒。",刚刚活跃,"领星
+·
+hrbp",True,True,继续沟通,1783214944.4776,4349e8cc360a4ecf9f22be1fb44c1946
+ae2c2adf116341760nB-3N67FFRT,java后端开发,达观数据,,11-16K,1-3年,本科,上海浦东新区张江科学之门T2(模力·场)上海浦东新区育仁路188弄T2座20层,HarmonyOS开发,上海,101020100,https://www.zhipin.com/job_detail/ae2c2adf116341760nB-3N67FFRT.html,"岗位描述：
+1、参与智慧园区项目、智能体开发、大模型应用类项目交付⼯作
+2、负责项⽬整体架构架构设计、系统框架优化、功能实现逻辑开发
+3、负责项⽬组开发任务的协调安排，代码质量检查，完成项目交付工作；
+岗位要求：
+1、本科及以上学历，计算机相关专业，有智能体、⼤模型应用类系统开发经验者优先
+2、具备扎实的Java编程基础，丰富的J2EE、Spring的框架使用和实战经验
+3、有一定的前端开发基础，掌握react/vue相关技术栈，能够独立完成项目框架搭建优化能力者优先
+4、具有较强的沟通协调能力，有独立跨项目组沟通及推动开发工作展开的能力
+5、熟练掌握AI编程能力者优先（充分掌握）
+办公地址：需要长期驻场，驻场在浦东三林东",今日活跃,"达观数据
+·
+招聘专员",True,True,继续沟通,1783215008.014685,4349e8cc360a4ecf9f22be1fb44c1946
+9ce123a29a02ebbe0nB_0924EVRW,测试开发工程师,数坤网络科技股份...,,15-20K·14薪,1-3年,本科,上海徐汇区LUMINA星扬西岸中心星扬大厦7层,HarmonyOS开发,上海,101020100,https://www.zhipin.com/job_detail/9ce123a29a02ebbe0nB_0924EVRW.html,"岗位描述： 
+1、负责产品测试工作，参与产品需求分析，制定产品测试计划，把控产品测试进度；
+2、根据产品需求和设计文档, 设计测试用例，实施功能测试与集成测试；
+3、开发测试脚本，实现功能测试与集成测试的自动化；
+4、对测试问题进⾏跟踪，推动问题及时并合理地解决，汇总测试情况，编写测试报告；
+5、深⼊理解系统内部设计原理，并能从测试的角度对产品提出优化意见。
+岗位要求： 
+1、计算机或相关专业本科以上学历；具有2年以上测试相关⼯作经验； 
+2、熟悉测试流程和规范，熟练掌握软件测试方法和常用测试⼯具，对软件测试工作有浓厚兴趣； 
+3、熟悉Java/Python/Go等任一种后端语言； 
+4、熟悉Linux，熟悉MySQL/Postgresql/Oracle等数据库操作； 
+5、很强的学习能力和技术钻研能力，良好的沟通能力，善于团队合作； 
+6、有性能测试经验、自动化测试、安全性测试经验优先。",3日内活跃,"数坤网络科技股份...
+·
+数坤科技HR",True,True,继续沟通,1783215025.604379,4349e8cc360a4ecf9f22be1fb44c1946
+115e0b11f0d2cb0a0nF-2d60FFdX,ai开发工程师,上海鲲驰,,15-23K·13薪,1-3年,本科,上海浦东新区张江国创中心2期2期,HarmonyOS开发,上海,101020100,https://www.zhipin.com/job_detail/115e0b11f0d2cb0a0nF-2d60FFdX.html,"岗位职责：
+1. 负责基于大模型（LLM）的 AI 应用全链路开发与落地，核心围绕RAG 知识库、AI Agent、智能问答、经营分析助手等场景，⽀撑电⼦商务全链路场景；
+2. 主导AI能⼒的深度整合，设计并实现 AI 应用工作流，包括Prompt ⼯程、模型调用优化、检索增强、工具编排，解决模型幻觉、响应延迟等问题
+3. 负责项目的技术选型与架构设计，保障系统的高并发、高性能与可扩展性，参与分布式、微服务架构及云原生部署决策。
+4. 持续跟踪AI前沿技术，主动验证新模型/新框架在业务场景中的落地价值，推动团队技术成长。
+任职要求：
+1. 本科及以上学历，计算机、软件工程、人工智能、数据科学等相关专业，1-3 年 AI 应用开发或大模型落地经验，优秀应届毕业生可放宽
+2.具备Agent系统开发经验，熟悉LangChain/LangGraph/LLamalndex/AutoGen等框架及实现原理，有完整 AI 应用项目从 0 到 1 落地经验。
+3. 熟练掌握Python/Java/React/Vue/Angular等一门或多门编程语言，深入理解数据库设计与调优，熟悉缓存、消息队列等中间件，能主导技术选型与架构决策。
+4. 极度热爱AI，日常深度使用AI产品及AI辅助开发工具。熟练掌握主流AI服务API的调用与优化，了解深度学习框架(PyTorch/TensorFlow)。",3日内活跃,"上海鲲驰
+·
+HRBP",True,True,继续沟通,1783215043.092587,4349e8cc360a4ecf9f22be1fb44c1946
+4d6a89db3c9c00c90nF-3964EVtT,前端开发工程师,仙工,,15-25K·14薪,1-3年,本科,上海浦东新区张江国创中心3期3号楼,HarmonyOS开发,上海,101020100,https://www.zhipin.com/job_detail/4d6a89db3c9c00c90nF-3964EVtT.html,"岗位职责：
+1、负责公司机器人核心业务系统的前端研发，覆盖机器人调度管控、可视化运营、设备管理等多类业务场景的 Web 界面开发
+2、承担响应式多端适配与移动端体验优化⼯作，保障不同设备下的产品交互流畅度与性能表现
+3、参与公司前端基础组件库、通⽤技术能⼒的设计与研发，沉淀可复用的前端技术资产
+4、负责高复杂度技术场景的前端攻坚，包括但不限于 Web 地图、2D 图形渲染、Web 3D 可视化、实时消息 / ⾳视频通讯等方向
+5、支持个人技术成长规划，有意愿者可向 Node.js 全栈开发方向发展，拓展技术边界
+任职要求：
+1、全日制本科及以上学历，计算机、软件工程、电子信息等相关专业优先；重点院校背景优先，能力突出的理工科专业可酌情放宽专业限制
+2、工作年限不限，欢迎优秀应届生投递；应届生需具备扎实的前端技术积累与正式的前端岗位实习经历
+核心能力要求：
+1、具备扎实的前端底层功底，全面掌握 HTML、CSS、JavaScript 及 DOM、BOM 相关 API，具备纯原生 JavaScript 编码能力；
+2、重视原生手写代码能力，不依赖 AI 生成工具或低代码平台完成核心业务逻辑开发
+3、具备规范、高质量的 CSS 编码能力，能够实现复杂交互效果的同时保障代码结构清晰、可维护、易扩展，拒绝 “只追求效果、不关注代码质量” 的编码风格
+4、熟练掌握 ES6 + 等现代 JavaScript 语言特性，有 TypeScript 实际项目深度使用经验者优先
+5、精通 React 技术栈，具备完整的中大型 React 项目开发经验；熟悉 Vue 等其他主流前端框架亦可，入职后需转 React 技术栈
+6、熟悉 HTTP/HTTPS 协议原理，具备独立的前端网络排错、性能调试与问题定位能力
+7、具备响应式设计与多端适配的实际项目经验，能够独立完成跨设备、跨分辨率的界面适配工作
+8、具备良好的编码规范与代码习惯，优秀的逻辑分析与问题排查能力，良好的跨团队沟通与协作意识
+加分项：
+1、有 SVG、Canvas、WebGL 等图形可视化开发经验，或有地图、3D 场景相关项目经历
+2、有 Node.js 后端开发、全栈项目落地经验
+3、有工业软件、机器人系统、物联网平台相关领域开发经验",刚刚活跃,"仙工
+·
+产研BP",True,True,继续沟通,1783215069.187516,4349e8cc360a4ecf9f22be1fb44c1946
+4e3cdfe2616814411Hd429i-FlZR,软件开发工程师,上海高通企业管理,,18-25K·13薪,1-3年,本科,上海浦东新区上海浦东软件园X座9楼,HarmonyOS开发,上海,101020100,https://www.zhipin.com/job_detail/4e3cdfe2616814411Hd429i-FlZR.html,"Software Applications Engineer, WLAN - Shanghai
+Job Overview:
+The candidate will have an opportunity to join the highly talented and creative team of Qualcomm connectivity customer engineering organization focused on Automotive market. The candidate will provide software development and consultation to prospective users and/or product capability assessment and validation and support customers with any questions, issues, debugging, or troubleshooting regarding Wi-Fi software systems and applications. This position is also required to provide technical expertise of Wi-Fi software systems through sales presentations, product demonstrations and assist the sales staff in assessing potential application of company connectivity products to meet customer needs and preparing detailed product specifications for the development and implementation of customer applications/solutions. 
+Responsibilities:  
+•	Develop/integrate QCOM Wi-Fi solution into QCOM or 3rd party Automotive platforms.
+•	Customer technical support (query, issue debugging)/customization on QCOM Wi-Fi products.
+•	Performs root cause analyses on basic customer problems to identify underlying issue.
+•	Demonstrates fundamental knowledge of debugging techniques for Wi-Fi software/system.
+•	Publishes (e.g., writes, reviews, and edits) product technical documentation.
+•	Demonstrates Qualcomm products and offerings to customers as instructed by tech leads.
+•	Communicates essential technical information to be leveraged by sales and marketing teams.
+Basic Qualifications:  
+•	1+ years of experience in software development on Linux/Android embedded operating systems.
+•	1+ years solid design and coding experiences in C/C++, Java, Python, etc.
+•	1+ years’ experience with debugging techniques, excellent software problem solving.
+•	In-depth knowledge of operating system.
+•	Background of Wi-Fi software development.
+•	Be self-sufficient, self-driving and capable to operate effectively under tight deadlines.
+•	English communication capability able to work with colleagues around the world smoothly.
+Desired Qualifications: 
+•	Experience with Wi-Fi technology is a big plus.
+Education: 
+MS degree in Engineering, Information Systems, Computer Science, or related field.",今日活跃,"上海高通企业管理
+·
+开发经理",True,True,继续沟通,1783215082.519337,4349e8cc360a4ecf9f22be1fb44c1946
+abee35cd29fe116c03F93t26FVtT,算法应用开发工程师,东富龙,,12-24K,1-3年,本科,上海闵行区上海东富龙科技股份有限公司(都会路),HarmonyOS开发,上海,101020100,https://www.zhipin.com/job_detail/abee35cd29fe116c03F93t26FVtT.html,"1.精通Halcon或OpenCV至少一种视觉算法库，掌握C++语言；
+2.具备完整视觉缺陷检测项目的交付经历，胜任从需求分析、光学成像评估、算法开发测试及部署的闭环迭代工作，具有良好的沟通能力和团队精神，机器视觉行业从业1年以上；
+3.具备在WPF/WinForm、Qt、MFC任一框架下开发视觉软件经验的优先考虑；
+4.学历：本科及以上",今日活跃,"东富龙
+·
+人力资源专员",True,True,继续沟通,1783215100.244998,4349e8cc360a4ecf9f22be1fb44c1946
+32308b7efb0a1d9c031-3ti4FlBR,后端开发工程师,麦德信,,10-14K·13薪,1-3年,本科,长沙岳麓区金茂ICC北塔楼1307,HarmonyOS开发,长沙,101250100,https://www.zhipin.com/job_detail/32308b7efb0a1d9c031-3ti4FlBR.html,"一、本科及以上学历，计算机相关专业，2年以上实际工作经验；
+二、技术能力
+1、jAVA基础扎实，熟悉io、多线程、集合等基础框架
+2、熟悉分布式、缓存、消息队列等机制。
+3、有jvm调优，数据库调优等相关经验
+4、精通Spring Boot/SpringMVC、Spring Cloud、Dubbo、Mybatis等主流框架
+5、了解⽹络、系统、软件框架、数据库⽅⾯的安全防护知识
+6、熟练使用rabbitmq、kafka等mq中任意一种
+7、熟练使⽤linux环境，熟悉各种常用命令
+8、熟练使用elasticsearch",刚刚活跃,"麦德信
+·
+人力",True,True,继续沟通,1783229963.432061,b8527b1212ac42e58af0a7eae576b39e
+8aec3a54274b99360nF-09q9EFFX,AI开发工程师,多益网络,,15-25K·14薪,1-3年,学历不限,广州黄埔区多益网络总部大楼27号,HarmonyOS开发,广州,101280100,https://www.zhipin.com/job_detail/8aec3a54274b99360nF-09q9EFFX.html,"岗位职责：
+1、使用AI 驱动应用设计与开发，打通从前端交互、后端服务到交付的全链路；
+2、探索并实践 Prompt Engineering、 Context Engineering、SDD等前沿 AI 技术；
+3、根据业务需要，完成上级安排的市场调研/数据分析/方案设计等其他工作。
+岗位要求：
+1、编程基础扎实：熟练掌握⾄少⼀门编程语⾔：C/C++、Java、Python、C#、javascript等；
+2、对AI技术有强烈的兴趣，喜欢钻研，具有良好的学习能力，团队合作能力；
+3、熟练使⽤Claude code/Codex/Trae、Dify等AI工具，具备调优、工程化建设经验。
+加分项：
+有一定的全栈开发功底，能独立完成前后端开发工作。
+提示：
+公司实行全面禁烟制度；",今日活跃,"多益网络
+·
+HRBP",True,True,继续沟通,1783230265.689831,b8527b1212ac42e58af0a7eae576b39e
+178b369e7ef268dc0nF50ty-FlRU,鸿蒙开发工程师,诺特健康,,8-13K·13薪,1-3年,本科,杭州余杭区恒生科技园23幢诺特健康,鸿蒙开发,杭州,101210100,https://www.zhipin.com/job_detail/178b369e7ef268dc0nF50ty-FlRU.html,"岗位职责:  
+1. 负责鸿蒙系统应用的开发与维护，确保功能完整性和运行稳定性；  
+2. 与产品、设计团队协作，实现用户界面并优化交互体验；  
+3. 参与客户端架构设计，推动模块化与组件化开发，提升开发效率；  
+4. 持续优化应⽤性能与响应速度，提升⽤户体验；  
+5. 配合后端团队完成接口联调，保障系统整体稳定运⾏。  
+任职要求：  
+1. 具备良好的沟通能力，能高效协同跨职能团队开展⼯作；  
+2. 拥有扎实的编程基础和良好的代码规范，能够独立解决问题；  
+3. 具备较强的学习能力，能快速掌握新技术并应用于实际项目；  
+4. 有团队合作精神，责任心强，能承担一定工作压力；  
+5. 熟悉移动端开发基本原理，了解操作系统基础机制者优先。",刚刚活跃,"诺特健康
+·
+招聘者",True,True,继续沟通,1783234499.3868191,4e33b4d3bd8340048a99cfbbf8a10c5f
+5d53566638eb1ccb0nBy2tq7ElZS,系统开发工程师(J10936),迈为,,13-18K,1-3年,本科,苏州吴江区苏州迈为科技股份有限公司,HarmonyOS开发,苏州,101190400,https://www.zhipin.com/job_detail/5d53566638eb1ccb0nBy2tq7ElZS.html,"工作职责:
+1、负责公司达索EPDM、Solidworks、Electrical等二次开发工作；
+2、负责相关周边产品、软件的研究，根据业务部门需求完成产品需求定义、解决方案编制及功能实现：
+3、负责相关系统相关软件的开发、测试、维护及操作⼿册编写。
+任职资格:
+1、具有2年以上达索研发软件⼆开经验，如：PDM/PLM、 SoldWorks、Electrical（任⼀）；
+2、熟练掌握C#、Pathyon语言（任一）；
+3、对制造业研发软件的业务体系，有较强的了解；
+4、熟悉主流数据库，如: SQLServer、 MySQL、Oracle 等；
+5、具备较强的学习、研究和逻辑推理能⼒；",3日内活跃,"迈为
+·
+HR",True,True,继续沟通,1783234963.0265841,4e33b4d3bd8340048a99cfbbf8a10c5f
+eef1acd623500cfa0nF53dq_FlNW,智驾仿真工具开发（C/C++）,altenchina,,11-15K·13薪,1-3年,本科,苏州博世研发中心,HarmonyOS开发,苏州,101190400,https://www.zhipin.com/job_detail/eef1acd623500cfa0nF53dq_FlNW.html,"德资汽车零部件公司驻场
+福利：五险一金+商业保险，试用期不打折，法定年假+福利全额带薪病假+年度体检+节假日福利
+⼯作时间：9:00-18:00，双休，加班1:1结算加班费
+1.熟练掌握C++/Python，熟悉 Linux 开发环境，了解ROS/ROS2，具备仿真⼯具⼆次开发能力
+2.熟悉 ASAM Openx系列标准(OpenDRIVE/OpenSCENARIO/OSI)等等
+3.有Carmaker使用/车辆动⼒学开发/ogsim/worldsim开发经验更好;",刚刚活跃,"altenchina
+·
+招聘主管",True,True,继续沟通,1783235002.193342,4e33b4d3bd8340048a99cfbbf8a10c5f
+532ba756da704e281nZ52925E1dV,Linux软件开发工程师,仲琦科技,,9-14K,1-3年,本科,苏州晋合广场2座1601-1607,HarmonyOS开发,苏州,101190400,https://www.zhipin.com/job_detail/532ba756da704e281nZ52925E1dV.html,"1.熟悉嵌入式Linux开发
+2.熟练使用C语言
+3.熟悉计算机网络相关知识
+4.有网络产品开发经验优先",本周活跃,"仲琦科技
+·
+软件开发经理",True,True,继续沟通,1783235023.7077188,4e33b4d3bd8340048a99cfbbf8a10c5f
+9715d7b309e43cc60nF-29S6GFZU,软测工程师（软件开发&数据&AI自动化方向）,MOVA,,15-25K·15薪,1-3年,本科,苏州吴中区苏州信泰中心T2,HarmonyOS开发,苏州,101190400,https://www.zhipin.com/job_detail/9715d7b309e43cc60nF-29S6GFZU.html,"优先第一学历985 ，有机器人/互联网背景，测开+质量数字化+ai提效经验
+软件测试工程师（软件开发&数据&AI⾃动化⽅向）
+岗位简介
+⾯向数据驱动迭代、AI与自动化提效方向，参与产品迭代、⾃动化体系搭建、AI工具落地，推进研发测试全流程数字化、智能化升级。
+岗位职责
+开发方向
+参与产品迭代，负责自动化、AI辅助研发测试工具的开发与优化；
+依托业务数据优化代码与逻辑，支撑产品数据化迭代升级；
+落地AI研发应用，实现缺陷预判、代码优化，提升研发效率。
+测试方向
+负责产品全流程测试，实现测试全流程数字化沉淀，输出数据化测试报告；
+搭建、维护自动化测试框架，实现核心功能与回归测试自动化；
+应用AI工具完成用例生成、缺陷识别、风险预判、数据复盘等提效工作；
+基于测试数据挖掘版本与流程问题，输出迭代优化方案，完善测试规范。
+任职要求
+统招本科及以上，计算机、软件工程、软件测试、人工智能等相关专业；
+具备扎实计算机基础，逻辑清晰、数据敏感度高，善于数据分析与问题定位；
+开发岗：掌握Java/Python/Go任一语言，有项目经验优先；
+测试岗：熟悉测试流程，会接口测试、Python脚本或自动化工具优先；
+热爱智能技术迭代，工作负责，具备良好协作与抗压能力；
+加分项：有自动化框架、AI工具落地、数据化分析相关项目经验。",3日内活跃,"MOVA
+·
+招聘者",True,True,继续沟通,1783235032.804512,4e33b4d3bd8340048a99cfbbf8a10c5f
+b9d83a89b27974260nF-09q1E1JU,软件开发,蜂巢电子科技,,8-12K·15薪,在校/应届,本科,苏州吴中区中锐具美大厦15,HarmonyOS开发,苏州,101190400,https://www.zhipin.com/job_detail/b9d83a89b27974260nF-09q1E1JU.html,"岗位职责:  
+1. 参与软件系统方案设计与架构规划，推动项目高效交付；  
+2. 负责软件开发过程中的关键技术问题分析与解决；  
+3. 协助优化系统性能，提升软件整体运行效率与稳定性；  
+4. 参与团队协作，推动开发流程规范化与技术能⼒提升；  
+任职要求：  
+1. 熟悉C/C++，具备扎实的软件开发能⼒；  
+2.了解单⽚机、嵌入式、微机原理等；
+2. 具备良好的逻辑思维能力、沟通能⼒、协调能力；  
+3. 较强的责任心和执行力，能够按时高质量完成开发任务；  
+5.关注汽车行业动态且对汽车电子行业感兴趣， 对技术有持续学习的热情，关注行业新技术并能灵活应用。",今日活跃,"蜂巢电子科技
+·
+HR",True,True,继续沟通,1783235046.054379,4e33b4d3bd8340048a99cfbbf8a10c5f
+ec7d1c28c3c7a27e1HJ62d-6E1tZ,C#软件开发工程师,斯莱克设备,,9-14K,1-3年,本科,苏州吴中区苏州斯莱克精密设备股份有限公司整栋,HarmonyOS开发、鸿蒙开发、测试开发,上海,101020100,https://www.zhipin.com/job_detail/ec7d1c28c3c7a27e1HJ62d-6E1tZ.html,"岗位职责：
+1、与需求部门沟通撰写需求文档；
+2、根据需求文档进行系统开发设计；
+3、负责现有ERP系统的维护和问题处理；
+4、负责系统文档及项目资料的管理；
+5、ERP/OA/MES系统维护与开发；
+岗位要求：
+1、熟练使用MS-SQL数据库；
+2、根据产品需求进行测试及产品实施；
+3、掌握C#/.NET编程语言;
+4、熟练网络及服务器硬件相关设备的维护工作。
+5、有制造业ERP相关工作经验的优先；
+6、熟悉数据库操作；全日制本科以上；计算机专业；2年以上工作经验（优秀应届生亦可）；",刚刚活跃,"斯莱克设备
+·
+招聘经理",True,True,继续沟通,1783235400.307062,2277fff14f7640699f88d723ea017a71
+74302a1600b391f30nF7092-ElBT,26届芯片测试开发工程师,长川科技,,11-20K·15薪,1年以内,本科,苏州苏州工业园区长川科技(苏州)有限公司E3-301,HarmonyOS开发、鸿蒙开发、测试开发,上海,101020100,https://www.zhipin.com/job_detail/74302a1600b391f30nF7092-ElBT.html,"岗位职责：
+1、负责芯片测试方案和测试程序开发；
+2、负责芯片测试系统应用开发技术⽀持；
+3、负责收集芯⽚测试系统改善建议，协助优化测试系统。
+岗位要求：
+1、本科及以上学历，电⼦信息、通信工程、自动化等相关专业；
+2、具备良好的数电、模电基础及电路分析能⼒；
+3、掌握常规电子元器件应用，熟悉仪器仪表使用；
+4、具备编程基础（C++、Python等）；
+5、乐于分享，善于沟通。",3日内活跃,"长川科技
+·
+招聘经理",True,True,继续沟通,1783235413.896116,2277fff14f7640699f88d723ea017a71
+5b4990bd6ea97cd80nF-2NS0EFRT,软件开发助理工程师,苏州杰锐思,,8-12K,在校/应届,本科,苏州吴中区苏州杰锐思智能科技股份有限公司,HarmonyOS开发、鸿蒙开发、测试开发,上海,101020100,https://www.zhipin.com/job_detail/5b4990bd6ea97cd80nF-2NS0EFRT.html,"岗位职责：
+1.负责半导体设备上位机软件的设计与开发；
+2.根据项目进度要求和任务分配完成上位机软件的设计、编码和维护任务；
+3.负责编写软件需求分析、概要方案、用户手册等相关⽂档，解决调试过程中遇到的问题，修
+正代码bug；
+4.负责根据开发规范和流程独⽴完成编码；
+5.参与原有产品的维护和升级，对客户进⾏技术支持；
+任职要求:
+1.全日制本科及以上学历，计算机、⾃动化等相关专业；有半导体设备、工业自动化背景者优
+先；
+2.熟练掌握C++语言，具备扎实的面向对象编程功底，深入理解内存管理、多线程同步与并
+发、数据结构与算法；",3日内活跃,"苏州杰锐思
+·
+产品总监",True,True,继续沟通,1783235454.414779,2277fff14f7640699f88d723ea017a71
+72b2ee0f99da81850ndy2dS9F1RX,对日软件开发工程师（27届校招转正方向）,凌志软件,,7-12K,在校/应届,本科,苏州吴中区苏州凌志大厦1,HarmonyOS开发、鸿蒙开发、测试开发,上海,101020100,https://www.zhipin.com/job_detail/72b2ee0f99da81850ndy2dS9F1RX.html,"岗位职责:
+1、27届本科及以上学历，有志于软件行业长远发展；
+2、良好的沟通能力，很好的亲和力和较强的人际交往能⼒；
+3、精⼒充沛，喜爱竞争挑战和有强烈成功欲望；
+4、遵守纪侓和⾏业规范，能接受严格专业培训，具有敬业精神及团队合作意识；
+5、正直诚信，忠于企业，传承企业文化，愿意与企业一起发展成长
+任职要求:
+1、学历要求：本科、计算机、软件⼯程等相关的专业本科优先
+2、综合素质：具有客户服务理念、有效的沟通技巧、坚持学习和运用知识和技能。可承受一定压力，面对挑战可主动灵活的解决问题，有潜在领导素质",3日内活跃,"凌志软件
+·
+招聘主管",True,True,继续沟通,1783235499.297935,2277fff14f7640699f88d723ea017a71
+af9edd0cec5d1d571nZ429W7EVVU,测试开发工程师,招银,,15-25K,1-3年,本科,成都武侯区招商银行金融后台服务中心(益州大道中段),HarmonyOS开发、鸿蒙开发、测试开发,成都,101270100,https://www.zhipin.com/job_detail/af9edd0cec5d1d571nZ429W7EVVU.html,"职位职责
+1.参与产品的需求分析，负责测试计划以及方案的制定、案例设计、测试执行、缺陷跟踪处理以及测试报告的编写工作，定期汇报项目进展情况；
+2.根据项目测试需要，使用自动化测试框架、平台及工具，开发自动化测试用例，涉及单元测试自动化、接口测试自动化及界面测试自动化；
+3.参与所负责产品的文档编写、自动化框架以及知识库建设等工作。
+职位要求
+1.本科及以上学历，计算机相关专业；
+2.熟悉软件工程及CMMI体系，精通测试理论及测试用例设计、白盒黑盒测试技能；
+3.3年以上开发或测试工作经验，能独立承担大型项目的测试工作；1年以上自动化测试经验，掌握常见自动化测试工具和自动化测试框架，具备测试团队管理经验者优先；
+4.熟练使用Java、Python中至少一种语言，熟悉MySQL、Oracle、SQL Server、DB2中至少一种关系型数据库；
+5.责任心强，有良好的合作精神，有较强的学习能力和沟通协调能力；
+6.具备以下一种或多种经验者优先：
+a.有手机自动化测试工具开发维护经验；
+b.有成功的大规模自动化测试实施经验；
+c.熟悉金融或者企业财务相关的业务，有参与金融系统测试经验。",3日内活跃,"招银
+·
+招聘管理岗",True,True,继续沟通,1783235517.4049642,2277fff14f7640699f88d723ea017a71
+8096c029ffd422aa0nBz2tm5FFRQ,测试开发工程师,京东方车载,,10-15K,1-3年,本科,成都郫都区成都京东方车载显示技术有限公司,HarmonyOS开发、鸿蒙开发、测试开发,成都,101270100,https://www.zhipin.com/job_detail/8096c029ffd422aa0nBz2tm5FFRQ.html,"岗位职责：
+ 1. 云检平台软件的全流程测试。
+ 2. 设计测试⽅案及⽤例，并编写测试脚本。
+ 3. 协助开发测试Agent。
+ 4. 未来其他产品的测试。
+岗位要求：
+1. 学历经验：计算机或相关专业本科及以上学历，1-3年软件测开经验。
+ 2. 精通 Python/Java ⾄少一种编程语言。
+ 3. 熟练使⽤ Pytest/JUnit 等测试框架开发接口/单元测试。
+ 4. 熟悉 Linux 命令及 SQL 基础操作。
+ 5. 熟练使用 Git/Jira 等协作工具。
+ 6. 了解 AI 自动化测试框架。",3日内活跃,"京东方车载
+·
+招聘经理",True,True,继续沟通,1783235537.6716118,2277fff14f7640699f88d723ea017a71
+641cf0fb1edec30c0nF43tq_E1dT,算法测试工程师(006529),广东叶子科技发展,,12-20K·14薪,1-3年,本科,成都双流区成都OPPO大厦整栋,HarmonyOS开发、鸿蒙开发、测试开发,成都,101270100,https://www.zhipin.com/job_detail/641cf0fb1edec30c0nF43tq_E1dT.html,"岗位职责:
+1、负责AI应用产品落地全流程质量保障工作，保障模型能力、业务功能及线上体验稳定
+2、 参与需求方案、技术⽅案、产品交互⽅案评审，从测试视角提前识别⼤模型效果、功能逻辑、交互体验、系统稳定性等潜在风险，输出风险评估建议，推动问题前置规避
+3、 探索AI算法测试新思路、新工具方法，尝试⼤模型辅助自动化评测等方式，持续提升测试效率与团队效能
+任职要求:
+1、本科及以上学历，计算机、软件工程等相关专业，优秀应届生、相关工作经验较少者均可投递
+2、对大模型LLM、AI应用类产品有浓厚兴趣，关注算法测试新技术、新方法。熟悉大模型基础原理，对大模型辅助评测有经验者优先
+3、思维逻辑清晰，理解力强，做事踏实肯干、责任心强，主动愿意钻研问题，具备良好自驱力和快速学习能力
+4、沟通协作顺畅，心态好、抗压性强，能适配产品快速迭代节奏，悟性高、执行力强即可",3日内活跃,"广东叶子科技发展
+·
+HR",True,True,继续沟通,1783235576.2461388,2277fff14f7640699f88d723ea017a71
+5ff9a26b63e391c40nBz2NW4F1BQ,测试软件开发工程师（2027届可接受实习）,成都智明达,,10-15K,在校/应届,本科,成都青羊区成都智明达电子股份有限公司,HarmonyOS开发、鸿蒙开发、测试开发,成都,101270100,https://www.zhipin.com/job_detail/5ff9a26b63e391c40nBz2NW4F1BQ.html,"岗位职责：
+1、针对公司的嵌入式产品设计测试软件并进行调试； 
+2、负责执行产品测试及版本验证工作； 
+3、负责相关技术⽂档编写及评审⼯作；
+4、上级交办的其他⼯作；
+任职要求：
+1、统招本科及以上学历，计算机、电子相关专业； 
+2、2027届应届毕业生，有嵌⼊式项目开发/测试经历优先；
+3、至少熟悉C/C++/Python其中一门语言编程； 
+4、抗压能力强，在工作和学习方面有较强的自我驱动力； 
+5、较强的沟通能力及团队合作能力。
+加分项：
+1、有开发经验者
+2、熟悉linux、vxworks等操作系统者
+3、具备STM32 开发优先
+ps实习表现好可以提供转正机会，签订三方",3日内活跃,"成都智明达
+·
+HRBP",True,True,继续沟通,1783235669.107219,2277fff14f7640699f88d723ea017a71
+caa9ff7298eb67720nF-29i6FFpV,金融深度AI大模型研究测试专家,勤为科技有限公司,,10-12K,1-3年,本科,成都武侯区NIC国创中心35楼1号,HarmonyOS开发、鸿蒙开发、测试开发,成都,101270100,https://www.zhipin.com/job_detail/caa9ff7298eb67720nF-29i6FFpV.html,"一、岗位职责
+负责金融类大模型数据标注、事实核验、合规风险筛查，校验模型金融推理、投研问答输出质量；
+梳理、撰写标准化 Rubric 标注规范，搭建 Deep Research/Agent 任务评测体系，设计 Benchmark 评测标准；
+依托交易所公告、央⾏数据、专业研报等权威渠道完成⾦融内容事实核查；
+拆解复杂⾦融推理逻辑，从模型训练视角甄别优质训练数据，优化金融数据集。
+二、任职资格
+（⼀）学历要求
+硬性标准：国内 985 院校或 QS 世界前 100 院校，本科及以上，硕士、博士优先；
+放宽标准：金融工程、量化金融人才，院校可放宽至 211、两财一贸、北邮等知名专业院校。
+（二）专业与行业背景
+金融、经济、会计、投资相关专业；有券商、基金、银行、金融科技从业经验优先；
+熟悉金融市场、金融产品、财报分析、宏观经济指标，掌握行业监管合规政策；
+理解金融数值计算、投研逻辑类标注工作，可识别金融内容时效与合规问题。
+（三）通用能力要求
+有豆包、KIMI、元宝等主流大模型标注平台实操经验；
+逻辑缜密，擅长拆解复杂金融问题推理链条，判断力强；
+细心负责，可承受高强度事实核验工作，对数据精准度高度敏感；
+能站在模型训练视角判断数据质量，不局限于表层正误校验。
+三，薪酬福利
+综合薪酬10K-12K，优秀者可面议。保险齐全，内部晋升通道透明且广阔。
+bao",刚刚活跃,"勤为科技有限公司
+·
+人事总监",True,True,继续沟通,1783235731.7025,2277fff14f7640699f88d723ea017a71
+8c3ab44b506ec7f90nd72tm5EVRZ,周末双休/早9晚6！！Python开发工程,蕾茗科技有限公司,,12-20K,1-3年,本科,成都武侯区NIC国创中心1,HarmonyOS开发、鸿蒙开发、测试开发,成都,101270100,https://www.zhipin.com/job_detail/8c3ab44b506ec7f90nd72tm5EVRZ.html,"岗位职责：
+1。负责公司核心业务系统的后端架构设计与研发，完成高质量代码编写和单元测试。2。参与需求分析，根据产品需求完成技术方案设计和数据库设计。
+3。负责现有Python项目的维护，性能瓶颈分析及优化(包括代码重构，SQL优化，缓存策略等).4。编写清晰的技术⽂档(接口⽂档，部署⽂档)，配合前端工程师完成接口联调。5。解决开发过程中的技术难题，保障系统的高可⽤和稳定性。
+任职资格：
+1。本科及以上学历(计算机相关专业)，具有1年以上Python开发经验。2。熟练掌握Python 语法，熟悉常用的数据结构和算法。
+3。熟练掌握至少一种Python Web 框架(如 Django,Flask,FastAPI或Tornado).4。熟悉 MySQL/PostgreSQL关系型数据库，具备索引优化，SQL调优能力；5。熟悉Linux环境基本命令，熟练使用Git进行代码管理。",3日内活跃,"蕾茗科技有限公司
+·
+招聘者",True,True,继续沟通,1783235791.102423,2277fff14f7640699f88d723ea017a71
+939999a7996e15d20nBz39q_FFRQ,仪表引擎测试开发,华苏科技,,11-12K,1-3年,本科,武汉蔡甸区岚图汽车科技股份有限公司(云峰工厂)1,HarmonyOS开发、鸿蒙开发、测试开发,武汉,101200100,https://www.zhipin.com/job_detail/939999a7996e15d20nBz39q_FFRQ.html,"职位描述：
+1. 仪表引擎核心功能测试开发
+针对引擎的数据绑定层（CAN/SomeIP → 仪表变量）、状态机逻辑、报警优先级引擎、图形渲染管线进行接口级与场景级自动化测试
+2. 大模型驱动的智能测试
+调⽤⼤模型完成：
+引擎测试断⾔（如“转速表红色区域在7000rpm时开始闪烁”）
+对引擎输出的仪表截图进行语义理解与异常检测（图标缺失、指针错位、颜⾊偏差）
+3. 音频检测与引擎声学联动测试
+开发音频信号处理算法，验证引擎触发的报警音、语音提示的：
+时序对齐（如报警图标显示与提示音同步误差 < 50ms）
+音频特征（频率、时长、响度变化）是否符合规范
+实现音频闭环测试：引擎输出报警事件 → 采集座舱音频 → 自动判定通过/失败
+职位要求：
+本科及以上学历，计算机/通信/电子等相关专业，学习能力强，工作主动性强
+必备技能
+编程与自动化：精通Python，有大型嵌入式或图形引擎的自动化测试框架开发经验（pytest/gtest包装层）
+大模型调用：熟悉大模型API集成（如LangChain、OpenAI SDK），有Prompt设计或RAG应用经验
+音频处理基础：掌握数字信号处理基础（FFT、滤波、时域分析），能使用librosa/scipy实现音频特征提取与比对
+加分项
+熟悉汽车总线（CAN/LIN/ETH）及DBC/LDF解析库（python-can）
+有音频指纹（Audio Fingerprinting）或语音活动检测（VAD）算法经验
+软性要求
+对AI赋能测试有极强好奇心，愿意将大模型应用于断言生成、缺陷分析等深度场景",在线,"华苏科技
+·
+HR",True,True,继续沟通,1783235850.595865,2277fff14f7640699f88d723ea017a71
+d0651a737be034fe0nF-3N-7E1ZX,测试开发实习生——武汉（27届 ）,知乎,,10-15K·15薪,在校/应届,本科,武汉洪山区武汉光谷 APP 广场四号楼7层,HarmonyOS开发、鸿蒙开发、测试开发,武汉,101200100,https://www.zhipin.com/job_detail/d0651a737be034fe0nF-3N-7E1ZX.html,"职位描述：
+    1. 跟进知乎APP、知乎Web等产品的业务需求。
+    2. 跟进并优化知乎产品的项目流程和测试流程，保证产品质量。
+    3. 开发和维护团队的自动化测试框架，编写和维护自动化测试用例。
+    4. 设计、构建和优化持续交付流程，开发和维护相关的持续交付⼯具。
+任职资格：
+    1. 熟悉 Python、 Java、Go、Shell 中的⼀种语⾔，熟悉 Linux 常用命令。
+    2. 熟悉测试方法论及常⽤的测试工具，如抓包工具、性能测试工具等。
+    3. 有 APP、Web 方向的测试经验，有UI、接口自动化测试相关的经验。
+    4. 有良好的团队合作精神，有责任感，有较好的沟通能力，主动性强，有钻研新技术的热情和能力。
+    5.暑期需要集中全勤，一周五天，整体实习5-6个月。
+加分项：
+    1. 能够熟练使用AI，并能够在质量领域有实际落地优先。
+    2. 对测试技术有强烈的兴趣和爱好，曾经直接向开发者报告过 Bug 或者贡献过 Patch优先。
+    3. 提供 Github 账号、技术 Blog 链接等优先。",刚刚活跃,"知乎
+·
+招聘专员",True,True,继续沟通,1783235859.640361,2277fff14f7640699f88d723ea017a71
+f90686e278f3735f1HZ72dm4FFdY,软件测试开发工程师,克莱蒙特,,10-15K·13薪,1-3年,本科,武汉蔡甸区武汉经济技术开发区1,HarmonyOS开发、鸿蒙开发、测试开发,武汉,101200100,https://www.zhipin.com/job_detail/f90686e278f3735f1HZ72dm4FFdY.html,"职责
+1. 分析系统需求、软件需求，澄清需求。
+2. 设计测试用例，审核测试用例。
+3. 测试用例自动化脚本编辑、调试。
+4. 执行测试用例、填写测试结果、测试报告。
+5. 搭建测试环境、debug环境问题，满足测试需求。
+要求
+1. 统招本科学历，软件、汽车相关专业，两年以上汽车电子HIL测试经验。
+2. 语言：中文流利，英语读写水平。
+3. 熟悉软件开发测试流程、bug处理流程，了解A-SPICE。
+4. 熟悉各种黑盒白盒测试方法，有测试用例设计实际经验。
+5. 熟悉使用至少一门编程语言： C， C++， Java， CAPL Python。
+6. 有一定的硬件基础，会使用常用测量工具，万用表，示波器等。
+7. 任意一种HIL测试平台经验：NI，VT System, dSpace是加分项。",3日内活跃,"克莱蒙特
+·
+HR 经理",True,True,继续沟通,1783235872.636801,2277fff14f7640699f88d723ea017a71
+fb463906ffb5e5511H1z39u4FlFQ,系统测试开发工程师(J12164),北京芯动微电子科技,,15-30K·15薪,1-3年,本科,武汉江夏区芯动科技,HarmonyOS开发、鸿蒙开发、测试开发,武汉,101200100,https://www.zhipin.com/job_detail/fb463906ffb5e5511H1z39u4FlFQ.html,"工作职责:
+1、深入研究产品原理，制定测试方案和checKlist，负责产品Bring up，小批量验证开发和测试，以及大批量生产导入测试等工作；
+2、根据公司产品项目验证需求，完成产品量产前系统驱动验证代码开发以及测试；
+3、规划验证测试平台，参与验证测试平台设计与搭建；
+4、编写测试用例，编写验证报告、大批量导入测试文档等。
+任职资格:
+1、本科以上学历，电子、通信相关专业，两年以上相关工作经验；
+2、熟练掌握C语言，熟悉硬件原理图并会根据原理图分析问题；
+3、有嵌入式底层驱动开发经验优先；能在Linux系统下做uboot开发者优先；熟悉多种嵌入式CPU架构，有显卡、视频图像相关开发以及测试经验者优先；
+4、有学习新技术和工具的热情，能熟练阅读英文文档，具有逻辑和创造性的思维能力，沟通和解决问题的能力。",今日活跃,"北京芯动微电子科技
+·
+人事行政部主管",True,True,继续沟通,1783235881.9869561,2277fff14f7640699f88d723ea017a71
+d7c8dbd26ac030cc0nF509S5EVBY,27校招-测试开发（武汉） (MJ002150),东土科技,,14-28K,在校/应届,本科,武汉江夏区豪迈大厦(武大园四路)2栋12层,HarmonyOS开发、鸿蒙开发、测试开发,武汉,101200100,https://www.zhipin.com/job_detail/d7c8dbd26ac030cc0nF509S5EVBY.html,"岗位职责：
+开发自动化测试脚本及调试相关测试工具；
+编写测试用例并执行功能、性能测试；
+分析测试结果并提交缺陷追踪报告；
+优化⼯业⽹络芯⽚测试流程；
+维护持续集成环境中的测试框架；
+执行工业操作系统兼容性测试验证。
+职位要求：
+计算机相关专业本科及以上学历；
+熟练掌握Python/Java语⾔及主流测试框架；
+掌握操作系统原理及软件测试理论；
+具备数据通信协议及软件开发流程知识；
+能有效解决复杂技术问题；
+具备学习新技术的能力及主动沟通意识。",3日内活跃,"东土科技
+·
+招聘总监",True,True,继续沟通,1783235890.448927,2277fff14f7640699f88d723ea017a71
+60056b2175a6d5950nF-2N-6GVpV,研发工程师-后端/前端/测试/AI应用-26届,上海能良,,7-12K,在校/应届,本科,武汉洪山区武汉软件新城2期B6号楼1层6栋一单元整栋,HarmonyOS开发、鸿蒙开发、测试开发,武汉,101200100,https://www.zhipin.com/job_detail/60056b2175a6d5950nF-2N-6GVpV.html,"一、企业简介：
+能良成立于2008年，2018年通过资本整合，成为深圳国资委(深投控)下属的天音通信控股股份有限公司(简称""天音控股""，股票代码：000829)的控股⼦公司。
+公司是国内领先的线上带电产品综合服务商，聚焦⼿机、数码、家电、智能出⾏等领域。我们深度服务淘天、拼多多、京东、抖音、快手、美团等所有主流电商平台，在各⼤平台拥有超过700家零售店铺，公司拥有自营的仓储配送体系，客服直播运营中心，并依托扎实的数字化能力与供应链体系，致力于成为行业领先的零售，分销及服务为一体的综合解决方案提供商。
+二、岗位职责：
+1、针对电商平台运行过程中的各类技术问题进行排查、修复与优化，持续提升平台稳定性、流畅度与使用体验，适配业务常态化运营及各类营销活动场景。
+2、配合产品、运营、测试等相关团队协同推进项目落地，跟进业务需求，高效完成研发迭代任务，助力业务稳步。
+3、主动学习行业前沿技术，结合业务场景开展技术优化与创新，规范研发流程，整理完善相关技术资料，沉淀团队技术经验与资产。
+4、负责平台日常技术保障工作，及时响应处理线上突发问题，筑牢平台技术运行基础。
+三、任职资格：
+1、工作地点 ：武汉。该岗位需到广东梅州轮岗客服、直播3个月。
+2、全日制统招本科及以上学历，2026届应届毕业生，计算机、软件工程、电子信息、人工智能、数据科学、网络工程等相关专业。
+3、逻辑思维清晰严谨，具备优秀的问题拆解、故障分析、技术攻坚能力，学习能力强，能快速适配电商业务迭代节奏与新技术栈，愿意深耕互联网电商技术领域长期发展。
+4、专业基础扎实，熟练掌握数据结构、算法、计算机网络、操作系统、数据库等核心知识；熟练掌握Java/Go/Python/JS等至少一门主流开发语言，了解SpringBoot、Vue、React等常用开发框架；熟悉MySQL、Redis、MQ等常用中间件，了解高并发、分布式基础原理。具备良好的代码规范和编程思维。
+四、薪酬福利：
+1、月薪税前7K-12K，后续根据公司晋升机制调薪。
+2、管培生配套培训，培养全模块复合型能力，提升经营者角色胜任力。
+3、年轻化的团队，简单的氛围，交流畅通，工作高效。
+4、不定期团建，生日会，节日大礼包、内购福利，学习交流会，一起解锁成长玩法。",在线,"上海能良
+·
+校招HRBP",True,True,继续沟通,1783236134.340086,2277fff14f7640699f88d723ea017a71
+c6d30f583023c34a0nd43dm9FVpZ,测试开发工程师-campus-2026,经纬恒润,,12-17K·15薪,在校/应届,本科,南京江宁区紫金研创中心-2号楼4楼,HarmonyOS开发、鸿蒙开发、测试开发,南京,101190100,https://www.zhipin.com/job_detail/c6d30f583023c34a0nd43dm9FVpZ.html,"工作职责
+1.参与需求与设计评审，制定测试策略；
+2.负责测试用例编写、评审和测试过程执行，并对发现的问题进行回归验证；
+3.开发C语⾔或C++测试脚本，负责⾃动化测试执⾏和维护；
+4.与开发团队沟通，分析确认问题，提交测试缺陷，跟踪缺陷闭环；
+5.编写测试报告、统计测试数据，负责软件版本发布管理。
+任职要求
+1. 理工类专业，本科及以上学历，计算机或软件专业优先；
+2. 逻辑严谨，细心、耐⼼、责任心强；沟通表达良好，亲和力强；
+3. 了解嵌入式软件测试与软件测试相关技术，了解数据库使用；
+4. 熟悉软件测试过程，了解软件测试基础知识，了解软件工程，或有软件测试经历者优先；
+5. 有python或其它脚本语言使用经验者优先。",3日内活跃,"经纬恒润
+·
+招聘者",True,True,继续沟通,1783236244.345073,2277fff14f7640699f88d723ea017a71
+254d8cf15ce92daf0nV93tW1EVdU,图像算法效果评测/测试工程师,虹软科技,,14-26K,1-3年,本科,南京雨花台区华博智慧园5楼,HarmonyOS开发、鸿蒙开发、测试开发,南京,101190100,https://www.zhipin.com/job_detail/254d8cf15ce92daf0nV93tW1EVdU.html,"岗位职责
+1、按照既定的方法，作为主力参与某个图像类算法项目的效果评测， 同时包括不限定自动化测试、性能测试，功耗测试，内存测试，压⼒测试等，并且输出测试报告;
+2、根据测试结果，对问题进⾏初定位，确定具体模块，及时和相关⼲系人（包括项目经理，算法⼯程师，ISP tuning工程师）沟通，推动问题修复;
+任职要求
+1、 本科及以上学历，计算机相关专业优先；
+2、 有过测试岗位经验，1年以上图像相关产品测试经验优先；
+3、 熟悉高通或MTK平台相关ISP优先；
+4、 良好的沟通能力和团队协作能力，逻辑思维缜密，爱好新知识；",今日活跃,"虹软科技
+·
+HRM",True,True,继续沟通,1783236294.9914,2277fff14f7640699f88d723ea017a71
+8fb4ba290e125ea90nF-2dS0GFtZ,python后端开发工程师 15-20k,蕾茗科技有限公司,,15-20K,1-3年,本科,成都武侯区武侯区天府大道北段1777号NIC国创中心,HarmonyOS开发、鸿蒙开发、测试开发,成都,101270100,https://www.zhipin.com/job_detail/8fb4ba290e125ea90nF-2dS0GFtZ.html,"岗位职责：
+1.负责公司核⼼业务系统的架构设计与研发，完成⾼质量代码编写和单元测试
+2.参与需求分析，根据产品需求完成设计技术⽅案设计和数据库设计
+3.解决开发过程中的技术难题，保障系统的高可用和稳定性
+任职资格：
+1.本科及以上学历（计算机相关专业）
+2.具有1年以上python开发经验
+3.熟悉掌握python语法，熟悉常⽤的数据结构和算法",刚刚活跃,"蕾茗科技有限公司
+·
+招聘者",True,True,继续沟通,1783237054.64566,ba07a721be5a45008a96d225b1d48ac2
+15169c45cbf503710nF53NS6FVpZ,服务器 BIOS 固件开发工程师,锐捷网络,,15-25K·14薪,1-3年,本科,成都武侯区世外桃源广场-B座4层,HarmonyOS开发、鸿蒙开发、测试开发,成都,101270100,https://www.zhipin.com/job_detail/15169c45cbf503710nF53NS6FVpZ.html,"岗位职责
+1.负责产品BIOS需求评估，输出设计方案;依据项目设计任务书及相关设计，进行开发
+2.负责产品BIOS功能调试，升级和维护。
+3.负责产品BIOS相关问题和BUG处理
+岗位要求
+1.全日制本科及以上学历，2年及以上⼯作经验，完成过2个以上产品全周期BIOS开发，
+有服务器BIOS开发经验优先。
+2.熟悉计算机BIOS开发环境及调试⼿段，能够使⽤BIOS相关工具按要求进行BIOS配置
+及开发⼯作。
+熟悉X86服务器CPU，Chipset，了解BMC，CPLD;熟悉常用总线如IIC，SPI,
+SMBUS，SATA，PCIE，LPC等;熟悉Linux系统指令，及shel脚本编写",3日内活跃,"锐捷网络
+·
+招聘专员",True,True,继续沟通,1783237074.437678,ba07a721be5a45008a96d225b1d48ac2
+781c2f05ba4799140nF-3dm9ElZV,研发工程师-后端/前端/测试/AI应用-校招,上海能良,,7-12K,在校/应届,本科,武汉洪山区武汉软件新城2期B6,HarmonyOS开发、鸿蒙开发、测试开发,武汉,101200100,https://www.zhipin.com/job_detail/781c2f05ba4799140nF-3dm9ElZV.html,"一、企业简介：
+能良成立于2008年，2018年通过资本整合，成为深圳国资委(深投控)下属的天音通信控股股份有限公司(简称""天音控股""，股票代码：000829)的控股⼦公司。
+公司是国内领先的线上带电产品综合服务商，聚焦⼿机、数码、家电、智能出⾏等领域。我们深度服务淘天、拼多多、京东、抖音、快手、美团等所有主流电商平台，在各⼤平台拥有超过700家零售店铺，公司拥有自营的仓储配送体系，客服直播运营中心，并依托扎实的数字化能力与供应链体系，致力于成为行业领先的零售，分销及服务为一体的综合解决方案提供商。
+二、岗位职责：
+1、针对电商平台运行过程中的各类技术问题进行排查、修复与优化，持续提升平台稳定性、流畅度与使用体验，适配业务常态化运营及各类营销活动场景。
+2、配合产品、运营、测试等相关团队协同推进项目落地，跟进业务需求，高效完成研发迭代任务，助力业务稳步。
+3、主动学习行业前沿技术，结合业务场景开展技术优化与创新，规范研发流程，整理完善相关技术资料，沉淀团队技术经验与资产。
+4、负责平台日常技术保障工作，及时响应处理线上突发问题，筑牢平台技术运行基础。
+三、任职资格：
+1、工作地点 ：武汉。该岗位需到广东梅州轮岗客服、直播3个月。
+2、全日制统招本科及以上学历，2026届应届毕业生，计算机、软件工程、电子信息、人工智能、数据科学、网络工程等相关专业。
+3、逻辑思维清晰严谨，具备优秀的问题拆解、故障分析、技术攻坚能力，学习能力强，能快速适配电商业务迭代节奏与新技术栈，愿意深耕互联网电商技术领域长期发展。
+4、专业基础扎实，熟练掌握数据结构、算法、计算机网络、操作系统、数据库等核心知识；熟练掌握Java/Go/Python/JS等至少一门主流开发语言，了解SpringBoot、Vue、React等常用开发框架；熟悉MySQL、Redis、MQ等常用中间件，了解高并发、分布式基础原理。具备良好的代码规范和编程思维。
+四、薪酬福利：
+1、月薪税前7K-12K，后续根据公司晋升机制调薪。
+2、管培生配套培训，培养全模块复合型能力，提升经营者角色胜任力。
+3、年轻化的团队，简单的氛围，交流畅通，工作高效。
+4、不定期团建，生日会，节日大礼包、内购福利，学习交流会，一起解锁成长玩法。",在线,"上海能良
+·
+招聘者",True,True,继续沟通,1783237107.820849,ba07a721be5a45008a96d225b1d48ac2
+81421113a612a0c01HNz2t20GFdR,DSP软件开发工程师,西安爱科赛博,,15-23K·15薪,1-3年,本科,苏州虎丘区苏州爱科赛博电源技术有限责任公司,HarmonyOS开发、鸿蒙开发、测试开发,苏州,101190400,https://www.zhipin.com/job_detail/81421113a612a0c01HNz2t20GFdR.html,"岗位职责：
+1、负责电能产品DSP软件开发工作。
+2、负责电源产品的DSP软件开发工作。
+3、负责MCU单板原理图的设计。
+4、负责系统控制功能的实现
+任职要求：
+1、数字基于C2000系列DSP的开发。
+2、熟悉Modbus、CAN、TCP/IP通讯开发。
+3、有充电模块、电能质量、UPS、PCS等开发经验者优先考虑。
+4、江苏省内籍，或定居苏州者优先",本周活跃,"西安爱科赛博
+·
+人力主管",True,True,继续沟通,1783237299.377704,ba07a721be5a45008a96d225b1d48ac2
+13e919cdf94c37131HN-09y0GVJX,上位机软件开发工程师,航天环宇,,10-15K·14薪,1-3年,本科,长沙岳麓区湖南航天环宇通信科技股份有限公司杏康南路6号,HarmonyOS开发、鸿蒙开发、测试开发,长沙,101250100,https://www.zhipin.com/job_detail/13e919cdf94c37131HN-09y0GVJX.html,"岗位职责：
+1、负责机电产品上位机软件开发：UI界面、通信协议、数据处理；
+2、负责上位机软件的调试、测试与维护；
+3、撰写、维护相关技术文档。
+任职要求：
+1、统招本科及以上学历，软件工程、计算机、自动化等相关专业；
+2、2年以上相关工作经验，具有一定的软件架构设计能力，熟悉常见编程框架原理并能熟练运用相关工具；
+3、熟悉c#语言，.net框架；
+4、熟悉TCP/UDP通信协议，具有网络编程经验，熟悉串口，can通讯;
+5、具备良好的沟通理解能力，富有责任心和进取精神。",3日内活跃,"航天环宇
+·
+人力资源部经理",True,True,继续沟通,1783237534.90857,ba07a721be5a45008a96d225b1d48ac2
+397dd3de199c31a00nB_3Nq7GFFZ,软件开发工程师(J28980),奇瑞汽车,,10-15K·15薪,1-3年,本科,长沙岳麓区湘江智能网联产业孵化基地(一期)4楼,HarmonyOS开发、鸿蒙开发、测试开发,长沙,101250100,https://www.zhipin.com/job_detail/397dd3de199c31a00nB_3Nq7GFFZ.html,"工作职责:
+1、产线软件开发：使用 C/C++ 开发产线自动化测试程序（EOL/FCT/老化测试），实现 ECU 功能验证、程序刷写等；
+2、产线⾃动化⼯站上位机开发：开发⾃动化设备的上位机软件——操作界面、测试流程控制、设备通讯、结果判定与数据上传；
+3、产线数据与监控：开发产线状态 / 数据监控程序，分析产线生产数据，优化测试程序与设备参数、降低误判率；基于数据对设备状态进⾏监测与预测性维护，减少非计划停机；逐步参与数据驱动的数字化产线建设；
+4、项目支持：参与新项目导入调试、软件版本管理及文档维护
+任职资格:
+1、本科及以上，计算机/电子/自动化相关专业，2 年以上相关经验；
+2、C/C++ 或 C# 任一语言基础扎实，能独立读懂、调试、修改代码；掌握常用数据结构与算法，理解面向对象思想与常用设计模式；
+3、熟悉 CAN/CAN-FD 总线协议，会用 CANoe/PCAN 等工具，理解 UDS（ISO 14229） 诊断协议
+4、具备软硬件联调和问题定位能力，能看懂电路原理图，熟练使用示波器、万用表等调试工具（加分项）
+5、具备较强的学习能力、责任心，有意向在汽车电子领域深耕；
+6、英语读写熟练（加分项）",3日内活跃,"奇瑞汽车
+·
+人事主管",True,True,继续沟通,1783237552.559614,ba07a721be5a45008a96d225b1d48ac2
+87797ed93fea81f10nV_0tq4GVZX,前端开发工程师（双休+五险一金）,全速创想,,8-11K,1-3年,本科,长沙岳麓区麓谷·新长海中心-A1栋808,HarmonyOS开发、鸿蒙开发、测试开发,长沙,101250100,https://www.zhipin.com/job_detail/87797ed93fea81f10nV_0tq4GVZX.html,"【工作职责】
+1、参与需求文档分析，与产品沟通确认功能点，制定实现方案；
+2、负责游戏营销类活动/休闲小游戏 前端开发⼯作，主动推进项⽬流程；
+3、维护及优化前端页⾯性能，优化交互体验。
+【工作要求】
+1. 专科及以上学历，计算机软件或相关专业；
+2. 两年及以上前端开发工作经验，并热爱游戏事业；
+3. 精通HTML5/CSS3/ES6等⽹页相关技术，熟练掌握DIV+CSS页面架构和布局方式（包括Flexbox布局），高效还原页面设计95%以上；
+4. 精通JavaScript，封装组件。熟练运用Vue、React等前端主流框架；
+5. 高度的责任心、较强的抗压能力及出色的技术学习能力;
+6. 良好的沟通技巧和团队合作精神；
+7. （加分项）热爱前沿技术，喜欢探索，具备AI项目运用能力。",3日内活跃,"全速创想
+·
+招聘主管",True,True,继续沟通,1783237587.6843112,ba07a721be5a45008a96d225b1d48ac2
+3537133164c153680nF73ti0FFRV,测试开发工程师 - 电商方向,南威软件,,15-20K·14薪,1-3年,本科,西安长安区协同创新港银河B栋626,HarmonyOS开发、鸿蒙开发、测试开发,西安,101110100,https://www.zhipin.com/job_detail/3537133164c153680nF73ti0FFRV.html,"【工作职责】
+1、负责公司电商产品（APP、小程序、H5、PC等）的功能和性能测试工作，全面保障产品的质量。
+2、深⼊业务，参与需求和技术⽅案评审，从质量角度前置性地发现和预防风险。
+3、推动CI/CD流程中的质量卡点建设，通过技术⼿段持续改进产品质量和发布流程。
+4、完成上级安排的相关工作。
+【任职要求】
+1、计算机相关专业本科及以上学历，1年以上互联网或AI⾏业测试开发经验。
+2、具备扎实的计算机基础和测试开发能力，熟练使用Python/Java/Golang/C++等至少一门编程语言，熟练使用Appium/Selenium/Pytest等自动化测试框架。
+3、对软件测试理论和方法有深入理解，有白盒测试、性能测试、安全测试经验者优先。
+4、熟练使用claude/codex/genimi等AI编程工具。
+5、对技术有强烈的热爱、好奇心和钻研精神，具备卓越的团队协作、沟通和问题解决能力，自驱、富有责任心和主人翁精神，极致追求产品质量和研发效率。",3日内活跃,"南威软件
+·
+产品经理",True,True,继续沟通,1783237711.604639,ba07a721be5a45008a96d225b1d48ac2
+b40f6ef1d564a3870nF-39u9F1NU,芯片测试开发工程师,西安华讯科技,,6-11K,1年以内,本科,西安雁塔区西安神州数码科技园11-12层,HarmonyOS开发、鸿蒙开发、测试开发,西安,101110100,https://www.zhipin.com/job_detail/b40f6ef1d564a3870nF-39u9F1NU.html,"工作职责：
+- 为全球客户开发Memory芯片测试系统
+- 为客户提供Memory 设备提供测试方法和解决方案
+- 在存储器的测试机台上开发测试程序和设计硬件接口
+- 优化测试程序以降低测试成本和提⾼测试的故障覆盖率
+- 解决顾客在⼯程开发和⽣产中的问题总结项目中的知识和经验
+- 建立所有的项⽬和知识文档
+- 在项目执行过程中，与包括总部和现场支持在内的全球同事合作，共同服务客户
+- 与客户有效沟通，确保服务能够满足客户的需求
+任职资格
+- 微电子或电子相关专业；本科或硕士学历
+- 具有基本的C/C++、Java或shell编程经验，熟悉Linux操作系统优先；
+- 良好的英语听说及读写能力；
+- 具备优秀的学习能力和对新知识新技术探求的欲望；
+- 良好的团队合作能力；态度积极，性格开朗，善于沟通，有责任心。
+- 0-2年工作经验，欢迎应届毕业生
+- 入职后，公司将提供系统的、为期数月的技术培训",3日内活跃,"西安华讯科技
+·
+HR",True,True,继续沟通,1783237796.119336,ba07a721be5a45008a96d225b1d48ac2
+7fa3889d3a20fd9f0nF-29q5FVBQ,测试开发工程师,嘉为科技,,10-13K,1-3年,本科,深圳南山区深圳湾创新科技中心-T1栋4902单元,HarmonyOS开发、鸿蒙开发、测试开发,深圳,101280600,https://www.zhipin.com/job_detail/7fa3889d3a20fd9f0nF-29q5FVBQ.html,"岗位职责：1. 负责嘉为蓝鲸 AIOps Web / SaaS / 私有化产品的全流程测试，包括功能测试、接口测试、集成测试、回归测试、验收测试和生产问题分析。
+2. 深入参与 AI Native 产品能力测试，包括智能问答、知识库检索、告警分析、日志分析、⼯单摘要、⾃动派单、CMDB 查询、巡检报告、应急预案、变更分析等场景。
+3. 参与 AI ⽣成内容质量验证，设计测试集和评估方法，关注答案准确性、完整性、可解释性、引用可信度、权限边界、数据安全和幻觉风险。
+4. 参与 API / UI ⾃动化测试建设，结合 AI 工具提升用例生成、脚本编写、缺陷分析、日志排查和回归测试效率。
+5. 参与生产环境问题分析，通过日志、指标、链路、告警、工单等数据协助定位根因，推动系统稳定性和质量提升。
+6. 与产品、研发、交付团队协作，推动 AI 能力从“可演示”走向“可交付、可验证、可运营”。
+任职要求：1. 计算机相关专业本科及以上学历，1年以上 Web 应用软件测试经验，有监控告警、运维、ITSM、CMDB 或 ToB SaaS 产品测试经验优先。
+2. 扎实的软件测试理论基础，熟悉测试用例设计、缺陷管理、接口测试、回归测试和验收测试流程。
+3. 熟悉 Linux 基础命令，熟练使用 SQL 进行数据查询与验证。
+4. 至少熟悉一种主流编程语言，如 Python / Java / JavaScript，能够进行自动化测试脚本开发。
+5. 熟悉 Postman、Charles / Fiddler、JMeter / Locust、pytest、Selenium、Playwright 等至少一种测试工具。
+6. 对 AI 测试有兴趣，至少尝试过任一一项内容：
+    - Prompt 测试；
+    - RAG 知识库测试；
+    - 大模型答案质量评估；
+    - Agent 工具调用测试；
+    - AI 幻觉、越权、数据泄露、错误引用等风险验证；
+    - AI 辅助测试用例生成和缺陷分析。
+7. 具备较强的责任心、主动性、沟通能力和问题推动能力。",刚刚活跃,"嘉为科技
+·
+招聘者",True,True,继续沟通,1783238158.841923,ba07a721be5a45008a96d225b1d48ac2
+b1f96968a5e66cfe0nBy3N-9FVVT,测试开发工程师（无人环卫车）-广州,文远知行,,12-22K·15薪,1-3年,本科,广州海珠区文远知行WeRide(官洲生命科学创新中心A栋店),HarmonyOS开发、鸿蒙开发、测试开发,广州,101280100,https://www.zhipin.com/job_detail/b1f96968a5e66cfe0nBy3N-9FVVT.html,"岗位职责：
+1.保障自动驾驶车辆系统, 软硬件问题可以处理. 保证自动驾驶车辆的正常测试和运营. 负责车辆运营过程中的问题及时处理; 
+2.针对自动驾驶系统 和 硬件, 做对应的测试方案, 并反馈相关的测试问题. 
+3.保证⾃动驾驶系统 的 版本⼀致性. 
+岗位要求：
+1.统招本科以上学历，理⼯科专业;
+2.需要具备ubuntu、git、docker相关的知识，有使用CI/CD工具完成⾃动化编译部署的工作；
+3.良好的python编程能力，能够编写或者维护自动化测试的脚本，提高日常测试效率；
+4.有很强的责任心，能够吃苦耐劳，有比较强的逻辑思维，能够有效的定位测试过程中出现的问题，并进行解决；
+5.有比较好的沟通能力，和各个模块对接测试需求。",3日内活跃,"文远知行
+·
+招聘助理",True,True,继续沟通,1783238177.3957078,ba07a721be5a45008a96d225b1d48ac2
+11d7517226565f540nF539y5GFVS,初中级算法工程师（摄像头测试算法）,华亚智能,,15-20K·13薪,1-3年,初中,广州天河区创想公社·天河1-1-101,HarmonyOS开发、鸿蒙开发、测试开发,广州,101280100,https://www.zhipin.com/job_detail/11d7517226565f540nF539y5GFVS.html,"岗位要求：
+1.熟悉 C#，能维护 .NET项目。
+2.熟悉 WinForms 开发，能看懂 Designer、事件绑定、PropertyGrid、控件刷新、跨线程 UI 更新。
+3.能读懂较大的业务流程代码。
+4.熟悉多线程基础，能处理 Thread、Task.Run、线程停止、UI Invoke、后台采图等问题。
+5.熟悉 TCP/WCF 或类似⼯控通讯，能维护客户端回调、运动控制命令下发、结果返回
+6.能对接第三⽅ DLL，理解 x64/AnyCPU、引⽤路径、native DLL、bindingRedirect、运行目录依赖。
+7.有⼯业相机或机器视觉经验，至少理解采图、Raw/BMP/PNG、ROI、SFR/MTF、OC、Tilt、Check 等概念。
+8.能维护 JSON/INI 参数文件，理解机种参数、工站参数、用户权限、结果文件保存路径。
+9.能现场排查问题：看日志、复现流程、定位是参数、算法、相机、运动平台还是软件逻辑问题。
+加分项：
+- 做过 AA、摄像头模组、VCM、镜头组装、光学检测、SFR/MTF 调试。
+- 用过 OpenCvSharp、ScottPlot、MaterialSkin、HelixToolkit、SkiaSharp。
+- 熟悉运动控制轴：X/Y/Z/Tx/Ty/Rz 或 U 轴。
+- 熟悉算法工程师交付 DLL 的集成方式。
+- 会优化老项目结构，能在不大改架构的情况下把代码逐步整理清楚。
+- 有产线软件维护经验，能接受现场问题优先、稳定性优先。
+双休弹性工作制（每月最后一个周的周六上班，其它周六休息），调休可累计至次年4月份，包中晚餐包住，5险1金，公积金按工资全额的各5%；试用期三个月，年终奖是保底一个月月薪的年终奖（按入职月份折算，写进offer里），年终奖再往上走要看团队利润，拿团队利润的30%作为奖励年终奖和分红双休。公司准备要28年上市，也已在和证券公司在谈，新员工要入职满一年才有股权激励，即原始股，原始股值钱是因为上市能放大40-160倍；每个月10号发工资，从不推迟；年终奖年前一次性发完。
+工作地点：广东珠海",3日内活跃,"华亚智能
+·
+招聘经理",True,True,继续沟通,1783238286.912317,ba07a721be5a45008a96d225b1d48ac2
+e1dd13446c3ab4600nF-3Ny8GVNU,前端开发工程师,兴趣岛,,8-12K,1-3年,本科,广州天河区兴趣岛办公大楼总部无,HarmonyOS开发、鸿蒙开发、测试开发,广州,101280100,https://www.zhipin.com/job_detail/e1dd13446c3ab4600nF-3Ny8GVNU.html,"岗位职责：
+1、负责知识付费、教培类 SaaS 平台前端功能开发，依据产品需求、设计稿使用 Vue/React 完成页面开发；
+2、负责微信 H5、小程序开发，有抖音 / 快⼿⼩程序、App 内嵌 WebView 开发调试经验优先；
+3、基于 Webpack/Vite 完成项⽬构建，开展代码性能优化、代码分割、懒加载等优化工作；
+4、对接后端 RESTful 接口，完成联调、数据校验，编写 Mock 数据与单元测试；
+5、参与前端工程化建设、代码质量管控、性能监控，对现有架构持续迭代优化；
+6、借助 AI 开发⼯具（Copilot/Cursor）提升开发效率，探索 AI 在前端落地的实用方案。
+任职要求：
+1、熟练 HTML5/CSS3、ES6+、TypeScript；熟练 Vue/React 及配套状态管理工具；
+2、熟练 Ant Design/Element UI 等组件库，具备二次开发能力；
+熟悉前端工程化、CI/CD 流程，掌握前端安全基础（XSS、CORS、CSRF）；
+3、了解 WebView 嵌套页面调试、小程序生态适配相关技术。",刚刚活跃,"兴趣岛
+·
+HRBP",True,True,继续沟通,1783238396.908475,ba07a721be5a45008a96d225b1d48ac2
+4d67f7cdbcae4f200nR-2t6-F1FZ,java全栈开发工程师,中科软,,10-15K,1-3年,本科,广州越秀区成悦大厦20层,HarmonyOS开发、鸿蒙开发、测试开发,广州,101280100,https://www.zhipin.com/job_detail/4d67f7cdbcae4f200nR-2t6-F1FZ.html,"岗位职责：
+1.参与公司核心业务系统的全栈开发工作，使用SpringCloud+ Spring Boot+Vue微服务技术栈；
+2.根据业务需求进行系统设计、功能开发及持续优化，确保⾼质量交付；
+3.编写⾼性能、⾼可读性的 SQL，能对 Oracle / MySQL/OceanBase等数据库进行性能调优；
+4.与产品、测试、运维等团队协作，推动项目顺利落地。
+任职要求：
+• 本科及以上学历，计算机类专业优先；
+• 1年及以上 Java 后端开发经验，熟悉微服务开发，熟练掌握 SpringCloud、Spring Boot 、Redis等技术框架；
+• 熟悉 Vue 前端开发，能够独⽴完成基本功能的实现；
+• 熟悉 MySQL、Oracle 数据库，具备 SQL 编写能力及性能优化经验；
+• 逻辑清晰，具备良好的业务理解能力和沟通能力；
+加分项：
+•有实际全栈项目开发经验；
+•熟悉 Redis、Git 等常用工具和技术；
+•有保险行业经验者优先。
+福利待遇：
+•入职即享受 五险一金 + 补充意外险
+•入职满一年可享带薪年假、免费年度体检
+•加入大型保险公司核心系统开发（覆盖20+关联系统）
+•实战微服务架构+智能AI前沿应用技术
+•快速沉淀保险业务深度与AI应用能力",3日内活跃,"中科软
+·
+人力资源",True,True,继续沟通,1783238431.299668,ba07a721be5a45008a96d225b1d48ac2
+65f32bcd9216f7160nBy0967GVJZ,后端开发工程师（GO）,欢聚集团,,15-25K·16薪,1-3年,本科,广州番禺区万达广场B-1座28,HarmonyOS开发、鸿蒙开发、测试开发,广州,101280100,https://www.zhipin.com/job_detail/65f32bcd9216f7160nBy0967GVJZ.html,"职位描述：
+① 负责百万级DAU的App后端业务功能开发，保障服务的高可用性及稳定性；
+② 参与ToB服务的开发，设计通用的行业解决⽅案；
+③ 负责账号、内容审核、PUSH等业务中台系统的维护及迭代。
+任职资格: 
+① 计算机相关专业，2年以上互联⽹Go项⽬开发经验，掌握调试方法和bug排查；
+② 熟悉MySQL、Redis等数据库，掌握常见互联网项⽬技术栈，如Web框架/RPC/MQ/缓存技术/微服务架构等；
+③ 有高可用、分布式系统设计和开发经验优先；
+④ 有责任心，良好学习能力和团队协作能力，善于思考；
+⑤ 能够同时使用Java、Go两种语言进行项目开发，工作有较强的自驱力。",今日活跃,"欢聚集团
+·
+招聘HR",True,True,继续沟通,1783238457.5711732,ba07a721be5a45008a96d225b1d48ac2
+d6c8aacf124e3b270nB_2dW4FFpY,测试开发工程师,古茗茶饮,,11-20K·14薪,1-3年,本科,杭州萧山区萧山科创中心A座5楼,HarmonyOS开发、鸿蒙开发、测试开发,杭州,101210100,https://www.zhipin.com/job_detail/d6c8aacf124e3b270nB_2dW4FFpY.html,"职位描述
+	工作职责
+1.负责公司相关业务的产品质量保障工作，参与项目过程，制定测试计划和测试策略，对各个项目关键点进⾏把关，有效保证产品线质量；
+2.根据公司质量控制规范来引导产品研发团队，及时发现问题并积极推动过程改进；
+3.负责测试⽤例⾃动化开发，提高测试覆盖率及执行效率。
+4.对被测系统/产品的质量负责，并通过测试流程和⽅法创新，不断提升研发的质量和效率；
+5.整体负责供应链领域茗星配业务全部系统的质量保障
+	任职资格
+1、本科及以上学历，3年以内测试工作经验，有性能测试和接口自动化测试的成功实践，或应届生
+2、精通测试流程，熟悉测试用例设计方法，能深入分析产品需求，对开发的设计方案给出合理建议；
+3、熟悉Python/Java等至少一门编程语言，具备独立开发测试工具、框架的能力；
+4、有较强的逻辑思维能力及责任心，具备良好的沟通表达能力和冲突管理能力；
+5、善于团队合作，拥抱变化，拥有owner意识及自我驱动力，具备以终为始的结果导向思维。",今日活跃,"古茗茶饮
+·
+招聘者",True,True,继续沟通,1783238526.189051,ba07a721be5a45008a96d225b1d48ac2
+b4b59a676b70197c0nZ92t21GFBZ,测试开发工程师,五洲工程顾问,,11-18K,1-3年,本科,杭州滨江区五洲工程顾问集团有限公司杭州市滨江区荟薡智创中心10幢5楼,HarmonyOS开发、鸿蒙开发、测试开发,杭州,101210100,https://www.zhipin.com/job_detail/b4b59a676b70197c0nZ92t21GFBZ.html,"1. 计算机相关专业本科及以上学历，1-3年软件测试或测试开发工作经验。
+2. 熟悉测试理论与方法，具备扎实的功能测试和自动化测试能力。
+3. 熟练掌握Python/Java中⼀种，掌握Requests，Pytest，HttpRunner，Locust，Allure.
+4. 熟悉RESTful API规范，能独⽴完成接口测试、参数化设计、断⾔校验等工作。
+5. 熟悉数据库操作，能编写SQL验证数据准确性。
+6. 熟悉Linux，Git、Jenkins、Docker等，熟悉CI/CD。
+7. 有AI相关产品的测试经验，如NLP、CV，语音数字⼈等。
+加分项
+1. 了解AI(NLP/CV)简单原理, 对AI有学习意愿，能协助AI算法工程师完善评测数据集
+2. 能使用AI协助进行模糊测试",3日内活跃,"五洲工程顾问
+·
+人力招聘专员",True,True,继续沟通,1783238535.203136,ba07a721be5a45008a96d225b1d48ac2
+f79fefcd6195c5390nF73N27EVRX,测试开发工程师-中间件,乌鸫科技,,11-20K,1-3年,本科,杭州余杭区阿里巴巴西溪C区,HarmonyOS开发、鸿蒙开发、测试开发,杭州,101210100,https://www.zhipin.com/job_detail/f79fefcd6195c5390nF73N27EVRX.html,"岗位职责：
+1、负责面向全集团中间件的质量保障，注重产品体验，能够从用户视角发现问题并反馈给开发，参与中间件发版迭代测试，编写集测用例集并执行；
+2、参与中间件CI/CD流程优化，确保中间件在持续集成和交付过程中得到充分测试；
+3、维护和优化现有的测试⼯具和⾃动化测试框架，确保其稳定运⾏。研究并引I入新的测试工具和技术，并通过AlCoding提效集成封装覆盖率；
+4、参与建设中间件⾃动化压测体系；
+5、制订中间件的发布规范和质量标准，并与研发同学一起落地质量规范。
+任职要求：
+1、本科及以上学历，计算机、数学、电子工程、通信等相关专业
+2、有足够的java开发经验，具备优秀的编程基础能力；
+3、掌握单元测试、接口测试、系统测试、性能测试；具备自动化框架、测试工具平台开发能力；
+4、熟悉基本中间件工作原理及架构，对DevOps，中间件技术充满热情，在自动化测试领域有深入的研究和思考；
+5、了解Al前沿，并将agent/mcp、skills应用实践者优先。",刚刚活跃,"乌鸫科技
+·
+资深招聘专家",True,True,继续沟通,1783238548.3852,ba07a721be5a45008a96d225b1d48ac2
+e85f186210284cf00nB509i1FlFR,汽车电子测试开发工程师(J10005),鸿泉物联网,,11-20K·14薪,1-3年,本科,杭州滨江区鸿泉大厦启智街35号,HarmonyOS开发、鸿蒙开发、测试开发,杭州,101210100,https://www.zhipin.com/job_detail/e85f186210284cf00nB509i1FlFR.html,"【本岗位非外包，要求学信网可查学历】
+工作职责:
+1、测试方案制定与执⾏，根据汽车电⼦系统的设计规格和功能要求，制定详细的MIL、SIL、HIL、PIL测试⽅案和计划。
+2、自动化测试开发，运用Python、C++等编程语⾔，开发自动化测试脚本和工具，实现测试过程的自动化执行和结果的自动分析，提高测试效率和质量，减少人工测试的误差和重复性工作。
+3、 集成和维护自动化测试框架，使其与汽车电子开发流程紧密结合，能够适应不同项目和产品的测试需求。
+4、问题分析与解决
+5、上级领导交办的其他任务。
+任职资格:
+1、本科学历，2年以上测试经验，熟悉汽车电子系统的架构和原理，包括动力系统、底盘系统、车身电子系统、智能网联系统等，熟悉汽车电子相关的行业标准和规范，如ISO 26262、ISO 14229等。
+2、理解MIL、SIL、HIL、PIL测试的原理、方法和流程，掌握相关的测试设备和工具的使用，如NI的测试平台、Vector的CANoe等。
+3、熟练掌握至少一种编程语言，如Python、C++、Java等，能够编写高效、稳定的自动化测试脚本和工具，具备良好的代码设计和编程习惯。
+4、熟悉脚本语言和自动化测试框架，如Robot Framework、Pytest等，能够根据测试需求进行定制化开发和扩展。
+5、熟练操作NI的各种自动化软件和硬件设备，如LabVIEW、TestStand、PXI系统等，能够进行测试系统的搭建、配置和调试。
+6、掌握汽车电子测试中常用的工具和仪器，如示波器、逻辑分析仪、电源分析仪等，能够进行信号测量、分析和故障诊断。",今日活跃,"鸿泉物联网
+·
+HRBP",True,True,继续沟通,1783238557.411658,ba07a721be5a45008a96d225b1d48ac2
+c1c6d88564c62bf20nF63dq6FVVU,测试开发,嘉兴九州文化传媒,,13-18K·13薪,1-3年,本科,杭州钱塘区和达湖畔中心湖畔中心A座,HarmonyOS开发、鸿蒙开发、测试开发,杭州,101210100,https://www.zhipin.com/job_detail/c1c6d88564c62bf20nF63dq6FVVU.html,"职位名称：海外短剧平台-测试开发工程师
+一、 岗位职责
+全链路业务测试：参与海外短剧平台中后台系统的测试工作，在导师指导下负责广告投放、核⼼播放链路等功能的质量保障。
+测试执⾏与保障：深度参与产品需求评审，编写清晰的测试⽤例，执行功能测试、接口测试及兼容性测试，确保海外广告数据回传与分销链路的准确性。
+AI 赋能与技术提效：熟练运⽤ AI 工具（如 ChatGPT、Claude、GitHub Copilot 等）进行代码辅助生成、测试用例编写及异常日志分析，积极探索 AI 在测试流程中的落地与提效。
+自动化建设：参与团队自动化测试体系的维护与优化，编写并维护基于 Pytest 等框架的自动化测试脚本。
+缺陷闭环管理：精确定位并跟踪系统缺陷，与开发、产品团队紧密配合，推动问题高效解决，确保项目按时上线。
+二、 岗位要求
+背景要求：本科及以上学历，计算机、软件工程、电子信息等相关专业。
+技术能力：
+扎实的计算机基础（数据结构、算法、计算机网络、数据库等）。
+熟练掌握 Python 或 Java 至少一种编程语言，具备良好的编码习惯，在校期间有实际项目编码经验或测试脚本编写经验者优先。
+了解主流自动化测试框架（如 Pytest、Appium、Selenium、Playwright），有相关实践或自学成果者优先。
+AI 原生意识（必备项）：具备极强的“AI 原生”意识和探索精神，能够熟练将 AI 工具融入到日常学习、编码或测试工作中，并能分享利用 AI 工具优化工作流的实际案例。
+业务潜力：
+对海外广告投放（Facebook/TikTok 等）、AI生成以及AI Agent能力有一定了解或浓厚兴趣（无需精通，有概念即可）。
+具备严谨的逻辑思维能力和敏锐的数据敏感度。
+综合素质：具备强大的快速学习能力、自驱力与良好的沟通协作能力，抗压能力强，能够适应短剧行业高频迭代、快速变现的业务节奏。
+三、 加分项
+有知名互联网公司（特别是出海、短剧、网文、泛娱乐方向）的测试开发/软件测试实习经验。
+熟悉 CI/CD 流程（如 Jenkins）或了解前端性能监控工具（如 Lighthouse）。",本周活跃,"嘉兴九州文化传媒
+·
+招聘者",True,True,继续沟通,1783238566.50774,ba07a721be5a45008a96d225b1d48ac2
+bde58dda219921160nF-2NW_FlZQ,研发工程师-后端/前端/测试/AI应用-校招,上海能良,,7-12K,在校/应届,本科,武汉洪山区武汉软件新城2期B6号楼1层6栋一单元整栋,HarmonyOS开发、鸿蒙开发、测试开发,武汉,101200100,https://www.zhipin.com/job_detail/bde58dda219921160nF-2NW_FlZQ.html,"一、企业简介：
+能良成立于2008年，2018年通过资本整合，成为深圳国资委(深投控)下属的天音通信控股股份有限公司(简称""天音控股""，股票代码：000829)的控股⼦公司。
+公司是国内领先的线上带电产品综合服务商，聚焦⼿机、数码、家电、智能出⾏等领域。我们深度服务淘天、拼多多、京东、抖音、快手、美团等所有主流电商平台，在各⼤平台拥有超过700家零售店铺，公司拥有自营的仓储配送体系，客服直播运营中心，并依托扎实的数字化能力与供应链体系，致力于成为行业领先的零售，分销及服务为一体的综合解决方案提供商。
+二、岗位职责：
+1、针对电商平台运行过程中的各类技术问题进行排查、修复与优化，持续提升平台稳定性、流畅度与使用体验，适配业务常态化运营及各类营销活动场景。
+2、配合产品、运营、测试等相关团队协同推进项目落地，跟进业务需求，高效完成研发迭代任务，助力业务稳步。
+3、主动学习行业前沿技术，结合业务场景开展技术优化与创新，规范研发流程，整理完善相关技术资料，沉淀团队技术经验与资产。
+4、负责平台日常技术保障工作，及时响应处理线上突发问题，筑牢平台技术运行基础。
+三、任职资格：
+1、工作地点 ：武汉。该岗位需到广东梅州轮岗客服、直播3个月。
+2、全日制统招本科及以上学历，2026届应届毕业生，计算机、软件工程、电子信息、人工智能、数据科学、网络工程等相关专业。
+3、逻辑思维清晰严谨，具备优秀的问题拆解、故障分析、技术攻坚能力，学习能力强，能快速适配电商业务迭代节奏与新技术栈，愿意深耕互联网电商技术领域长期发展。
+4、专业基础扎实，熟练掌握数据结构、算法、计算机网络、操作系统、数据库等核心知识；熟练掌握Java/Go/Python/JS等至少一门主流开发语言，了解SpringBoot、Vue、React等常用开发框架；熟悉MySQL、Redis、MQ等常用中间件，了解高并发、分布式基础原理。具备良好的代码规范和编程思维。
+四、薪酬福利：
+1、月薪税前7K-12K，后续根据公司晋升机制调薪。
+2、管培生配套培训，培养全模块复合型能力，提升经营者角色胜任力。
+3、年轻化的团队，简单的氛围，交流畅通，工作高效。
+4、不定期团建，生日会，节日大礼包、内购福利，学习交流会，一起解锁成长玩法。",3日内活跃,"上海能良
+·
+招聘专家",True,True,继续沟通,1783238626.022308,ba07a721be5a45008a96d225b1d48ac2
+7ea6a9066f172ad30nBz0t6-F1ZR,系统开发工程师（长沙）,威卡电子控制技术...,,8-13K,1-3年,本科,长沙岳麓区梅溪湖创新中心2604-1室,HarmonyOS开发、鸿蒙开发、测试开发,长沙,101250100,https://www.zhipin.com/job_detail/7ea6a9066f172ad30nBz0t6-F1ZR.html,"职位职责：
+一、 技术沟通
+1积极与客户友好沟通，记录和整理好客户技术需求，做好技术输入工作
+2引导客户使用标准化的⽅案，减少定制开发
+3应⽤相关接口⼯作，主动沟通，保证工作顺利进行
+4⼤客户的技术沟通和技术前瞻性引导
+二、 设计开发
+1. 参与系统解决方案设计；
+2. 完成SAS、MOD详细设计及更新；
+3. 完成程序编码设计及更新；
+4. 完成程序单元测试和集成测试（编程规范、静态测试、动态测试）；
+5. 完成现场调试作业指导书、系统说明书等指导性文件；
+6. 完成新产品应用导入，新产品使用层面开发手册编制和维护；
+7．负责重点项目的技术总体把控（新车型、老行业新产品）；
+8. 解决较复杂难题；
+9. 独立完成DFMEA设计
+三、技术研究
+完成模块级模型、算法研究和设计开发
+四、技术支持
+1持续关注客户技术需求，做好客户技术支持工作
+2生产制造相关技术支持
+3现场调试及售后服务相关技术支持
+五、完成公司交给的其他任务
+任职资格
+一、学历及所学专业
+1大学本科及以上学历，电子、计算机或自动化等相关专业
+二、经验
+1. 移动机械行业工作经验3年以上；
+2. 自动化控制行业工作经验3年以上
+三、知识
+1. 熟悉电气设计相关知识；
+2. 熟悉电气元件相关原理；
+3. 熟悉C、C++、PLC等编程知识；
+4. 了解电液控制相关知识；
+5. 熟悉控制逻辑和控制算法知识；",3日内活跃,"威卡电子控制技术...
+·
+人力资源管理",True,True,继续沟通,1783238715.913989,ba07a721be5a45008a96d225b1d48ac2
+28aa718e1b62cea303Vz3dS0EVpZ,自动驾驶测试开发工程师（环卫车事业部）,文远知行,,12-22K·15薪,1-3年,本科,广州海珠区合景科盛广场17F,HarmonyOS开发、鸿蒙开发、测试开发,广州,101280100,https://www.zhipin.com/job_detail/28aa718e1b62cea303Vz3dS0EVpZ.html,"岗位职责：
+1.保障自动驾驶车辆系统, 软硬件问题可以处理. 保证自动驾驶车辆的正常测试和运营. 负责车辆运营过程中的问题及时处理; 
+2.针对自动驾驶系统 和 硬件, 做对应的测试方案, 并反馈相关的测试问题. 
+3.保证自动驾驶系统 的 版本一致性. 
+岗位要求：
+1.统招本科以上学历，理工科专业;
+2.需要具备ubuntu、git、docker相关的知识，有使用CI/CD工具完成自动化编译部署的工作；
+3.良好的python编程能力，能够编写或者维护自动化测试的脚本，提高日常测试效率；
+4.有很强的责任心，能够吃苦耐劳，有比较强的逻辑思维，能够有效的定位测试过程中出现的问题，并进行解决；
+5.有比较好的沟通能力，和各个模块对接测试需求。",今日活跃,"文远知行
+·
+招聘HR",True,True,继续沟通,1783239169.109429,ba07a721be5a45008a96d225b1d48ac2
+dfff862e2f70d1310nBy3N-9GVdY,测试开发工程师-护车（环卫车事业部）,文远知行,,12-22K·15薪,1-3年,本科,广州海珠区广州国际生物岛螺旋大道68号官洲生命科学中心21楼（官洲地铁站A出口,HarmonyOS开发、鸿蒙开发、测试开发,广州,101280100,https://www.zhipin.com/job_detail/dfff862e2f70d1310nBy3N-9GVdY.html,"岗位职责：
+1.保障自动驾驶车辆系统, 软硬件问题可以处理. 保证自动驾驶车辆的正常测试和运营. 负责车辆运营过程中的问题及时处理; 
+2.针对自动驾驶系统 和 硬件, 做对应的测试方案, 并反馈相关的测试问题. 
+3.保证⾃动驾驶系统 的 版本⼀致性. 
+岗位要求：
+1.统招本科以上学历，理⼯科专业;
+2.需要具备ubuntu、git、docker相关的知识，有使用CI/CD工具完成⾃动化编译部署的工作；
+3.良好的python编程能力，能够编写或者维护自动化测试的脚本，提高日常测试效率；
+4.有很强的责任心，能够吃苦耐劳，有比较强的逻辑思维，能够有效的定位测试过程中出现的问题，并进行解决；
+5.有比较好的沟通能力，和各个模块对接测试需求。",3日内活跃,"文远知行
+·
+人事招聘专员",True,True,继续沟通,1783239410.6450298,ba07a721be5a45008a96d225b1d48ac2

@@ -18,11 +18,20 @@ local-api-usage/*
 local-api-usage/kuaishou/*
 !local-api-usage/kuaishou/batch-publish-kuaishou.mjs
 !local-api-usage/kuaishou/generate-kuaishou-tasks.mjs
+*.jsonl
+*.state.json
+tasks.*.json
 !local-api-usage/safari-rpa/
 local-api-usage/safari-rpa/*
 !local-api-usage/safari-rpa/configs/
 !local-api-usage/safari-rpa/configs/**
-*.jsonl
-*.state.json
-tasks.*.json
-local-api-usage/safari-rpa/var/
+# Ignore runtime data by default.
+!local-api-usage/safari-rpa/var/
+local-api-usage/safari-rpa/var/*
+
+# Allow the reports directory.
+!local-api-usage/safari-rpa/var/reports/
+local-api-usage/safari-rpa/var/reports/*
+
+# Allow Boss report directories.
+!local-api-usage/safari-rpa/var/reports/boss/
