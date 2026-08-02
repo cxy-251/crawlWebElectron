@@ -14,8 +14,6 @@ search:
     - {name: 西安, code: "101110100"}
     - {name: 厦门, code: "101230200"}
 
-  # Code-first sectors are rotated by date and city. Generic robot, firmware,
-  # hardware, and field-integration searches are intentionally excluded.
   weekday_keywords:
     mon: [Linux系统开发, C++开发, 基础软件开发, 分布式系统开发, 中间件开发]
     tue: [AI应用开发, 大模型应用开发, AI平台开发, 推理引擎开发, 模型部署工程师]
@@ -25,124 +23,262 @@ search:
     sat: [HarmonyOS开发, Android开发, 客户端开发, Qt开发, 桌面端开发]
     sun: [音视频开发, 编解码开发, 计算机视觉, 图像处理, 多媒体开发]
 
+  # Fail configuration loading if a search term is added without an executable
+  # title/JD rule below.
+  require_keyword_rules: true
+  require_position_filters: true
+  # Keep today's direction first, then use the other configured directions only
+  # when the primary candidate pool cannot satisfy the unchanged run target.
+  expand_all_keywords_on_shortfall: true
+
+  directions:
+    systems:
+      min_score: 4
+      require_direction_title: false
+      jd_support_any: [多线程, 网络编程, 性能优化, 进程间通信, 并发, 高可用, CMake, GCC, GDB]
+      deny_any: [桌面运维, 网络运维, 运维值班, 硬件电路, 电气设计, 现场实施, 技术支持]
+    ai:
+      min_score: 4
+      require_direction_title: false
+      jd_support_any: [Python, PyTorch, TensorFlow, CUDA, RAG, Agent, 向量数据库, Docker, Kubernetes, 微服务]
+      deny_any: [数据标注, 电话销售, 课程顾问, 内容运营, 社群运营]
+    automotive:
+      min_score: 4
+      require_direction_title: false
+      jd_support_any: [C++, C语言, Linux, QNX, AUTOSAR, CAN, SOME/IP, 车载以太网, 嵌入式软件]
+      deny_any: [汽车销售, 测试驾驶, 整车试验, 标定工程师, 售后服务, 维修技师]
+    graphics:
+      min_score: 4
+      require_direction_title: false
+      jd_support_any: [C++, GLSL, HLSL, Shader, 图形学, 计算机图形, 实时渲染, 性能优化]
+      deny_any: [平面设计, UI设计, 视频剪辑, 美术外包, 广告设计]
+    industrial:
+      min_score: 4
+      require_direction_title: false
+      jd_support_any: [C++, C#, Python, Qt, 数值计算, 科学计算, 几何内核, 求解器, 桌面软件]
+      deny_any: [机械设计, 结构设计, 有限元分析师, 仿真分析师, CAD制图, CAE应用, 实施顾问, 技术支持]
+    client:
+      min_score: 4
+      require_direction_title: false
+      jd_support_any: [C++, Java, Kotlin, Swift, ArkTS, Dart, Flutter, Qt, 客户端架构, 性能优化]
+      deny_any: [手机销售, 门店运营, 客服, UI设计, 产品经理]
+    media_cv:
+      min_score: 4
+      require_direction_title: false
+      jd_support_any: [C++, Python, FFmpeg, OpenCV, CUDA, SIMD, 实时处理, 性能优化, 深度学习]
+      deny_any: [视频剪辑, 摄影师, 后期制作, 内容审核, 数据标注]
+
+  keyword_rules:
+    Linux系统开发:
+      direction: systems
+      query_params: {position: "100102,100802,100806"}
+      title_any: [Linux, 系统软件, 内核, 驱动, BSP, 系统开发]
+      jd_core_any: [Linux, POSIX, 内核, 驱动, BSP, 系统编程]
+    C++开发:
+      direction: systems
+      query_params: {position: "100102"}
+      title_any: [C++, C语言]
+      jd_core_any: [C++, C语言]
+    基础软件开发:
+      direction: systems
+      query_params: {position: "100102,100802,100806,101313"}
+      title_any: [基础软件, 系统软件, 基础架构, 内核, 运行时]
+      jd_core_any: [基础软件, 系统软件, 操作系统, 运行时, Runtime, 编译器]
+    分布式系统开发:
+      direction: systems
+      query_params: {position: "100101,100102,100109,100116,101313"}
+      title_any: [分布式, 基础架构, 后端开发, 服务端开发]
+      jd_core_any: [分布式, 一致性, 高可用, 服务治理, 微服务]
+    中间件开发:
+      direction: systems
+      query_params: {position: "100101,100102,100109,100116"}
+      title_any: [中间件, 基础架构, 后端开发, 服务端开发]
+      jd_core_any: [中间件, RPC, 消息队列, 服务治理, API网关]
+
+    AI应用开发:
+      direction: ai
+      query_params: {position: "100109,100120,101301,101302,101310"}
+      title_any: [AI应用, AI工程师, 人工智能, Python开发]
+      jd_core_any: [AI应用, 人工智能应用, 生成式AI, AIGC, 智能体, Agent]
+    大模型应用开发:
+      direction: ai
+      query_params: {position: "100109,100120,101310"}
+      title_any: [大模型应用, 大模型开发, LLM, AI应用]
+      jd_core_any: [大模型, LLM, RAG, 提示词工程, 智能体, Agent]
+    AI平台开发:
+      direction: ai
+      query_params: {position: "100102,100109,100120,101301,101313"}
+      title_any: [AI平台, 机器学习平台, MLOps, 基础架构]
+      jd_core_any: [AI平台, 机器学习平台, MLOps, 训练平台, 特征平台]
+    推理引擎开发:
+      direction: ai
+      query_params: {position: "100102,100120,101302,101313"}
+      title_any: [推理引擎, 模型推理, 引擎开发, AI工程师]
+      jd_core_any: [推理引擎, 模型推理, TensorRT, ONNX Runtime, 算子开发]
+    模型部署工程师:
+      direction: ai
+      query_params: {position: "100109,100120,101301,101302"}
+      title_any: [模型部署, MLOps, AI工程师, 算法工程师]
+      jd_core_any: [模型部署, 模型服务, Serving, MLOps, 推理服务]
+
+    汽车软件开发:
+      direction: automotive
+      query_params: {position: "100202,100802,100806,101308"}
+      title_any: [汽车软件, 车载软件, 嵌入式软件, 软件开发]
+      jd_core_any: [汽车软件, 车载软件, 车规, ECU, 域控制器]
+    智能座舱开发:
+      direction: automotive
+      query_params: {position: "100202,100802,100806"}
+      title_any: [智能座舱, 车机, 车载软件, Android]
+      jd_core_any: [智能座舱, 车机, 座舱系统, IVI, 车载Android]
+    车载系统开发:
+      direction: automotive
+      query_params: {position: "100802,100806,101308"}
+      title_any: [车载系统, 车载软件, 车机, 嵌入式软件]
+      jd_core_any: [车载系统, 车载软件, ECU, 域控制器, 车载操作系统]
+    AUTOSAR开发:
+      direction: automotive
+      query_params: {position: "100802,100806,101308"}
+      title_any: [AUTOSAR, 汽车软件, 车载软件, 嵌入式软件]
+      jd_core_any: [AUTOSAR, Adaptive AUTOSAR, Classic AUTOSAR, RTE, BSW]
+    QNX开发:
+      direction: automotive
+      query_params: {position: "100802,100806"}
+      title_any: [QNX, 车载系统, 智能座舱, 嵌入式软件]
+      jd_core_any: [QNX, Neutrino, 车载操作系统, 智能座舱]
+
+    图形开发:
+      direction: graphics
+      query_params: {position: "100121,101306,101313"}
+      title_any: [图形开发, 图形图像, 计算机图形, 引擎开发]
+      jd_core_any: [计算机图形, 图形学, 图形引擎, 图形渲染]
+    渲染开发:
+      direction: graphics
+      query_params: {position: "100121,101313"}
+      title_any: [渲染开发, 渲染引擎, 图形开发, 引擎开发]
+      jd_core_any: [渲染引擎, 实时渲染, 光栅化, 光线追踪, PBR]
+    GPU开发:
+      direction: graphics
+      query_params: {position: "100102,100121,100806,101313"}
+      title_any: [GPU, 图形开发, 高性能计算, 算子开发]
+      jd_core_any: [GPU, CUDA, OpenCL, GPU计算, GPU驱动]
+    OpenGL开发:
+      direction: graphics
+      query_params: {position: "100121,101313"}
+      title_any: [OpenGL, 图形开发, 渲染开发]
+      jd_core_any: [OpenGL, OpenGL ES, GLSL]
+    Vulkan开发:
+      direction: graphics
+      query_params: {position: "100121,101313"}
+      title_any: [Vulkan, 图形开发, 渲染开发]
+      jd_core_any: [Vulkan, SPIR-V, GLSL]
+
+    工业软件开发:
+      direction: industrial
+      query_params: {position: "100102,100109,101313"}
+      title_any: [工业软件, 工程软件, 制造软件, 桌面端开发]
+      jd_core_any: [工业软件, 工程软件, 制造软件, 数字孪生, 工业互联网]
+    CAD开发:
+      direction: industrial
+      query_params: {position: "100102,100121,101313"}
+      title_any: [CAD开发, CAD平台, 几何内核, 图形开发]
+      jd_core_any: [CAD开发, CAD平台, 几何内核, B-Rep, NURBS, OpenCASCADE]
+    CAE开发:
+      direction: industrial
+      query_params: {position: "100102,100109,101313"}
+      title_any: [CAE开发, 求解器, 仿真软件, 科学计算]
+      jd_core_any: [CAE开发, CAE平台, 求解器开发, 有限元软件, 前后处理开发]
+    仿真软件开发:
+      direction: industrial
+      query_params: {position: "100102,100109,101313"}
+      title_any: [仿真软件, 软件开发, 科学计算, 求解器]
+      jd_core_any: [仿真软件, 仿真平台, 求解器, 数值模拟, 多物理场]
+    几何算法:
+      direction: industrial
+      query_params: {position: "100102,100120,100121,101306,101313"}
+      title_any: [几何算法, 几何内核, CAD开发, 算法工程师]
+      jd_core_any: [计算几何, 几何算法, 几何内核, 曲面, 网格算法]
+
+    HarmonyOS开发:
+      direction: client
+      query_params: {position: "100213"}
+      title_any: [HarmonyOS, 鸿蒙, ArkTS, 客户端开发]
+      jd_core_any: [HarmonyOS, 鸿蒙, ArkTS, ArkUI]
+    Android开发:
+      direction: client
+      query_params: {position: "100202"}
+      title_any: [Android, 安卓, Kotlin, 客户端开发]
+      jd_core_any: [Android, 安卓, Kotlin, Jetpack]
+    客户端开发:
+      direction: client
+      query_params: {position: "100202,100203,100208,100213"}
+      title_any: [客户端开发, 移动端开发, iOS, Android, HarmonyOS]
+      jd_core_any: [客户端开发, 移动端, Android, iOS, HarmonyOS, Flutter]
+    Qt开发:
+      direction: client
+      query_params: {position: "100102"}
+      title_any: [Qt, 桌面端开发, 客户端开发]
+      jd_core_any: [Qt, Qt Quick, QML]
+    桌面端开发:
+      direction: client
+      query_params: {position: "100102,100203,100208"}
+      title_any: [桌面端开发, 桌面软件, 客户端开发, Qt]
+      jd_core_any: [桌面软件, 桌面端, Qt, Electron, Windows客户端, macOS客户端]
+
+    音视频开发:
+      direction: media_cv
+      query_params: {position: "100121"}
+      title_any: [音视频开发, 多媒体开发, 编解码, 流媒体]
+      jd_core_any: [音视频, 流媒体, FFmpeg, WebRTC, 音频处理, 视频处理]
+    编解码开发:
+      direction: media_cv
+      query_params: {position: "100121"}
+      title_any: [编解码, 音视频开发, 多媒体开发]
+      jd_core_any: [编解码, H.264, H.265, HEVC, AV1, AAC, FFmpeg]
+    计算机视觉:
+      direction: media_cv
+      query_params: {position: "100120,101302,101306"}
+      title_any: [计算机视觉, 视觉算法, CV算法, 图像算法]
+      jd_core_any: [计算机视觉, 机器视觉, 目标检测, 图像识别, OpenCV]
+    图像处理:
+      direction: media_cv
+      query_params: {position: "100120,100121,101306"}
+      title_any: [图像处理, 图像算法, 视觉算法, 计算机视觉]
+      jd_core_any: [图像处理, 图像增强, 图像算法, OpenCV, 计算成像]
+    多媒体开发:
+      direction: media_cv
+      query_params: {position: "100121"}
+      title_any: [多媒体开发, 音视频开发, 编解码, 流媒体]
+      jd_core_any: [多媒体, 音视频, FFmpeg, GStreamer, WebRTC]
+
   query_params:
     scale: "304,305,306"
-    # Include unrestricted/junior filters plus 3-5 and 5-10 year software roles.
-    experience: "102,103,104,105,106,108"
+    # Boss unrestricted, graduate/junior, under-one-year, and one-to-three-year filters.
+    experience: "102,103,104,108"
     degree: "203,202,201,208"
     salary: "405"
 
 criteria:
-  # A title must describe software product, platform, algorithm, runtime, client,
-  # graphics, automotive-software, or industrial-software development.
+  # Generic software titles may reach JD evaluation. Direction-specific titles
+  # come from the active keyword rule, not from one global permissive list.
   title_allow:
     - 软件开发
     - 软件工程师
+    - 开发工程师
     - 研发工程师
-    - 系统开发
-    - 系统软件
-    - 基础软件
-    - 基础架构
-    - Linux
-    - 内核开发
-    - 驱动开发
-    - C++
-    - C语言
-    - Python
+    - 程序员
+    - 算法工程师
     - 后端开发
     - 服务端开发
-    - 分布式系统
-    - 中间件
-    - 云原生
-    - 数据库内核
-    - 存储引擎
-    - 高性能计算
-    - 运维开发
-    - SRE
     - 客户端开发
-    - 桌面端开发
-    - Qt
-    - Android
-    - 安卓
-    - iOS
-    - HarmonyOS
-    - 鸿蒙
-    - ArkTS
-    - Flutter
-    - Swift
-    - 图形开发
-    - 图形图像
-    - 计算机图形
-    - GPU
-    - 渲染开发
-    - OpenGL
-    - Vulkan
-    - Metal
-    - WebGPU
-    - WebGL
-    - Three.js
-    - 游戏引擎
-    - 引擎开发
-    - 音视频开发
-    - 多媒体开发
-    - 编解码
-    - 图像处理
-    - 计算机视觉
-    - 视觉算法
-    - OpenCV
-    - AI应用
-    - AI工程师
-    - AI平台
-    - 大模型应用
-    - 大模型开发
-    - LLM
-    - 推理引擎
-    - 模型推理
-    - 模型部署
-    - 训练框架
-    - MLOps
-    - 机器学习工程师
-    - 深度学习工程师
-    - NLP工程师
-    - 汽车软件
-    - 车载软件
-    - 智能座舱
-    - 车机开发
-    - 车载系统
-    - AUTOSAR
-    - QNX
-    - 自动驾驶软件
-    - 车载嵌入式
-    - 工业软件
-    - CAD开发
-    - CAE开发
-    - CAM开发
-    - EDA开发
-    - 仿真软件
-    - 几何算法
-    - 几何内核
-    - 科学计算
-    - 数值计算
-    - CFD开发
-    - PLM开发
-    - PDM开发
-    - 嵌入式软件
-    - 嵌入式Linux
     - 测试开发
-    - 自动化测试
 
-  # Deny concrete non-coding roles rather than broad substrings. The standalone
-  # word “客户” is forbidden here because it would reject “客户端开发”.
   title_deny:
     - 销售
-    - 销售工程师
-    - 渠道销售
     - 客户经理
-    - 大客户经理
     - 客户成功
     - 客服
     - 商务拓展
-    - 商务经理
     - 市场营销
     - 采购
     - 运营
@@ -159,6 +295,9 @@ criteria:
     - 培训
     - 人事
     - 招聘专员
+    - 招聘顾问
+    - 人才招聘
+    - 猎头顾问
     - 行政
     - 机械设计
     - 结构工程师
@@ -183,23 +322,25 @@ criteria:
     - 功能测试
     - 硬件测试
 
-  experience_allow: [经验不限, 1-3年, 3-5年, 5-10年]
+  experience_allow: [经验不限, 在校/应届, 应届生, 1年以内, 1-3年]
   education_deny: [硕士, 博士]
   company_size_min: 500
   salary_min_k: 10
   salary_max_k: 20
   allow_unknown: true
-  allow_unknown_hr_activity: true
+  allow_unknown_hr_activity: false
   hr_active_allow: [刚刚在线, 今日在线, 在线, 当前在线, 刚刚活跃, 今日活跃, 一日内活跃, 二日内活跃, 三日内活跃, 近三日活跃, 3日内活跃, 四日内活跃, 五日内活跃, 六日内活跃, 七日内活跃, 本周活跃]
   hr_title_deny: [猎头, 代招]
 
 limits:
   run: 110
   daily: 110
-  # Initial balancing quota. The overflow phase may exceed it while the shared
-  # run and daily limits remain below 110.
   per_city: 10
   max_pages: 10
+  batch_size: 30
+  max_detail_reads_per_batch: 30
+  max_search_reads_per_batch: 12
+  max_scroll_rounds_per_batch: 10
 
 ordering:
   strategy: random_rotated
@@ -208,21 +349,12 @@ communication:
   enabled: true
 
 profiles:
-  collection:
-    communication:
-      enabled: false
-    limits:
-      run: 110
   test:
-    # At most ten new confirmed communications in this run. They count toward
-    # the same 110-per-day ledger used by production.
     communication:
       enabled: true
     limits:
       run: 10
   production:
-    # Test-profile communications already completed today are deducted from this
-    # shared allowance.
     communication:
       enabled: true
     limits:

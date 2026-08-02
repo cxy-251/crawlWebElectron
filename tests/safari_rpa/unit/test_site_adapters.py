@@ -26,11 +26,13 @@ class CommunicationBossSafari:
         same_job: bool = True,
         confirm_after_click: bool = True,
         mismatch: bool = False,
+        button_text: str = "立即沟通",
     ) -> None:
         self.status = status
         self.same_job = same_job
         self.confirm_after_click = confirm_after_click
         self.mismatch = mismatch
+        self.button_text = button_text
         self.clicks = 0
 
     async def evaluate(self, page, expression):
@@ -41,7 +43,7 @@ class CommunicationBossSafari:
             "expected_job_id": "JOB-1",
             "same_job": self.same_job,
             "status": self.status,
-            "button_text": "立即沟通" if self.status == "available" else "继续沟通",
+            "button_text": self.button_text if self.status == "available" else "继续沟通",
             "url": "https://www.zhipin.com/job_detail/JOB-1.html",
         }
 
@@ -50,7 +52,7 @@ class CommunicationBossSafari:
             found = self.mismatch
         else:
             found = locator.value != "留在此页"
-        return ElementState(found=found, visible=found, enabled=found)
+        return ElementState(found=found, visible=found, enabled=found, text=self.button_text)
 
     async def click(self, page, locator, postcondition, timeout=15):
         self.clicks += 1
@@ -62,6 +64,68 @@ class CommunicationBossSafari:
         elif self.confirm_after_click:
             self.status = "communicated"
         return ActionEvidence("click", 0, 1, STATE, STATE)
+
+
+class JobCardBossSafari:
+    def __init__(self, slot=None) -> None:
+        self.slot = slot or {
+            "state": "done",
+            "value": {
+                "job_id": "JOB-1",
+                "title": "C++开发工程师",
+                "salary": "15-20K",
+                "experience": "1-3年",
+                "education": "本科",
+                "jd": "负责 Linux C++ 基础软件开发",
+                "hr_active_time": "今日活跃",
+                "hr_title": "招聘经理",
+                "hr_boss_raw": "张女士 招聘经理 今日活跃",
+                "friend_status": 0,
+                "can_add_friend": True,
+            },
+        }
+        self.scripts: list[str] = []
+        self.cleanup_calls = 0
+
+    async def evaluate(self, page, expression):
+        self.scripts.append(expression)
+        if "const loggedIn" in expression:
+            return {"risk": False, "login_required": False, "page_type": "search"}
+        if "boss_start_job_card_read" in expression:
+            return True
+        if "boss_take_job_card_read" in expression:
+            return self.slot
+        if "boss_cleanup_job_card_read" in expression:
+            self.cleanup_calls += 1
+            return True
+        return None
+
+    async def wait_for(self, page, condition, timeout=30):
+        self.condition = condition
+        self.timeout = timeout
+        return STATE
+
+
+class SearchJobsBossSafari:
+    def __init__(self) -> None:
+        self.script = ""
+
+    async def evaluate(self, page, expression):
+        self.script = expression
+        return [{
+            "job_id": "JOB-1",
+            "title": "Linux开发",
+            "url": "https://www.zhipin.com/job_detail/JOB-1.html",
+            "salary": "15-20K",
+            "company": "示例公司",
+            "experience": "1-3年",
+            "education": "本科",
+            "scale": "1000-9999人",
+            "location": "深圳南山区",
+            "security_id": "SEC-1",
+            "lid": "LID-1",
+            "boss_online": True,
+        }]
 
 
 class TwitterSafari:
@@ -130,7 +194,14 @@ class SiteAdapterTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual("skipped_experience_mismatch", result["outcome"])
         self.assertFalse(result["confirmed"])
         self.assertFalse(result["performed"])
-        self.assertEqual(2, safari.clicks)
+        self.assertEqual(1, safari.clicks)
+
+    async def test_boss_never_clicks_a_generic_communication_control(self) -> None:
+        safari = CommunicationBossSafari("available", button_text="沟通")
+        with self.assertRaises(RpaError) as raised:
+            await BossPageAdapter(safari).communicate(PAGE, "JOB-1")
+        self.assertEqual("BOSS_COMMUNICATE_UNAVAILABLE", raised.exception.code)
+        self.assertEqual(0, safari.clicks)
 
     def test_boss_risk_contract_ignores_naked_403_digits(self) -> None:
         script = BossPageAdapter._access_state_script()
@@ -148,10 +219,54 @@ class SiteAdapterTests(unittest.IsolatedAsyncioTestCase):
 
     def test_boss_login_contract_does_not_block_logged_in_detail_for_incidental_text(self) -> None:
         script = BossPageAdapter._access_state_script()
-        self.assertIn("const loginRequired = loginUrl || (!loggedIn && (!!visibleLoginNode || pageUnavailableLogin));", script)
+        self.assertIn("pageType === 'unknown'", script)
+        self.assertIn("visibleLoginNode && (!loggedIn || pageType === 'unknown')", script)
         self.assertIn("login_reason: loginReason", script)
         self.assertIn("login_text: loginText", script)
         self.assertNotIn("const loginPage = /login|passport/.test(url) ||", script)
+
+    def test_boss_sms_login_code_is_not_misclassified_as_risk_control(self) -> None:
+        script = BossPageAdapter._access_state_script()
+        risk_pattern = script.split("const riskPattern =", 1)[1].split(";", 1)[0]
+        self.assertNotIn("验证码", risk_pattern)
+        self.assertIn("滑块验证", risk_pattern)
+        self.assertIn("人机验证", risk_pattern)
+
+    async def test_boss_search_jobs_preserve_background_card_identifiers(self) -> None:
+        safari = SearchJobsBossSafari()
+        jobs = await BossPageAdapter(safari)._extract_search_jobs(PAGE)
+        self.assertEqual("SEC-1", jobs[0]["security_id"])
+        self.assertEqual("LID-1", jobs[0]["lid"])
+        self.assertTrue(jobs[0]["boss_online"])
+        self.assertIn("__vue__", safari.script)
+        self.assertIn("securityId", safari.script)
+        self.assertIn("searchParams.get('lid')", safari.script)
+
+    async def test_boss_job_card_read_returns_sanitized_match_fields_and_cleans_slot(self) -> None:
+        safari = JobCardBossSafari()
+        listed = {
+            "job_id": "JOB-1",
+            "url": "https://www.zhipin.com/job_detail/JOB-1.html",
+            "security_id": "SEC / 1",
+            "lid": "LID?1",
+            "company": "示例公司",
+            "scale": "1000-9999人",
+        }
+        job = await BossPageAdapter(safari).read_job_card(PAGE, listed, timeout=3)
+        self.assertEqual("job_card_api", job["source"])
+        self.assertEqual("负责 Linux C++ 基础软件开发", job["jd"])
+        self.assertEqual("今日活跃", job["hr_active_time"])
+        self.assertEqual("示例公司", job["company"])
+        self.assertEqual("1000-9999人", job["scale"])
+        self.assertEqual(1, safari.cleanup_calls)
+        self.assertEqual(3, safari.timeout)
+        start_script = next(script for script in safari.scripts if "boss_start_job_card_read" in script)
+        self.assertIn("SEC%20%2F%201", start_script)
+        self.assertIn("LID%3F1", start_script)
+        self.assertIn("new XMLHttpRequest()", start_script)
+        self.assertNotIn("fetch(endpoint", start_script)
+        self.assertNotIn("friend/add", start_script)
+        self.assertNotIn("headers: {Cookie", start_script)
 
     async def test_twitter_profile_navigation_normalizes_to_x_handle(self) -> None:
         safari = TwitterSafari()
@@ -261,13 +376,27 @@ class SiteAdapterTests(unittest.IsolatedAsyncioTestCase):
         config = yaml.safe_load((CONFIGS / "boss/production.yaml").read_text(encoding="utf-8"))
         self.assertEqual(11, len(config["search"]["cities"]))
         self.assertEqual(
-            ["深圳", "广州", "杭州", "上海", "成都", "武汉", "南京", "苏州", "东莞", "佛山", "重庆"],
+            ["深圳", "广州", "杭州", "上海", "成都", "武汉", "南京", "苏州", "长沙", "西安", "厦门"],
             [city["name"] for city in config["search"]["cities"]],
         )
-        self.assertEqual("Python开发工程师", config["search"]["weekday_keywords"]["mon"])
-        self.assertEqual("iOS开发工程师", config["search"]["weekday_keywords"]["sat"])
-        self.assertIn("开发", config["criteria"]["title_allow"])
+        self.assertEqual("Linux系统开发", config["search"]["weekday_keywords"]["mon"][0])
+        self.assertEqual("HarmonyOS开发", config["search"]["weekday_keywords"]["sat"][0])
+        self.assertIn("Linux系统开发", config["search"]["keyword_rules"])
+        self.assertEqual(
+            "100213",
+            config["search"]["keyword_rules"]["HarmonyOS开发"]["query_params"]["position"],
+        )
+        self.assertIn("软件开发", config["criteria"]["title_allow"])
         self.assertIn("产品经理", config["criteria"]["title_deny"])
+        self.assertFalse(config["criteria"]["allow_unknown_hr_activity"])
+        self.assertTrue(config["search"]["expand_all_keywords_on_shortfall"])
+        self.assertTrue(
+            all(
+                direction["require_direction_title"] is False
+                for direction in config["search"]["directions"].values()
+            )
+        )
+        self.assertEqual(12, config["limits"]["max_search_reads_per_batch"])
         url = BossWorkflow._search_url(
             "iOS开发工程师",
             {"name": "深圳", "code": "101280600"},
@@ -282,7 +411,6 @@ class SiteAdapterTests(unittest.IsolatedAsyncioTestCase):
 
     def test_boss_profiles_share_cities_keywords_and_daily_ledger(self) -> None:
         expected = {
-            "collection": (110, False),
             "test": (10, True),
             "production": (110, True),
         }
@@ -293,14 +421,15 @@ class SiteAdapterTests(unittest.IsolatedAsyncioTestCase):
             with self.subTest(profile=name):
                 config = BossWorkflow._config({**source, "profile": name})
                 self.assertEqual(11, len(config["search"]["cities"]))
-                self.assertEqual("Python开发工程师", config["search"]["weekday_keywords"]["mon"])
-                self.assertEqual("iOS开发工程师", config["search"]["weekday_keywords"]["sat"])
-                self.assertIn("开发", config["criteria"]["title_allow"])
+                self.assertEqual("Linux系统开发", config["search"]["weekday_keywords"]["mon"][0])
+                self.assertEqual("HarmonyOS开发", config["search"]["weekday_keywords"]["sat"][0])
+                self.assertIn("软件开发", config["criteria"]["title_allow"])
                 self.assertIn("销售", config["criteria"]["title_deny"])
                 self.assertEqual(name, config["profile"])
                 self.assertEqual(run_limit, config["limits"]["run"])
                 self.assertEqual(110, config["limits"]["daily"])
                 self.assertEqual(10, config["limits"]["per_city"])
+                self.assertEqual(12, config["limits"]["max_search_reads_per_batch"])
                 self.assertEqual(communication, config["communication"]["enabled"])
 
     def test_boss_unknown_profile_is_rejected(self) -> None:
@@ -308,7 +437,10 @@ class SiteAdapterTests(unittest.IsolatedAsyncioTestCase):
             BossWorkflow._config(
                 {
                     "profile": "missing",
-                    "profiles": {"production": {"communication": {"enabled": True}}},
+                    "profiles": {
+                        "test": {"communication": {"enabled": True}},
+                        "production": {"communication": {"enabled": True}},
+                    },
                     "search": {"cities": [{"name": "深圳", "code": "101280600"}], "keywords": ["iOS开发工程师"]},
                 }
             )

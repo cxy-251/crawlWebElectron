@@ -49,6 +49,9 @@ on run argv
                         set tabTitle to name of browserTab
                     end try
                     set currentJson to "false"
+                    try
+                        if browserTab is current tab of browserWindow then set currentJson to "true"
+                    end try
                     set end of tabParts to "{\"tab_index\":" & tabIndex & ",\"url\":" & my jsonString(tabUrl) & ",\"title\":" & my jsonString(tabTitle) & ",\"is_current\":" & currentJson & "}"
                 end repeat
                 set end of windowParts to "{\"window_id\":" & browserWindowId & ",\"index\":" & windowIndex & ",\"tabs\":[" & my joinList(tabParts, ",") & "]}"

@@ -1,6 +1,10 @@
 from __future__ import annotations
 
+import asyncio
+import json
+import uuid
 from typing import Any
+from urllib.parse import quote
 
 from safari_rpa.contracts.errors import ErrorKind, RpaError, UnknownSideEffectError
 from safari_rpa.contracts.safari import Locator, PageCondition, PageRef, SafariAutomationPort
@@ -13,7 +17,7 @@ class BossPageAdapter:
     def __init__(self, safari: SafariAutomationPort):
         self.safari = safari
 
-    async def ensure_page(self) -> PageRef:
+    async def ensure_search_page(self) -> PageRef:
         page = await self.safari.ensure_site(self.ORIGIN, self.START_URL)
         await self.safari.wait_for(
             page,
@@ -25,6 +29,27 @@ class BossPageAdapter:
         )
         await self.assert_access(page)
         return page
+
+    async def ensure_page(self) -> PageRef:
+        """Compatibility alias for callers that only need a search page."""
+
+        return await self.ensure_search_page()
+
+    async def open_detail_page(self, search_page: PageRef) -> PageRef:
+        page = await self.safari.create_page(search_page, self.START_URL)
+        await self.safari.wait_for(
+            page,
+            PageCondition.js(
+                self._actionable_page_condition(),
+                "Boss detail workspace surface or an actionable blocking state appears",
+            ),
+            timeout=40,
+        )
+        await self.assert_access(page)
+        return page
+
+    async def close_page(self, page: PageRef) -> None:
+        await self.safari.close_page(page)
 
     async def assert_access(self, page: PageRef) -> dict[str, Any]:
         state = await self.safari.evaluate(
@@ -52,7 +77,7 @@ class BossPageAdapter:
             const empty = /暂无相关职位|没有找到相关职位|暂无职位|没有搜索结果/.test(text);
             const pageType = list && detail ? 'search_detail' : list ? 'search' : detail ? 'detail' :
                 empty ? 'search_empty' : 'unknown';
-            const riskPattern = /验证码|访问异常|账号异常|安全验证|操作频繁|暂时封禁/;
+            const riskPattern = /访问异常|账号异常|安全验证|操作频繁|暂时封禁|滑块验证|人机验证|请完成.{0,8}验证/;
             const visible = el => {
                 if (!el) return false;
                 const style = getComputedStyle(el);
@@ -93,9 +118,11 @@ class BossPageAdapter:
             const loginUrl = /(^|\.)login\.zhipin\.com$/.test(parsedUrl.hostname) ||
                 /\/(?:web\/user|login|passport)(?:[/?#]|$)/.test(parsedUrl.pathname);
             const pageUnavailableLogin = !loggedIn && pageType === 'unknown' && loginPattern.test(text);
-            const loginRequired = loginUrl || (!loggedIn && (!!visibleLoginNode || pageUnavailableLogin));
+            const loginRequired = loginUrl ||
+                (!!visibleLoginNode && (!loggedIn || pageType === 'unknown')) ||
+                pageUnavailableLogin;
             const loginReason = loginUrl ? 'login_url' :
-                !loggedIn && visibleLoginNode ? 'visible_login_node' :
+                visibleLoginNode && (!loggedIn || pageType === 'unknown') ? 'visible_login_node' :
                 pageUnavailableLogin ? 'unavailable_page_text' : '';
             const loginText = (visibleLoginNode?.innerText || (pageUnavailableLogin ? text : '')).trim().slice(0, 240);
             const path403 = /(?:^|\/)403(?:[./?]|$)/.test(parsedUrl.pathname);
@@ -111,7 +138,7 @@ class BossPageAdapter:
                 risk_reason: riskReason, risk_text: riskText, login_reason: loginReason, login_text: loginText};
             """
 
-    async def open_search(self, page: PageRef, url: str) -> list[dict[str, str]]:
+    async def open_search(self, page: PageRef, url: str) -> list[dict[str, Any]]:
         await self.safari.navigate(page, url)
         await self.safari.wait_for(
             page,
@@ -124,7 +151,6 @@ class BossPageAdapter:
         state = await self.assert_access(page)
         if state.get("page_type") not in {"search", "search_detail", "search_empty"}:
             raise RpaError("BOSS_SEARCH_PAGE_INVALID", "Boss did not expose a search result surface", details=state)
-        import asyncio
         for _ in range(5):
             await self.safari.evaluate(
                 page,
@@ -140,8 +166,7 @@ class BossPageAdapter:
 
         return await self._extract_search_jobs(page)
 
-    async def next_page(self, page: PageRef) -> list[dict[str, str]]:
-        import asyncio
+    async def next_page(self, page: PageRef) -> list[dict[str, Any]]:
         # Infinite scroll (waterfall) mode: just scroll down repeatedly
         for _ in range(6):
             await self.safari.evaluate(
@@ -155,38 +180,321 @@ class BossPageAdapter:
                 """
             )
             await asyncio.sleep(1.0)
-            
+
         return await self._extract_search_jobs(page)
 
-    async def _extract_search_jobs(self, page: PageRef) -> list[dict[str, str]]:
+    async def _extract_search_jobs(self, page: PageRef) -> list[dict[str, Any]]:
         value = await self.safari.evaluate(
             page,
             r"""
-            const anchors = Array.from(document.querySelectorAll('.job-card-wrapper a[href*="/job_detail/"], a.job-name[href*="/job_detail/"]'));
+            /* boss_extract_search_jobs */
+            const records = new Map();
+            const textValue = value => value == null ? '' : String(value).trim();
+            const jobIdOf = item => textValue(
+                item?.encryptJobId || item?.jobId || item?.encryptId || item?.job_id
+            );
+            const merge = item => {
+                const jobId = jobIdOf(item);
+                if (!jobId) return;
+                const previous = records.get(jobId) || {};
+                const compact = Object.fromEntries(
+                    Object.entries(item).filter(([, value]) => value !== '' && value !== null && value !== undefined)
+                );
+                records.set(jobId, {...previous, ...compact, job_id: jobId});
+            };
+            const vueJobLists = [];
+            const visited = new Set();
+            const inspectVm = (vm, depth = 0) => {
+                if (!vm || typeof vm !== 'object' || visited.has(vm) || depth > 4) return;
+                visited.add(vm);
+                for (const owner of [vm, vm.$data, vm.data, vm.jobData, vm.zpData]) {
+                    if (!owner || typeof owner !== 'object') continue;
+                    for (const key of ['jobList', 'list', 'jobs']) {
+                        if (Array.isArray(owner[key]) && owner[key].some(jobIdOf)) {
+                            vueJobLists.push(owner[key]);
+                        }
+                    }
+                }
+                for (const child of Array.isArray(vm.$children) ? vm.$children : []) {
+                    inspectVm(child, depth + 1);
+                }
+                if (depth < 2) inspectVm(vm.$parent, depth + 1);
+            };
+            const candidateNodes = new Set();
+            for (const selector of [
+                '#wrap', '.page-job-wrapper', '.page-jobs-main', '.job-list-wrapper',
+                '.job-list-box', 'ul.rec-job-list'
+            ]) {
+                for (const node of document.querySelectorAll(selector)) {
+                    candidateNodes.add(node);
+                    if (node.parentElement) candidateNodes.add(node.parentElement);
+                }
+            }
+            for (const node of candidateNodes) inspectVm(node.__vue__);
+            for (const list of vueJobLists) {
+                for (const item of list) {
+                    const jobId = jobIdOf(item);
+                    if (!jobId) continue;
+                    const city = textValue(item.cityName);
+                    const district = textValue(item.areaDistrict || item.districtName);
+                    const business = textValue(item.businessDistrict);
+                    merge({
+                        job_id: jobId,
+                        title: textValue(item.jobName || item.title),
+                        url: `${location.origin}/job_detail/${jobId}.html`,
+                        salary: textValue(item.salaryDesc || item.salary),
+                        company: textValue(item.brandName || item.companyName),
+                        experience: textValue(item.jobExperience || item.experienceName || item.jobExperienceName),
+                        education: textValue(item.jobDegree || item.degreeName || item.jobDegreeName),
+                        scale: textValue(item.brandScaleName || item.scaleName),
+                        location: textValue(item.jobArea || `${city}${district}${business}`),
+                        security_id: textValue(item.securityId),
+                        lid: textValue(item.lid),
+                        friend_status: item.friendStatus,
+                        can_add_friend: item.canAddFriend,
+                        boss_online: item.bossOnline,
+                        gold_hunter: item.goldHunter,
+                        proxy_job: item.proxyJob,
+                        job_valid_status: item.jobValidStatus
+                    });
+                }
+            }
+            const anchors = Array.from(document.querySelectorAll('.job-card-wrapper a[href*="/job_detail/"],.job-card-box a[href*="/job_detail/"],a.job-name[href*="/job_detail/"]'));
             const seen = new Set();
-            return anchors.map(anchor => {
+            for (const anchor of anchors) {
                 const parsed = new URL(anchor.getAttribute('href') || anchor.href, location.origin);
                 const match = parsed.pathname.match(/\/job_detail\/([^/?]+)\.html$/);
-                if (!match || seen.has(match[1])) return null;
+                if (!match || seen.has(match[1])) continue;
                 seen.add(match[1]);
                 const href = `${parsed.origin}/job_detail/${match[1]}.html`;
-                const card = anchor.closest('li.job-card-box') || anchor;
+                const card = anchor.closest('.job-card-wrapper,.job-card-box,li') || anchor;
+                const cardText = (card.innerText || '').replace(/\s+/g, ' ').trim();
+                const pick = selectors => {
+                    for (const selector of selectors) {
+                        const value = card.querySelector(selector)?.innerText?.trim();
+                        if (value) return value;
+                    }
+                    return '';
+                };
                 const title = (card.querySelector('.job-name,.job-title')?.innerText || anchor.innerText || '').split('\n')[0].trim();
-                return {job_id:match[1],title,url:href};
-            }).filter(Boolean);
+                const salary = pick(['.salary','.job-salary','.red']);
+                const company = pick(['.company-name','.company-info .name','.company-text']);
+                const experience = (cardText.match(/经验不限|在校\/应届|应届生|\d+年以内|\d+-\d+年/)||[])[0] || '';
+                const education = (cardText.match(/学历不限|初中|中专|高中|大专|本科|硕士|博士/)||[])[0] || '';
+                const scale = (cardText.match(/少于\d+人|\d+-\d+人|\d+人以上|\d+万以上人/)||[])[0] || '';
+                const locationText = pick(['.job-area','.job-location','.job-address','.job-area-wrapper']);
+                merge({
+                    job_id: match[1], title, url: href, salary, company, experience,
+                    education, scale, location: locationText,
+                    security_id: parsed.searchParams.get('securityId') || '',
+                    lid: parsed.searchParams.get('lid') || ''
+                });
+            }
+            return Array.from(records.values());
             """,
         )
         if not isinstance(value, list):
             return []
-        return [
-            {
+        jobs: list[dict[str, Any]] = []
+        for item in value:
+            if not isinstance(item, dict) or not item.get("url"):
+                continue
+            jobs.append({
                 "job_id": str(item.get("job_id") or ""),
                 "title": str(item.get("title") or ""),
                 "url": str(item.get("url") or ""),
-            }
-            for item in value
-            if isinstance(item, dict) and item.get("url")
-        ]
+                "salary": str(item.get("salary") or ""),
+                "company": str(item.get("company") or ""),
+                "experience": str(item.get("experience") or ""),
+                "education": str(item.get("education") or ""),
+                "scale": str(item.get("scale") or ""),
+                "location": str(item.get("location") or ""),
+                "security_id": str(item.get("security_id") or ""),
+                "lid": str(item.get("lid") or ""),
+                "friend_status": item.get("friend_status"),
+                "can_add_friend": item.get("can_add_friend"),
+                "boss_online": item.get("boss_online"),
+                "gold_hunter": item.get("gold_hunter"),
+                "proxy_job": item.get("proxy_job"),
+                "job_valid_status": item.get("job_valid_status"),
+            })
+        return jobs
+
+    async def read_job_card(
+        self,
+        page: PageRef,
+        listed: dict[str, Any],
+        *,
+        timeout: float = 15,
+    ) -> dict[str, Any]:
+        """Read a sanitized job card through Boss's authenticated same-origin GET."""
+
+        await self.assert_access(page)
+        security_id = str(listed.get("security_id") or "").strip()
+        lid = str(listed.get("lid") or "").strip()
+        job_id = str(listed.get("job_id") or "").strip()
+        if not security_id or not lid or not job_id:
+            raise RpaError(
+                "BOSS_JOB_CARD_IDENTIFIERS_MISSING",
+                "Boss search result does not expose securityId, lid, and job ID",
+                ErrorKind.RETRYABLE,
+                {"job_id": job_id, "has_security_id": bool(security_id), "has_lid": bool(lid)},
+            )
+
+        request_key = f"boss_job_card_{uuid.uuid4().hex}"
+        endpoint = (
+            "/wapi/zpgeek/job/card.json?"
+            f"securityId={self._url_component(security_id)}&lid={self._url_component(lid)}"
+        )
+        key_json = json.dumps(request_key)
+        endpoint_json = json.dumps(endpoint)
+        started = await self.safari.evaluate(
+            page,
+            f"""
+            /* boss_start_job_card_read */
+            const key={key_json};
+            const endpoint={endpoint_json};
+            const slots=window.__safariRpaBossJobCards ||= Object.create(null);
+            slots[key]={{state:'pending'}};
+            const storeError = error => {{
+                slots[key]={{state:'error',error:String(error).slice(0,240)}};
+            }};
+            const storePayload = (payload, status) => {{
+                if (status < 200 || status >= 300) throw new Error(`HTTP ${{status}}`);
+                if (payload?.code !== undefined && Number(payload.code) !== 0) {{
+                    throw new Error(`provider code ${{payload.code}}`);
+                }}
+                const card=payload?.zpData?.jobCard || payload?.zpData?.card || payload?.zpData;
+                if (!card || typeof card !== 'object') throw new Error('jobCard missing');
+                const value = input => input == null ? '' : String(input).trim();
+                const onlineValue = card.online ?? card.bossOnline;
+                const online = onlineValue === true || onlineValue === 1;
+                const active = value(card.activeTimeDesc || card.bossActiveTimeDesc) || (online ? '当前在线' : '');
+                const bossName = value(card.bossName);
+                const bossTitle = value(card.bossTitle);
+                const bossRaw = [bossName, bossTitle, active].filter(Boolean).join(' ');
+                slots[key]={{
+                    state:'done',
+                    value:{{
+                        job_id:value(card.encryptJobId || card.jobId) || {json.dumps(job_id)},
+                        title:value(card.jobName),
+                        salary:value(card.salaryDesc),
+                        company:value(card.brandName),
+                        experience:value(card.experienceName || card.jobExperience),
+                        education:value(card.degreeName || card.jobDegree),
+                        location:value(card.address || card.jobAddress || card.cityName),
+                        jd:value(card.postDescription || card.jobDescription),
+                        hr_active_time:active,
+                        hr_title:bossTitle,
+                        hr_boss_raw:bossRaw,
+                        friend_status:card.friendStatus,
+                        can_add_friend:card.canAddFriend,
+                        boss_online:onlineValue,
+                        proxy_job:card.atsProxyJob,
+                        job_valid_status:card.jobValidStatus
+                    }}
+                }};
+            }};
+            const request = new XMLHttpRequest();
+            request.open('GET', new URL(endpoint, location.origin).href, true);
+            request.withCredentials = true;
+            request.timeout = 10000;
+            request.setRequestHeader('Accept', 'application/json, text/plain, */*');
+            request.onload = () => {{
+                try {{
+                    storePayload(JSON.parse(request.responseText || '{{}}'), request.status);
+                }} catch (error) {{
+                    storeError(error);
+                }}
+            }};
+            request.onerror = () => storeError(`XHR network error status=${{request.status}}`);
+            request.ontimeout = () => storeError('XHR timeout');
+            try {{
+                request.send();
+            }} catch (error) {{
+                storeError(error);
+            }}
+            return true;
+            """,
+        )
+        if started is not True:
+            raise RpaError(
+                "BOSS_JOB_CARD_START_FAILED",
+                "Boss background job-card read did not start",
+                ErrorKind.RETRYABLE,
+                {"job_id": job_id},
+            )
+
+        slot: object = None
+        try:
+            await self.safari.wait_for(
+                page,
+                PageCondition.js(
+                    f"""
+                    const slot=window.__safariRpaBossJobCards?.[{key_json}];
+                    return slot?.state === 'done' || slot?.state === 'error';
+                    """,
+                    f"Boss background job card {job_id} completes",
+                ),
+                timeout=timeout,
+            )
+            slot = await self.safari.evaluate(
+                page,
+                f"""
+                /* boss_take_job_card_read */
+                const key={key_json};
+                const slots=window.__safariRpaBossJobCards;
+                const slot=slots?.[key] || null;
+                if (slots) {{
+                    delete slots[key];
+                    if (Object.keys(slots).length === 0) delete window.__safariRpaBossJobCards;
+                }}
+                return slot;
+                """,
+            )
+        finally:
+            try:
+                await self.safari.evaluate(
+                    page,
+                    f"""
+                    /* boss_cleanup_job_card_read */
+                    const key={key_json};
+                    const slots=window.__safariRpaBossJobCards;
+                    if (slots) {{
+                        delete slots[key];
+                        if (Object.keys(slots).length === 0) delete window.__safariRpaBossJobCards;
+                    }}
+                    return true;
+                    """,
+                )
+            except Exception:
+                pass
+
+        if not isinstance(slot, dict):
+            raise RpaError(
+                "BOSS_JOB_CARD_INVALID",
+                "Boss background job-card result is not readable",
+                ErrorKind.RETRYABLE,
+                {"job_id": job_id},
+            )
+        if slot.get("state") != "done" or not isinstance(slot.get("value"), dict):
+            raise RpaError(
+                "BOSS_JOB_CARD_FAILED",
+                "Boss background job-card request failed",
+                ErrorKind.RETRYABLE,
+                {"job_id": job_id, "error": str(slot.get("error") or "")[:240]},
+            )
+
+        card = dict(listed)
+        card.update({key: value for key, value in slot["value"].items() if value not in {"", None}})
+        card["job_id"] = job_id
+        card["url"] = str(listed.get("url") or "")
+        card["source"] = "job_card_api"
+        return card
+
+    @staticmethod
+    def _url_component(value: str) -> str:
+        return quote(value, safe="")
 
     async def read_job(self, page: PageRef, url: str) -> dict[str, Any]:
         await self.safari.navigate(page, url)
@@ -233,6 +541,22 @@ class BossPageAdapter:
             raise RpaError("BOSS_JOB_INVALID", "Boss job detail could not be extracted")
         return value
 
+    async def page_metrics(self, page: PageRef) -> dict[str, Any]:
+        value = await self.safari.evaluate(
+            page,
+            r"""
+            return {
+                url: location.href,
+                dom_nodes: document.getElementsByTagName('*').length,
+                job_cards: document.querySelectorAll('.job-card-wrapper,.job-card-box,li.job-card').length,
+                images: document.images.length,
+                scroll_height: Math.max(document.body?.scrollHeight||0,document.documentElement?.scrollHeight||0),
+                background_job_card_slots: Object.keys(window.__safariRpaBossJobCards || {}).length
+            };
+            """,
+        )
+        return value if isinstance(value, dict) else {}
+
     async def communication_state(self, page: PageRef, expected_job_id: str) -> dict[str, Any]:
         value = await self.safari.evaluate(
             page,
@@ -243,7 +567,7 @@ class BossPageAdapter:
             const button = document.querySelector('.btn-startchat,.op-btn-chat') || buttons.find(el => /立即沟通|继续沟通|已沟通/.test(el.innerText||''));
             const text = button?.innerText?.trim() || '';
             const status=/继续沟通|已沟通|发消息/.test(text)?'communicated':
-                /立即沟通|沟通/.test(text)?'available':'unavailable';
+                /立即沟通/.test(text)?'available':'unavailable';
             return {{job_id:current,expected_job_id:expected,same_job:current===expected,status,
                 button_text:text,url:location.href}};
             """,
@@ -267,12 +591,11 @@ class BossPageAdapter:
         candidates = [
             Locator.css(".btn-startchat,.op-btn-chat"),
             Locator.text("立即沟通"),
-            Locator.text("沟通"),
         ]
         target = None
         for locator in candidates:
             state = await self.safari.query(page, locator)
-            if state.found and state.visible and state.enabled:
+            if state.found and state.visible and state.enabled and "立即沟通" in state.text:
                 target = locator
                 break
         if target is None:
@@ -308,15 +631,6 @@ class BossPageAdapter:
                 "reason": "experience_mismatch",
             }
 
-        stay = Locator.text("留在此页")
-        stay_state = await self.safari.query(page, stay)
-        if stay_state.found and stay_state.visible and stay_state.enabled:
-            await self.safari.click(
-                page,
-                stay,
-                PageCondition.absent(stay, "Boss stay-on-page dialog closes"),
-                timeout=8,
-            )
         confirmed = await self.communication_state(page, expected_job_id)
         if confirmed.get("status") != "communicated":
             raise UnknownSideEffectError(

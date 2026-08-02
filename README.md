@@ -86,10 +86,20 @@ SAFARI_RPA_API_TOKEN=replace-me PYTHONPATH=src/safari-rpa uv run \
 Boss uses one maintained config file, `local-api-usage/safari-rpa/configs/boss/production.yaml`. Select behavior with `--profile`:
 
 ```txt
-collection  read-only scan/export; never communicates
 test        real Boss communication, capped at 10 new confirmed communications
 production  full production profile, capped by daily and per-city limits
 ```
+
+Boss first rejects structured search-card failures and obvious non-development
+roles, then uses the authenticated search page's read-only `job/card.json`
+response to evaluate the configured JD keywords, direction score, and recruiter
+activity. Direction titles are hints rather than a pre-JD hard gate. It opens
+the reusable visible detail tab only after that background check passes,
+revalidates the visible job, and keeps the exact `立即沟通` control as its only
+intentional Boss write. A failed background read falls back to one visible
+detail read and is reported separately. Search/detail page pairs are also
+recycled by search-read and confirmed-communication batch limits so long
+infinite-scroll sessions remain bounded.
 
 Validate the workflow before installing any schedule:
 
@@ -97,15 +107,11 @@ Validate the workflow before installing any schedule:
 PYTHONPATH=src/safari-rpa uv run safari-rpa --home local-api-usage/safari-rpa/var doctor
 PYTHONPATH=src/safari-rpa uv run safari-rpa --home local-api-usage/safari-rpa/var workflows
 
-# Safe manual validation first.
-PYTHONPATH=src/safari-rpa uv run safari-rpa --home local-api-usage/safari-rpa/var run \
-  boss.search-and-communicate.v1 --config local-api-usage/safari-rpa/configs/boss/production.yaml --profile collection
-
 PYTHONPATH=src/safari-rpa uv run safari-rpa --home local-api-usage/safari-rpa/var status --limit 10
 PYTHONPATH=src/safari-rpa uv run safari-rpa --home local-api-usage/safari-rpa/var reports list --limit 10
 ```
 
-Only after the collection run looks correct, use `test` deliberately if the real Boss account should send up to ten communications:
+Use `test` deliberately when the real Boss account should send up to ten communications:
 
 ```bash
 PYTHONPATH=src/safari-rpa uv run safari-rpa --home local-api-usage/safari-rpa/var run \

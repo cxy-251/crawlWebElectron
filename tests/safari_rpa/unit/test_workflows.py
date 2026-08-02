@@ -20,6 +20,7 @@ from tests.safari_rpa.fakes import UnusedSafari
 
 
 PAGE = PageRef("test-session", "test-marker", "example.com", 1, 1)
+DETAIL_PAGE = PageRef("detail-session", "detail-marker", "example.com", 1, 2)
 ROOT = Path(__file__).resolve().parents[3]
 CONFIGS = ROOT / "local-api-usage" / "safari-rpa" / "configs"
 
@@ -30,10 +31,35 @@ class FakeBossAdapter:
         self.communicated: set[str] = set(preexisting or ())
         self.job_ids = ["JOB-1"] if job_ids is None else job_ids
         self.read_calls = 0
+        self.job_card_calls = 0
         self.search_urls: list[str] = []
+        self.closed_pages: list[PageRef] = []
+        self.page_pairs = 0
 
-    async def ensure_page(self):
-        return PAGE
+    async def ensure_search_page(self):
+        self.page_pairs += 1
+        return PageRef(
+            f"search-session-{self.page_pairs}",
+            f"search-marker-{self.page_pairs}",
+            "example.com",
+            1,
+            self.page_pairs * 2 - 1,
+        )
+
+    async def open_detail_page(self, search_page):
+        return PageRef(
+            f"detail-session-{self.page_pairs}",
+            f"detail-marker-{self.page_pairs}",
+            "example.com",
+            1,
+            self.page_pairs * 2,
+        )
+
+    async def close_page(self, page):
+        self.closed_pages.append(page)
+
+    async def page_metrics(self, page):
+        return {"dom_nodes": 100, "job_cards": len(self.job_ids)}
 
     async def open_search(self, page, url):
         self.search_urls.append(url)
@@ -43,9 +69,14 @@ class FakeBossAdapter:
                 {
                     "title": "Python",
                     "url": f"https://www.zhipin.com/job_detail/{city}-{job_id}.html",
+                    "security_id": f"SEC-{city}-{job_id}",
+                    "lid": f"LID-{city}-{job_id}",
                 }
                 for job_id in self.job_ids
             ]
+        return []
+
+    async def next_page(self, page):
         return []
 
     async def read_job(self, page, url):
@@ -62,6 +93,24 @@ class FakeBossAdapter:
             "education": "本科",
             "location": "深圳",
             "jd": "Build reliable systems",
+        }
+
+    async def read_job_card(self, page, listed):
+        self.job_card_calls += 1
+        job_id = Path(urlparse(listed["url"]).path).stem
+        return {
+            **listed,
+            "job_id": job_id,
+            "title": "Python Engineer",
+            "company": "Example",
+            "scale": "1000-9999人",
+            "salary": "15-20K",
+            "experience": "1-3年",
+            "education": "本科",
+            "location": "深圳",
+            "jd": "Build reliable systems",
+            "hr_active_time": "今日活跃",
+            "source": "job_card_api",
         }
 
     async def communicate(self, page, job_id):
@@ -280,7 +329,207 @@ class WorkflowTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(10, completed.output["daily_completed_before_run"])
         self.assertEqual(100, completed.output["new_target"])
         self.assertEqual(10, completed.output["daily_confirmed_total"])
-        self.assertEqual([], production_fake.search_urls)
+        self.assertEqual(1, len(production_fake.search_urls))
+
+    async def test_boss_recycles_page_pair_at_confirmed_batch_boundary(self) -> None:
+        fake = FakeBossAdapter(["JOB-1", "JOB-2", "JOB-3"])
+        workflow, runner = self._boss_runner()
+        config = self._boss_config(run=3, daily=110, per_city=10)
+        config["limits"]["batch_size"] = 2
+        with patch("safari_rpa.workflows.boss.BossPageAdapter", return_value=fake):
+            run = await runner.create_run(workflow.descriptor.id, config, {})
+            await runner.execute(run.id)
+        completed = await self.store.get_run(run.id)
+        self.assertEqual(RunStatus.SUCCEEDED, completed.status)
+        self.assertEqual(3, completed.output["run_confirmed"])
+        self.assertEqual(2, completed.output["page_generations"])
+        self.assertEqual(1, completed.output["page_recycles"])
+        self.assertEqual(4, len(fake.closed_pages))
+
+    async def test_boss_recycles_page_pair_at_search_read_boundary(self) -> None:
+        fake = FakeBossAdapter([])
+        workflow, runner = self._boss_runner()
+        config = self._boss_config(run=1, daily=110, per_city=10)
+        config["search"]["keywords"] = ["one", "two", "three"]
+        config["limits"].update({"max_pages": 1, "max_search_reads_per_batch": 2})
+        with patch("safari_rpa.workflows.boss.BossPageAdapter", return_value=fake):
+            run = await runner.create_run(workflow.descriptor.id, config, {})
+            await runner.execute(run.id)
+        completed = await self.store.get_run(run.id)
+        self.assertEqual(RunStatus.SUCCEEDED, completed.status)
+        self.assertEqual(0, completed.output["run_confirmed"])
+        self.assertEqual(3, completed.output["page_generations"])
+        self.assertEqual(2, completed.output["page_recycles"])
+        self.assertEqual([2, 2, 2], [item["search_reads"] for item in completed.output["page_metrics"]])
+        self.assertEqual(6, len(fake.closed_pages))
+
+    async def test_boss_search_card_rejection_avoids_detail_navigation(self) -> None:
+        class RecruitingCardAdapter(FakeBossAdapter):
+            async def open_search(self, page, url):
+                self.search_urls.append(url)
+                if "page=1" not in url:
+                    return []
+                return [{
+                    "title": "人才招聘顾问",
+                    "url": "https://www.zhipin.com/job_detail/RECRUITER-1.html",
+                    "experience": "1-3年",
+                    "salary": "15-20K",
+                    "scale": "1000-9999人",
+                }]
+
+        fake = RecruitingCardAdapter()
+        workflow, runner = self._boss_runner()
+        config = self._boss_config(run=1, daily=110, per_city=10)
+        config["criteria"]["title_deny"].extend(["招聘顾问", "人才招聘"])
+        with patch("safari_rpa.workflows.boss.BossPageAdapter", return_value=fake):
+            run = await runner.create_run(workflow.descriptor.id, config, {})
+            await runner.execute(run.id)
+        completed = await self.store.get_run(run.id)
+        self.assertEqual(RunStatus.SUCCEEDED, completed.status)
+        self.assertEqual(1, completed.output["card_rejected"])
+        self.assertEqual(0, completed.output["detail_opened"])
+        self.assertEqual(0, fake.read_calls)
+        self.assertEqual(0, fake.job_card_calls)
+
+    async def test_boss_job_card_rejection_avoids_visible_detail_navigation(self) -> None:
+        class InactiveHrAdapter(FakeBossAdapter):
+            async def read_job_card(self, page, listed):
+                job = await super().read_job_card(page, listed)
+                job["hr_active_time"] = "本月活跃"
+                return job
+
+        fake = InactiveHrAdapter(["JOB-1"])
+        workflow, runner = self._boss_runner()
+        config = self._boss_config(run=1, daily=110, per_city=10)
+        config["criteria"]["hr_active_allow"] = ["今日活跃", "本周活跃"]
+        with patch("safari_rpa.workflows.boss.BossPageAdapter", return_value=fake):
+            run = await runner.create_run(workflow.descriptor.id, config, {})
+            await runner.execute(run.id)
+        completed = await self.store.get_run(run.id)
+        self.assertEqual(RunStatus.SUCCEEDED, completed.status)
+        self.assertEqual(1, completed.output["job_card_reads"])
+        self.assertEqual(1, completed.output["job_card_rejected"])
+        self.assertEqual(0, completed.output["detail_opened"])
+        self.assertEqual(0, fake.read_calls)
+        self.assertEqual(0, fake.communication_calls)
+
+    async def test_boss_job_card_failure_falls_back_to_visible_detail(self) -> None:
+        class UnavailableJobCardAdapter(FakeBossAdapter):
+            async def read_job_card(self, page, listed):
+                self.job_card_calls += 1
+                raise RpaError(
+                    "BOSS_JOB_CARD_FAILED",
+                    "temporary read failure",
+                    ErrorKind.RETRYABLE,
+                )
+
+        fake = UnavailableJobCardAdapter(["JOB-1"])
+        workflow, runner = self._boss_runner()
+        with patch("safari_rpa.workflows.boss.BossPageAdapter", return_value=fake):
+            run = await runner.create_run(
+                workflow.descriptor.id,
+                self._boss_config(run=1, daily=110, per_city=10),
+                {},
+            )
+            await runner.execute(run.id)
+        completed = await self.store.get_run(run.id)
+        self.assertEqual(RunStatus.SUCCEEDED, completed.status)
+        self.assertEqual(1, completed.output["job_card_fallbacks"])
+        self.assertEqual(1, completed.output["detail_opened"])
+        self.assertEqual(1, completed.output["run_confirmed"])
+        self.assertEqual(2, fake.job_card_calls)
+
+    async def test_boss_missing_job_card_identifiers_falls_back_without_api_retry(self) -> None:
+        class MissingIdentifiersAdapter(FakeBossAdapter):
+            async def open_search(self, page, url):
+                jobs = await super().open_search(page, url)
+                for job in jobs:
+                    job.pop("security_id", None)
+                    job.pop("lid", None)
+                return jobs
+
+        fake = MissingIdentifiersAdapter(["JOB-1"])
+        workflow, runner = self._boss_runner()
+        with patch("safari_rpa.workflows.boss.BossPageAdapter", return_value=fake):
+            run = await runner.create_run(
+                workflow.descriptor.id,
+                self._boss_config(run=1, daily=110, per_city=10),
+                {},
+            )
+            await runner.execute(run.id)
+        completed = await self.store.get_run(run.id)
+        self.assertEqual(RunStatus.SUCCEEDED, completed.status)
+        self.assertEqual(1, completed.output["job_card_fallbacks"])
+        self.assertEqual(0, fake.job_card_calls)
+        self.assertEqual(1, completed.output["detail_opened"])
+        self.assertEqual(1, completed.output["run_confirmed"])
+
+    async def test_boss_revalidates_visible_detail_after_background_match(self) -> None:
+        class StaleJobCardAdapter(FakeBossAdapter):
+            async def read_job(self, page, url):
+                job = await super().read_job(page, url)
+                job["title"] = "AI产品经理"
+                return job
+
+        fake = StaleJobCardAdapter(["JOB-1"])
+        workflow, runner = self._boss_runner()
+        with patch("safari_rpa.workflows.boss.BossPageAdapter", return_value=fake):
+            run = await runner.create_run(
+                workflow.descriptor.id,
+                self._boss_config(run=1, daily=110, per_city=10),
+                {},
+            )
+            await runner.execute(run.id)
+        completed = await self.store.get_run(run.id)
+        self.assertEqual(RunStatus.SUCCEEDED, completed.status)
+        self.assertEqual(1, completed.output["job_card_reads"])
+        self.assertEqual(1, completed.output["detail_opened"])
+        self.assertEqual(1, completed.output["detail_rejected"])
+        self.assertEqual(0, completed.output["run_confirmed"])
+        self.assertEqual(0, fake.communication_calls)
+
+    async def test_boss_reopens_same_job_when_a_later_keyword_matches(self) -> None:
+        class MultiKeywordAdapter(FakeBossAdapter):
+            async def read_job_card(self, page, listed):
+                job = await super().read_job_card(page, listed)
+                job["jd"] = "alpha beta"
+                return job
+
+            async def read_job(self, page, url):
+                job = await super().read_job(page, url)
+                job["jd"] = "beta"
+                return job
+
+        fake = MultiKeywordAdapter(["JOB-1"])
+        workflow, runner = self._boss_runner()
+        config = self._boss_config(run=1, daily=110, per_city=10)
+        config["search"].update({
+            "keywords": ["alpha", "beta"],
+            "directions": {"systems": {"min_score": 4}},
+            "keyword_rules": {
+                "alpha": {
+                    "direction": "systems",
+                    "title_any": ["Python"],
+                    "jd_core_any": ["alpha"],
+                },
+                "beta": {
+                    "direction": "systems",
+                    "title_any": ["Python"],
+                    "jd_core_any": ["beta"],
+                },
+            },
+        })
+        with (
+            patch("safari_rpa.workflows.boss.BossPageAdapter", return_value=fake),
+            patch.object(BossWorkflow, "_keywords", return_value=["alpha", "beta"]),
+        ):
+            run = await runner.create_run(workflow.descriptor.id, config, {})
+            await runner.execute(run.id)
+        completed = await self.store.get_run(run.id)
+        self.assertEqual(RunStatus.SUCCEEDED, completed.status)
+        self.assertEqual(1, completed.output["run_confirmed"])
+        self.assertEqual(2, completed.output["detail_opened"])
+        self.assertEqual(2, fake.read_calls)
 
     async def test_random_city_rotation_is_checkpointed(self) -> None:
         fake = FakeBossAdapter([])

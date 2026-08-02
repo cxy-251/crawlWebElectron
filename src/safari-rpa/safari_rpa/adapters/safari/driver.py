@@ -111,15 +111,25 @@ class SafariDriver:
 
             if matching_tabs:
                 selected = next((tab for tab in matching_tabs if tab.is_current), matching_tabs[0])
-                await self.runner.run("activate", selected.window_id, selected.tab_index)
-                window_id, tab_index = selected.window_id, selected.tab_index
+                window_id = selected.window_id
+                tab_index = await self._activate_site_tab(
+                    window_id,
+                    selected.tab_index,
+                    expected_origin,
+                    selected.url,
+                )
             else:
                 if workspace is None:
                     window_id = int(await self.runner.run("create_window", self._workspace_url(expected_origin)))
                 else:
                     window_id = workspace.window_id
                 tab_index = int(await self.runner.run("create_tab", window_id, start_url))
-                await self.runner.run("activate", window_id, tab_index)
+                tab_index = await self._activate_site_tab(
+                    window_id,
+                    tab_index,
+                    expected_origin,
+                    start_url,
+                )
 
             await self._wait_direct_ready(window_id, tab_index, expected_origin, timeout)
             await self._evaluate_at(
@@ -128,6 +138,75 @@ class SafariDriver:
                 f"window.name = {json.dumps(marker)}; return window.name;",
             )
             return PageRef(session_id, marker, expected_origin, window_id, tab_index)
+
+    async def _activate_site_tab(
+        self,
+        window_id: int,
+        tab_index: int,
+        expected_origin: str,
+        preferred_url: str,
+    ) -> int:
+        """Activate a site tab and recover once from Safari index reordering."""
+
+        try:
+            await self.runner.run("activate", window_id, tab_index)
+            return tab_index
+        except RpaError as exc:
+            if exc.code != "APPLESCRIPT_FAILED":
+                raise
+
+        windows = await self.inspect_windows()
+        window = next((item for item in windows if item.window_id == window_id), None)
+        if window is None:
+            raise PageLostError(
+                "Safari reordered or removed the target workspace window",
+                {"window_id": window_id, "origin": expected_origin},
+            )
+        candidates = [
+            tab
+            for tab in window.tabs
+            if self._url_matches_origin(tab.url, expected_origin)
+        ]
+        if not candidates:
+            raise PageLostError(
+                "Safari reordered or removed the target site tab",
+                {"window_id": window_id, "origin": expected_origin},
+            )
+        selected = next(
+            (tab for tab in candidates if tab.tab_index == tab_index),
+            next(
+                (tab for tab in candidates if tab.is_current and tab.url == preferred_url),
+                next(
+                    (tab for tab in candidates if tab.is_current),
+                    next((tab for tab in candidates if tab.url == preferred_url), candidates[-1]),
+                ),
+            ),
+        )
+        await self.runner.run("activate", selected.window_id, selected.tab_index)
+        return selected.tab_index
+
+    async def create_page(self, parent: PageRef, start_url: str, timeout: float = 30) -> PageRef:
+        """Create a separately owned tab in the parent's RPA workspace."""
+
+        expected_origin = self._normalize_origin(urlparse(start_url).hostname or parent.expected_origin)
+        session_id = uuid.uuid4().hex
+        marker = f"safari_rpa:{session_id}"
+        async with self._lock:
+            parent_window_id, _ = await self._resolve(parent)
+            tab_index = int(await self.runner.run("create_tab", parent_window_id, start_url))
+            tab_index = await self._activate_site_tab(
+                parent_window_id,
+                tab_index,
+                expected_origin,
+                start_url,
+            )
+            await self._wait_direct_ready(parent_window_id, tab_index, expected_origin, timeout)
+            await self._evaluate_at(
+                parent_window_id,
+                tab_index,
+                f"window.name = {json.dumps(marker)}; return window.name;",
+            )
+            return PageRef(session_id, marker, expected_origin, parent_window_id, tab_index)
 
     async def navigate(self, page: PageRef, url: str, timeout: float = 30) -> ActionEvidence:
         async with self._lock:

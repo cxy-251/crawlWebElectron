@@ -4,6 +4,8 @@ This directory is the durable record of accepted implementation plans.
 
 ## Current plan
 
+- [0016-boss-background-job-card-filtering.md](0016-boss-background-job-card-filtering.md) — implemented and live verified; background JD/HR filtering, target-preserving overflow, and bounded Safari search batches
+- [0015-boss-relevance-and-bounded-safari-pages.md](0015-boss-relevance-and-bounded-safari-pages.md) — implemented and verified; Boss exact-position and two-stage relevance filtering, separate bounded Safari pages, and production/test-only execution
 - [0014-boss-code-first-career-directions.md](0014-boss-code-first-career-directions.md) — implemented; Boss code-first market direction and keyword profile
 - [0013-boss-daily-target-replenishment.md](0013-boss-daily-target-replenishment.md) — implemented; Boss daily target replenishment and keyword rotation
 - [0012-boss-early-hr-activity-filter.md](0012-boss-early-hr-activity-filter.md) — implemented; Boss early HR activity filter

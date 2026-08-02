@@ -5,6 +5,7 @@ import re
 import unittest
 
 from safari_rpa.adapters.safari import SafariDriver
+from safari_rpa.contracts.errors import RpaError
 from safari_rpa.contracts.safari import ElementState, Locator, PageCondition, PageRef, PageState
 
 
@@ -21,6 +22,7 @@ class FakeRunner:
                         "url": "https://x.com/",
                         "title": "X",
                         "is_current": False,
+                        "name": "",
                     }
                 ],
             }
@@ -41,6 +43,7 @@ class FakeRunner:
                             "url": str(arguments[0]),
                             "title": SafariDriver._workspace_title("x.com"),
                             "is_current": True,
+                            "name": "",
                         }
                     ],
                 }
@@ -58,24 +61,40 @@ class FakeRunner:
                     "url": str(arguments[1]),
                     "title": "X",
                     "is_current": True,
+                    "name": "",
                 }
             )
             return str(tab_index)
         if command == "activate":
             return "ok"
         if command == "eval":
+            window_id = int(arguments[0])
+            tab_index = int(arguments[1])
+            window = next(item for item in self.windows if int(item["window_id"]) == window_id)
+            tab = window["tabs"][tab_index - 1]
             source = str(arguments[2])
             if "window.name =" in source:
                 match = re.search(r'window\.name = "([^"]+)"', source)
                 value = match.group(1) if match else ""
+                tab["name"] = value
+            elif "return window.name" in source:
+                value = tab.get("name", "")
             else:
                 value = {
-                    "url": "https://x.com/",
-                    "title": "X",
+                    "url": tab["url"],
+                    "title": tab["title"],
                     "ready_state": "complete",
                     "text_excerpt": "",
                 }
             return json.dumps({"ok": True, "value": value})
+        if command == "close_tab":
+            window_id = int(arguments[0])
+            tab_index = int(arguments[1])
+            window = next(item for item in self.windows if int(item["window_id"]) == window_id)
+            window["tabs"].pop(tab_index - 1)
+            for index, tab in enumerate(window["tabs"], 1):
+                tab["tab_index"] = index
+            return "ok"
         raise AssertionError((command, arguments))
 
 
@@ -90,6 +109,21 @@ class SystemClickRunner(FakeRunner):
         if command == "system_click":
             self.commands.append((command, *(str(value) for value in arguments)))
             return "ok"
+        return await super().run(command, *arguments)
+
+
+class StaleCreatedTabIndexRunner(FakeRunner):
+    async def run(self, command: str, *arguments: object) -> str:
+        if command == "create_tab":
+            actual = await super().run(command, *arguments)
+            return str(int(actual) + 1)
+        if command == "activate":
+            window_id = int(arguments[0])
+            tab_index = int(arguments[1])
+            window = next(item for item in self.windows if int(item["window_id"]) == window_id)
+            if tab_index > len(window["tabs"]):
+                self.commands.append((command, *(str(value) for value in arguments)))
+                raise RpaError("APPLESCRIPT_FAILED", f"Safari tab not found: {tab_index}")
         return await super().run(command, *arguments)
 
 
@@ -118,12 +152,14 @@ class SafariDriverTests(unittest.IsolatedAsyncioTestCase):
                             "url": SafariDriver._workspace_url("x.com"),
                             "title": SafariDriver._workspace_title("x.com"),
                             "is_current": False,
+                            "name": "",
                         },
                         {
                             "tab_index": 2,
                             "url": "https://x.com/",
                             "title": "X",
                             "is_current": True,
+                            "name": "",
                         },
                     ],
                 }
@@ -137,6 +173,51 @@ class SafariDriverTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("activate", commands)
         self.assertNotIn("create_window", commands)
         self.assertNotIn("create_tab", commands)
+
+    async def test_ensure_site_recovers_from_safari_created_tab_index_reordering(self) -> None:
+        runner = StaleCreatedTabIndexRunner(
+            [{
+                "window_id": 44,
+                "index": 1,
+                "tabs": [{
+                    "tab_index": 1,
+                    "url": SafariDriver._workspace_url("x.com"),
+                    "title": SafariDriver._workspace_title("x.com"),
+                    "is_current": True,
+                    "name": "",
+                }],
+            }]
+        )
+        driver = SafariDriver(runner=runner, poll_interval=0)
+        page = await driver.ensure_site("x.com", "https://x.com/")
+        self.assertEqual(44, page.window_id)
+        self.assertEqual(2, page.tab_index)
+        activate_commands = [
+            command for command in runner.commands if command[0] == "activate"
+        ]
+        self.assertEqual(("activate", "44", "3"), activate_commands[0])
+        self.assertEqual(("activate", "44", "2"), activate_commands[1])
+
+    async def test_create_page_owns_distinct_child_tab_in_parent_workspace(self) -> None:
+        runner = FakeRunner()
+        driver = SafariDriver(runner=runner, poll_interval=0)
+        parent = await driver.ensure_site("x.com", "https://x.com/")
+        child = await driver.create_page(parent, "https://x.com/explore")
+        self.assertEqual(parent.window_id, child.window_id)
+        self.assertNotEqual(parent.marker, child.marker)
+        self.assertNotEqual(parent.tab_index, child.tab_index)
+        self.assertEqual("x.com", child.expected_origin)
+        await driver.close_page(child)
+        self.assertIn("close_tab", [command[0] for command in runner.commands])
+
+    async def test_create_page_recovers_from_safari_created_tab_index_reordering(self) -> None:
+        runner = StaleCreatedTabIndexRunner()
+        driver = SafariDriver(runner=runner, poll_interval=0)
+        parent = await driver.ensure_site("x.com", "https://x.com/")
+        child = await driver.create_page(parent, "https://x.com/explore")
+        self.assertEqual(parent.window_id, child.window_id)
+        self.assertEqual(3, child.tab_index)
+        self.assertNotEqual(parent.marker, child.marker)
 
     async def test_inspect_returns_typed_window_contract(self) -> None:
         driver = SafariDriver(runner=FakeRunner())
