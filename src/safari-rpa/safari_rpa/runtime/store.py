@@ -423,6 +423,35 @@ class RunStore:
             for row in await cursor.fetchall()
         )
 
+    async def relocate_report_artifacts(self, report_id: str, path: str) -> int:
+        cursor = await self._connection().execute(
+            """UPDATE artifacts SET path = ?
+               WHERE type = 'boss_confirmed_daily_csv' AND path <> ?
+                 AND json_extract(metadata_json, '$.report_id') = ?""",
+            (path, path, report_id),
+        )
+        if cursor.rowcount > 0:
+            await self._connection().commit()
+        return max(0, cursor.rowcount)
+
+    async def relocate_report_run_outputs(self, report_date: str, path: str) -> int:
+        connection = self._connection()
+        relocated = 0
+        for key in ("daily_report_path", "daily_artifact_path"):
+            cursor = await connection.execute(
+                f"""UPDATE runs SET output_json = json_set(output_json, '$.{key}', ?)
+                    WHERE workflow_id = 'boss.search-and-communicate.v1'
+                      AND output_json IS NOT NULL AND json_valid(output_json)
+                      AND json_extract(output_json, '$.{key}') IS NOT NULL
+                      AND json_extract(output_json, '$.{key}') <> ?
+                      AND json_extract(output_json, '$.{key}') LIKE ?""",
+                (path, path, f"%/{report_date}.csv"),
+            )
+            relocated += max(0, cursor.rowcount)
+        if relocated:
+            await connection.commit()
+        return relocated
+
     async def find_artifact(self, run_id: str, step_key: str, artifact_type: str) -> ArtifactRecord | None:
         cursor = await self._connection().execute(
             """SELECT * FROM artifacts WHERE run_id = ? AND step_key = ? AND type = ?

@@ -9,6 +9,7 @@ async def handle_scheduled_run(arguments, application) -> int:
         arguments.config,
         profile=arguments.profile,
         ready_until=arguments.ready_until,
+        ready_for_minutes=arguments.ready_for_minutes,
         retry_seconds=arguments.retry_seconds,
     )
     ok = completed.status == "succeeded"

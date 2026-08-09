@@ -175,7 +175,7 @@ async def artifacts(request: web.Request) -> web.Response:
     run_id = request.match_info["run_id"]
     if await request.app[RPA_KEY].get_run(run_id) is None:
         raise RpaError("RUN_NOT_FOUND", "Run not found")
-    values = await request.app[RPA_KEY].store.list_artifacts(run_id)
+    values = await request.app[RPA_KEY].list_artifacts(run_id)
     return web.json_response({"ok": True, "data": jsonable(values)})
 
 

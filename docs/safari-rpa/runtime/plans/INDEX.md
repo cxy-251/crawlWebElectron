@@ -4,6 +4,7 @@ This directory is the durable record of accepted implementation plans.
 
 ## Current plan
 
+- [0017-boss-multi-window-daily-schedule.md](0017-boss-multi-window-daily-schedule.md) — implemented and verified; one Boss LaunchAgent at 08:00 and 13:00 with a shared daily 110 ledger, concise CLI records, and renamed report archive recovery
 - [0016-boss-background-job-card-filtering.md](0016-boss-background-job-card-filtering.md) — implemented and live verified; background JD/HR filtering, target-preserving overflow, and bounded Safari search batches
 - [0015-boss-relevance-and-bounded-safari-pages.md](0015-boss-relevance-and-bounded-safari-pages.md) — implemented and verified; Boss exact-position and two-stage relevance filtering, separate bounded Safari pages, and production/test-only execution
 - [0014-boss-code-first-career-directions.md](0014-boss-code-first-career-directions.md) — implemented; Boss code-first market direction and keyword profile

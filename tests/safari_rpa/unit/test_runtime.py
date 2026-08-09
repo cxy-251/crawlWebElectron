@@ -196,6 +196,79 @@ class RuntimeTests(unittest.IsolatedAsyncioTestCase):
         finally:
             await application.close()
 
+    async def test_moved_boss_report_is_found_and_registered_path_is_repaired(self) -> None:
+        application = build_application(self.root / "application-var")
+        await application.open()
+        try:
+            report_date = "2026-07-01"
+            old_path = application.home / "reports" / "boss" / f"{report_date}.csv"
+            archive_path = application.home / "reports" / "boss-629-802" / f"{report_date}.csv"
+            archive_path.parent.mkdir(parents=True)
+            archive_path.write_text("job_id\njob-1\n", encoding="utf-8-sig")
+            await application.store.upsert_report(
+                f"boss-confirmed-daily-{report_date}",
+                "boss.search-and-communicate.v1",
+                report_date,
+                "boss_confirmed_daily_csv",
+                str(old_path),
+                1,
+                {"source": "confirmed_side_effects"},
+            )
+            run = await application.store.create_run("boss.search-and-communicate.v1", {}, {})
+            await application.store.set_run_status(
+                run.id,
+                RunStatus.SUCCEEDED,
+                output={
+                    "daily_report_path": str(old_path),
+                    "daily_artifact_path": str(old_path),
+                    "communicated": 1,
+                },
+            )
+            await application.store.add_artifact(
+                run.id,
+                "boss_confirmed_daily_csv",
+                str(old_path),
+                {"report_id": f"boss-confirmed-daily-{report_date}"},
+            )
+
+            artifacts = await application.list_artifacts(run.id)
+            content = await application.report_content(f"boss-confirmed-daily-{report_date}")
+            repaired = await application.store.get_report(f"boss-confirmed-daily-{report_date}")
+            repaired_run = await application.store.get_run(run.id)
+
+            self.assertEqual("job_id\njob-1\n", content)
+            self.assertEqual(archive_path.resolve(), Path(repaired.path))
+            self.assertEqual(archive_path.resolve(), Path(artifacts[0].path))
+            self.assertEqual(str(archive_path.resolve()), repaired_run.output["daily_report_path"])
+            self.assertEqual(str(archive_path.resolve()), repaired_run.output["daily_artifact_path"])
+            self.assertEqual(1, repaired_run.output["communicated"])
+        finally:
+            await application.close()
+
+    async def test_moved_boss_report_is_not_guessed_when_archives_are_ambiguous(self) -> None:
+        application = build_application(self.root / "application-var")
+        await application.open()
+        try:
+            report_date = "2026-07-01"
+            old_path = application.home / "reports" / "boss" / f"{report_date}.csv"
+            for directory in ("boss-first", "boss-second"):
+                path = application.home / "reports" / directory / f"{report_date}.csv"
+                path.parent.mkdir(parents=True)
+                path.write_text(directory, encoding="utf-8")
+            await application.store.upsert_report(
+                f"boss-confirmed-daily-{report_date}",
+                "boss.search-and-communicate.v1",
+                report_date,
+                "boss_confirmed_daily_csv",
+                str(old_path),
+                1,
+            )
+
+            with self.assertRaisesRegex(RpaError, "Report file is missing"):
+                await application.report_content(f"boss-confirmed-daily-{report_date}")
+        finally:
+            await application.close()
+
     async def test_doctor_accepts_uv_virtual_environment_and_python_312(self) -> None:
         application_home = self.root / "doctor-var"
         application_home.mkdir()

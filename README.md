@@ -122,49 +122,111 @@ Do not manually run `production` unless an immediate production write is intende
 
 ### Boss Schedule
 
-Install the daily production LaunchAgent only after validation:
+The production schedule runs every day at `08:00` and `13:00`. Both triggers
+start the same workflow and share the confirmed Asia/Shanghai daily ledger.
+`limits.run` and `limits.daily` both remain `110`, so neither time window has a
+smaller quota: the morning run may use any available portion and the afternoon
+run only fills the remaining amount. Install or replace the single LaunchAgent:
 
 ```bash
-PYTHONPATH=src/safari-rpa uv run safari-rpa --home local-api-usage/safari-rpa/var schedule install \
+uv run --package browser-workflow-safari-rpa safari-rpa \
+  --home local-api-usage/safari-rpa/var schedule install \
   --id boss-production-daily \
   --config local-api-usage/safari-rpa/configs/boss/production.yaml \
   --profile production \
-  --at 06:00 \
+  --at 08:00 \
+  --at 13:00 \
+  --ready-for-minutes 90 \
   --timezone Asia/Shanghai
 ```
 
-Inspect schedule state:
+`--at` is repeatable. One plist contains both `StartCalendarInterval` entries;
+do not install two ids for the two times. Each trigger waits up to 90 minutes
+for an inspectable logged-in Safari session, then records a blocked run instead
+of retrying forever. The keep-awake agent prevents system sleep while connected
+to AC power, but it does not bypass login, CAPTCHA, or Boss risk controls.
+
+Inspect the stored schedule, generated plist, and live launchd services:
 
 ```bash
-PYTHONPATH=src/safari-rpa uv run safari-rpa --home local-api-usage/safari-rpa/var schedule status
-PYTHONPATH=src/safari-rpa uv run safari-rpa --home local-api-usage/safari-rpa/var schedule status boss-production-daily
+uv run --package browser-workflow-safari-rpa safari-rpa \
+  --home local-api-usage/safari-rpa/var schedule status boss-production-daily
+
+plutil -p ~/Library/LaunchAgents/com.browser-workflow.safari-rpa.boss-production.plist
+launchctl print gui/$(id -u)/com.browser-workflow.safari-rpa.boss-production
+launchctl print gui/$(id -u)/com.browser-workflow.safari-rpa.keep-awake
 ```
 
-Modify the schedule by running `schedule install` again with the same `--id` and a new value:
+Modify the times or readiness window by running `schedule install` again with
+the same id and the complete desired time list. The install is a replacement,
+not an append to the prior plist:
 
 ```bash
-PYTHONPATH=src/safari-rpa uv run safari-rpa --home local-api-usage/safari-rpa/var schedule install \
+uv run --package browser-workflow-safari-rpa safari-rpa \
+  --home local-api-usage/safari-rpa/var schedule install \
   --id boss-production-daily \
   --config local-api-usage/safari-rpa/configs/boss/production.yaml \
   --profile production \
-  --at 07:30 \
+  --at 08:00 \
+  --at 13:00 \
+  --ready-for-minutes 90 \
   --timezone Asia/Shanghai
 ```
 
-Cancel the schedule:
+Request cancellation of a currently running workflow without removing future
+triggers. First obtain the run id, then cancel that run cooperatively:
 
 ```bash
-PYTHONPATH=src/safari-rpa uv run safari-rpa --home local-api-usage/safari-rpa/var schedule uninstall boss-production-daily
+uv run --package browser-workflow-safari-rpa safari-rpa \
+  --home local-api-usage/safari-rpa/var status --limit 10
+uv run --package browser-workflow-safari-rpa safari-rpa \
+  --home local-api-usage/safari-rpa/var cancel RUN_ID
 ```
 
-If old `macRpaForge` LaunchAgents still exist, unload and remove them separately:
+Disable all future Boss triggers and unload the keep-awake agent:
 
 ```bash
-launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.macrpa-forge.boss-production.plist
-launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.macrpa-forge.keep-awake.plist
-rm ~/Library/LaunchAgents/com.macrpa-forge.boss-production.plist
-rm ~/Library/LaunchAgents/com.macrpa-forge.keep-awake.plist
+uv run --package browser-workflow-safari-rpa safari-rpa \
+  --home local-api-usage/safari-rpa/var schedule uninstall boss-production-daily
 ```
+
+Uninstall removes these generated LaunchAgent files but preserves runtime data:
+
+- Boss plist: `~/Library/LaunchAgents/com.browser-workflow.safari-rpa.boss-production.plist`
+- Keep-awake plist: `~/Library/LaunchAgents/com.browser-workflow.safari-rpa.keep-awake.plist`
+- Runtime database and schedule history: `local-api-usage/safari-rpa/var/safari-rpa.sqlite`
+- Scheduler logs: `local-api-usage/safari-rpa/var/logs/launchd/boss-production.stdout.log` and `boss-production.stderr.log`
+- Per-run confirmed CSV: `local-api-usage/safari-rpa/var/runs/<run-id>/boss-confirmed-<run-id>.csv`
+- Shared daily confirmed CSV: `local-api-usage/safari-rpa/var/reports/boss/YYYY-MM-DD.csv`
+
+Historical CSV directories may be renamed to a `boss-*` archive without
+changing communication quotas or deduplication because those use SQLite. When
+the original path is missing, `reports list`, `reports show --content`, and
+`artifacts RUN_ID` automatically find a unique same-date CSV below
+`reports/boss*` and repair report, artifact, and run-result file references. If
+more than one archive contains that date, no path is guessed; recreate a
+canonical copy in the current `boss` directory:
+
+```bash
+uv run --package browser-workflow-safari-rpa safari-rpa \
+  --home local-api-usage/safari-rpa/var reports rebuild --date YYYY-MM-DD
+```
+
+Inspect one run and its registered artifacts without printing the stored YAML
+configuration:
+
+```bash
+uv run --package browser-workflow-safari-rpa safari-rpa \
+  --home local-api-usage/safari-rpa/var status RUN_ID
+uv run --package browser-workflow-safari-rpa safari-rpa \
+  --home local-api-usage/safari-rpa/var artifacts RUN_ID
+uv run --package browser-workflow-safari-rpa safari-rpa \
+  --home local-api-usage/safari-rpa/var reports list --limit 10
+```
+
+CLI run and status commands return concise records. Full parsed config and input
+remain in SQLite for resume and audit, but are not echoed after success or
+failure.
 
 High-risk write actions remain outside the Electron UI until explicitly added behind a reviewed workflow contract.
 

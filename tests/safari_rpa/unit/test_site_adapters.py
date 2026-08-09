@@ -379,9 +379,9 @@ class SiteAdapterTests(unittest.IsolatedAsyncioTestCase):
             ["深圳", "广州", "杭州", "上海", "成都", "武汉", "南京", "苏州", "长沙", "西安", "厦门"],
             [city["name"] for city in config["search"]["cities"]],
         )
-        self.assertEqual("Linux系统开发", config["search"]["weekday_keywords"]["mon"][0])
-        self.assertEqual("HarmonyOS开发", config["search"]["weekday_keywords"]["sat"][0])
-        self.assertIn("Linux系统开发", config["search"]["keyword_rules"])
+        self.assertEqual("HarmonyOS开发", config["search"]["weekday_keywords"]["mon"][0])
+        self.assertEqual("图形开发", config["search"]["weekday_keywords"]["sat"][0])
+        self.assertIn("Android Framework开发", config["search"]["keyword_rules"])
         self.assertEqual(
             "100213",
             config["search"]["keyword_rules"]["HarmonyOS开发"]["query_params"]["position"],
@@ -396,6 +396,10 @@ class SiteAdapterTests(unittest.IsolatedAsyncioTestCase):
                 for direction in config["search"]["directions"].values()
             )
         )
+        self.assertTrue(
+            all("deny_any" not in direction for direction in config["search"]["directions"].values())
+        )
+        self.assertNotIn("Android", config["criteria"]["title_deny"])
         self.assertEqual(12, config["limits"]["max_search_reads_per_batch"])
         url = BossWorkflow._search_url(
             "iOS开发工程师",
@@ -421,8 +425,8 @@ class SiteAdapterTests(unittest.IsolatedAsyncioTestCase):
             with self.subTest(profile=name):
                 config = BossWorkflow._config({**source, "profile": name})
                 self.assertEqual(11, len(config["search"]["cities"]))
-                self.assertEqual("Linux系统开发", config["search"]["weekday_keywords"]["mon"][0])
-                self.assertEqual("HarmonyOS开发", config["search"]["weekday_keywords"]["sat"][0])
+                self.assertEqual("HarmonyOS开发", config["search"]["weekday_keywords"]["mon"][0])
+                self.assertEqual("图形开发", config["search"]["weekday_keywords"]["sat"][0])
                 self.assertIn("软件开发", config["criteria"]["title_allow"])
                 self.assertIn("销售", config["criteria"]["title_deny"])
                 self.assertEqual(name, config["profile"])

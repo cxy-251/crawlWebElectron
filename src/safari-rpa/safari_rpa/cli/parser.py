@@ -60,8 +60,13 @@ def build_parser() -> argparse.ArgumentParser:
     schedule_install.add_argument("--id", default="boss-production-daily")
     schedule_install.add_argument("--config", type=Path, default=default_config_path("boss/production.yaml"))
     schedule_install.add_argument("--profile", default="production")
-    schedule_install.add_argument("--at", default="06:00")
+    schedule_install.add_argument(
+        "--at",
+        action="append",
+        help="Daily HH:MM trigger; repeat for multiple windows (default: 06:00)",
+    )
     schedule_install.add_argument("--timezone", default="Asia/Shanghai")
+    schedule_install.add_argument("--ready-for-minutes", type=int, default=90)
     schedule_install.add_argument("--no-keep-awake", action="store_true")
     schedule_status = schedule_subparsers.add_parser("status", help="List schedules or inspect one")
     schedule_status.add_argument("schedule_id", nargs="?")
@@ -72,7 +77,8 @@ def build_parser() -> argparse.ArgumentParser:
     scheduled_parser.add_argument("workflow_id")
     scheduled_parser.add_argument("--config", type=Path, required=True)
     scheduled_parser.add_argument("--profile", default="production")
-    scheduled_parser.add_argument("--ready-until", default="12:00")
+    scheduled_parser.add_argument("--ready-until")
+    scheduled_parser.add_argument("--ready-for-minutes", type=int, default=90)
     scheduled_parser.add_argument("--retry-seconds", type=int, default=300)
 
     serve_parser = subparsers.add_parser("serve", help="Run the loopback REST and SSE service")

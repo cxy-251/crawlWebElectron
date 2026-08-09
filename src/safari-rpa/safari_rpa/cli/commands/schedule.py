@@ -19,8 +19,9 @@ async def install_schedule(arguments, application) -> int:
         {
             "config_path": str(arguments.config),
             "profile": arguments.profile,
-            "daily_at": arguments.at,
+            "daily_at": arguments.at or ["06:00"],
             "timezone": arguments.timezone,
+            "ready_for_minutes": arguments.ready_for_minutes,
             "keep_awake": not arguments.no_keep_awake,
         },
     )

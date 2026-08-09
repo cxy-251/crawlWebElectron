@@ -15,7 +15,14 @@ import yaml
 from safari_rpa.adapters.safari import SafariDriver
 from safari_rpa.adapters.launchd import LaunchdScheduler
 from safari_rpa.contracts.errors import RpaError
-from safari_rpa.contracts.runtime import JsonObject, ReportRecord, RunRecord, RunStatus, ScheduleRecord
+from safari_rpa.contracts.runtime import (
+    ArtifactRecord,
+    JsonObject,
+    ReportRecord,
+    RunRecord,
+    RunStatus,
+    ScheduleRecord,
+)
 from safari_rpa.application.llm_service import LocalLlmService
 from safari_rpa.paths import default_config_path, repository_root, source_root
 from safari_rpa.runtime import ArtifactFiles, RunStore, WorkflowRegistry, WorkflowRunner
@@ -77,10 +84,69 @@ class RpaApplication:
         return await self.store.list_runs(limit)
 
     async def list_reports(self, limit: int = 100) -> tuple[ReportRecord, ...]:
-        return await self.store.list_reports(limit)
+        reports = await self.store.list_reports(limit)
+        repaired = []
+        for report in reports:
+            repaired.append(await self._repair_report_path(report))
+        return tuple(repaired)
+
+    async def list_artifacts(self, run_id: str) -> tuple[ArtifactRecord, ...]:
+        artifacts = await self.store.list_artifacts(run_id)
+        report_ids = {
+            str(artifact.metadata.get("report_id"))
+            for artifact in artifacts
+            if artifact.type == "boss_confirmed_daily_csv" and artifact.metadata.get("report_id")
+        }
+        for report_id in report_ids:
+            await self.get_report(report_id)
+        return await self.store.list_artifacts(run_id) if report_ids else artifacts
 
     async def get_report(self, report_id: str) -> ReportRecord | None:
-        return await self.store.get_report(report_id)
+        report = await self.store.get_report(report_id)
+        return await self._repair_report_path(report) if report is not None else None
+
+    async def _repair_report_path(self, report: ReportRecord) -> ReportRecord:
+        path = Path(report.path).resolve()
+        if path.is_file() or report.type != "boss_confirmed_daily_csv":
+            if path.is_file() and report.type == "boss_confirmed_daily_csv":
+                await self._sync_report_references(report)
+            return report
+
+        reports_root = (self.home / "reports").resolve()
+        expected_name = f"{report.report_date}.csv"
+        candidates = []
+        for candidate in reports_root.glob(f"boss*/{expected_name}"):
+            resolved = candidate.resolve()
+            try:
+                resolved.relative_to(reports_root)
+            except ValueError:
+                continue
+            if resolved.is_file():
+                candidates.append(resolved)
+
+        current = reports_root / "boss" / expected_name
+        if current in candidates:
+            selected = current
+        elif len(candidates) == 1:
+            selected = candidates[0]
+        else:
+            return report
+
+        repaired = await self.store.upsert_report(
+            report.id,
+            report.workflow_id,
+            report.report_date,
+            report.type,
+            str(selected),
+            report.record_count,
+            report.metadata,
+        )
+        await self._sync_report_references(repaired)
+        return repaired
+
+    async def _sync_report_references(self, report: ReportRecord) -> None:
+        await self.store.relocate_report_artifacts(report.id, report.path)
+        await self.store.relocate_report_run_outputs(report.report_date, report.path)
 
     async def report_content(self, report_id: str) -> str:
         report = await self.get_report(report_id)
@@ -127,10 +193,11 @@ class RpaApplication:
             raise RpaError("SCHEDULE_WORKFLOW_UNSUPPORTED", workflow_id)
         config_path = value.get("config_path") or default_config_path("boss/production.yaml")
         record = await self.scheduler.install_boss(
-            schedule_id, config_path, daily_at=str(value.get("daily_at") or "06:00"),
+            schedule_id, config_path, daily_at=value.get("daily_at") or "06:00",
             timezone=str(value.get("timezone") or "Asia/Shanghai"),
             keep_awake=bool(value.get("keep_awake", True)),
             profile=str(value.get("profile") or "production"),
+            ready_for_minutes=max(1, int(value.get("ready_for_minutes") or 90)),
         )
         return await self.store.upsert_schedule(record)
 
@@ -147,10 +214,15 @@ class RpaApplication:
         config_path: str | Path,
         *,
         profile: str | None = None,
-        ready_until: str = "12:00",
+        ready_until: str | None = None,
+        ready_for_minutes: int = 90,
         retry_seconds: int = 300,
     ) -> RunRecord:
-        deadline = self._scheduled_deadline(ready_until)
+        deadline = (
+            self._scheduled_deadline(ready_until)
+            if ready_until
+            else datetime.now().astimezone() + timedelta(minutes=max(1, ready_for_minutes))
+        )
         last_error = ""
         while True:
             try:

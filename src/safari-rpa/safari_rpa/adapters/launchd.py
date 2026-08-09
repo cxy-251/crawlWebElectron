@@ -5,6 +5,7 @@ import os
 import plistlib
 import sys
 import time
+from collections.abc import Sequence
 from pathlib import Path
 
 from safari_rpa.contracts.errors import RpaError
@@ -26,10 +27,17 @@ class LaunchdScheduler:
         self.agents_directory = Path(agents_directory or Path.home() / "Library" / "LaunchAgents")
 
     async def install_boss(
-        self, schedule_id: str, config_path: str | Path, *, daily_at: str = "06:00",
+        self, schedule_id: str, config_path: str | Path, *,
+        daily_at: str | Sequence[str] = "06:00",
         timezone: str = "Asia/Shanghai", keep_awake: bool = True, profile: str = "production",
+        ready_for_minutes: int = 90,
     ) -> ScheduleRecord:
-        hour, minute = self._parse_time(daily_at)
+        daily_times = self._parse_times(daily_at)
+        intervals = [
+            {"Hour": hour, "Minute": minute}
+            for hour, minute in (self._parse_time(value) for value in daily_times)
+        ]
+        ready_minutes = max(1, int(ready_for_minutes))
         config = Path(config_path).expanduser().resolve()
         if not config.is_file():
             raise RpaError("SCHEDULE_CONFIG_MISSING", f"Schedule config does not exist: {config}")
@@ -42,7 +50,7 @@ class LaunchdScheduler:
                 sys.executable, "-m", "safari_rpa", "--home", str(self.runtime_home),
                 "scheduled-run", "boss.search-and-communicate.v1", "--config", str(config),
                 "--profile", profile,
-                "--ready-until", "12:00", "--retry-seconds", "300",
+                "--ready-for-minutes", str(ready_minutes), "--retry-seconds", "300",
             ],
             "WorkingDirectory": str(self.project_root),
             "EnvironmentVariables": {
@@ -50,7 +58,7 @@ class LaunchdScheduler:
                 "SAFARI_RPA_HOME": str(self.runtime_home),
                 "TZ": timezone,
             },
-            "StartCalendarInterval": {"Hour": hour, "Minute": minute},
+            "StartCalendarInterval": intervals[0] if len(intervals) == 1 else intervals,
             "StandardOutPath": str(logs / "boss-production.stdout.log"),
             "StandardErrorPath": str(logs / "boss-production.stderr.log"),
             "ProcessType": "Background",
@@ -60,9 +68,17 @@ class LaunchdScheduler:
             await self.install_keep_awake()
         now = time.time()
         return ScheduleRecord(
-            schedule_id, "boss.search-and-communicate.v1", str(config), daily_at, timezone,
+            schedule_id, "boss.search-and-communicate.v1", str(config), ",".join(daily_times), timezone,
             True, self.BOSS_LABEL, str(plist_path), keep_awake,
-            {"run_at_load": False, "ready_until": "12:00", "retry_seconds": 300, "profile": profile}, now, now,
+            {
+                "run_at_load": False,
+                "daily_times": daily_times,
+                "ready_for_minutes": ready_minutes,
+                "retry_seconds": 300,
+                "profile": profile,
+            },
+            now,
+            now,
         )
 
     async def install_keep_awake(self) -> Path:
@@ -128,3 +144,17 @@ class LaunchdScheduler:
         if not 0 <= hour <= 23 or not 0 <= minute <= 59:
             raise RpaError("INVALID_SCHEDULE", "daily_at must use HH:MM")
         return hour, minute
+
+    @classmethod
+    def _parse_times(cls, value: str | Sequence[str]) -> list[str]:
+        source = [value] if isinstance(value, str) else list(value)
+        expanded = [part.strip() for item in source for part in str(item).split(",") if part.strip()]
+        if not expanded:
+            raise RpaError("INVALID_SCHEDULE", "Configure at least one daily_at value")
+        normalized: list[str] = []
+        for item in expanded:
+            hour, minute = cls._parse_time(item)
+            canonical = f"{hour:02d}:{minute:02d}"
+            if canonical not in normalized:
+                normalized.append(canonical)
+        return normalized

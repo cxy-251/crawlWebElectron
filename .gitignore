@@ -34,4 +34,4 @@ local-api-usage/safari-rpa/var/*
 local-api-usage/safari-rpa/var/reports/*
 
 # Allow Boss report directories.
-!local-api-usage/safari-rpa/var/reports/boss/
+!local-api-usage/safari-rpa/var/reports/boss-629-802/

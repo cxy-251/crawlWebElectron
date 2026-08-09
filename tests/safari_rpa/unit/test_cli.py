@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+import io
 import inspect
+import json
 import tempfile
 import unittest
 from argparse import Namespace
+from contextlib import redirect_stdout
 from pathlib import Path
 from unittest.mock import patch
 
@@ -11,6 +14,7 @@ from safari_rpa.cli import _run
 from safari_rpa.cli.commands.run import handle_run
 from safari_rpa.cli.commands.scheduled_run import handle_scheduled_run
 from safari_rpa.cli.commands.twitter import handle_twitter
+from safari_rpa.cli.output import success
 from safari_rpa.cli.parser import build_parser
 from safari_rpa.cli.registry import COMMAND_HANDLERS
 from safari_rpa.contracts.runtime import RunRecord, RunStatus
@@ -39,8 +43,12 @@ class CliTests(unittest.IsolatedAsyncioTestCase):
             def __init__(self) -> None:
                 self.calls = []
 
-            async def run_scheduled_workflow(self, workflow_id, config, *, profile, ready_until, retry_seconds):
-                self.calls.append((workflow_id, config, profile, ready_until, retry_seconds))
+            async def run_scheduled_workflow(
+                self, workflow_id, config, *, profile, ready_until, ready_for_minutes, retry_seconds,
+            ):
+                self.calls.append(
+                    (workflow_id, config, profile, ready_until, ready_for_minutes, retry_seconds)
+                )
                 return RunRecord(
                     "run-1",
                     workflow_id,
@@ -61,16 +69,75 @@ class CliTests(unittest.IsolatedAsyncioTestCase):
             config=config,
             profile="production",
             ready_until="12:00",
+            ready_for_minutes=90,
             retry_seconds=300,
         )
         with patch("safari_rpa.cli.commands.scheduled_run.result") as output:
             code = await handle_scheduled_run(arguments, app)
         self.assertEqual(0, code)
         self.assertEqual(
-            [("boss.search-and-communicate.v1", config, "production", "12:00", 300)],
+            [("boss.search-and-communicate.v1", config, "production", "12:00", 90, 300)],
             app.calls,
         )
         output.assert_called_once()
+
+    def test_schedule_parser_accepts_repeated_daily_times(self) -> None:
+        arguments = build_parser().parse_args(
+            ["schedule", "install", "--at", "08:00", "--at", "13:00"]
+        )
+        self.assertEqual(["08:00", "13:00"], arguments.at)
+
+    def test_cli_run_record_output_omits_full_config_and_input(self) -> None:
+        run = RunRecord(
+            "run-1",
+            "boss.search-and-communicate.v1",
+            RunStatus.FAILED,
+            {"search": {"weekday_keywords": {"mon": ["secretly-long-config"]}}},
+            {"large": "input"},
+            None,
+            {"code": "EXAMPLE", "message": "failed"},
+            False,
+            1,
+            2,
+        )
+        stream = io.StringIO()
+        with redirect_stdout(stream):
+            success(run)
+        payload = json.loads(stream.getvalue())
+        self.assertNotIn("config", payload["data"])
+        self.assertNotIn("input", payload["data"])
+        self.assertEqual("EXAMPLE", payload["data"]["error"]["code"])
+        self.assertNotIn("secretly-long-config", stream.getvalue())
+
+    def test_cli_boss_run_record_output_keeps_only_operational_summary(self) -> None:
+        run = RunRecord(
+            "run-1",
+            "boss.search-and-communicate.v1",
+            RunStatus.SUCCEEDED,
+            {},
+            {},
+            {
+                "profile": "production",
+                "communicated": 12,
+                "daily_confirmed_total": 42,
+                "stop_reason": "source_exhausted",
+                "page_metrics": {"huge": ["detail"] * 100},
+                "keyword_order": ["many", "keywords"],
+            },
+            None,
+            False,
+            1,
+            2,
+        )
+        stream = io.StringIO()
+        with redirect_stdout(stream):
+            success(run)
+        payload = json.loads(stream.getvalue())
+
+        self.assertEqual(12, payload["data"]["output"]["communicated"])
+        self.assertEqual(42, payload["data"]["output"]["daily_confirmed_total"])
+        self.assertNotIn("page_metrics", payload["data"]["output"])
+        self.assertNotIn("keyword_order", payload["data"]["output"])
 
     async def test_run_handler_applies_config_profile_override(self) -> None:
         class FakeApplication:

@@ -15,13 +15,13 @@ search:
     - {name: 厦门, code: "101230200"}
 
   weekday_keywords:
-    mon: [Linux系统开发, C++开发, 基础软件开发, 分布式系统开发, 中间件开发]
-    tue: [AI应用开发, 大模型应用开发, AI平台开发, 推理引擎开发, 模型部署工程师]
-    wed: [汽车软件开发, 智能座舱开发, 车载系统开发, AUTOSAR开发, QNX开发]
-    thu: [图形开发, 渲染开发, GPU开发, OpenGL开发, Vulkan开发]
-    fri: [工业软件开发, CAD开发, CAE开发, 仿真软件开发, 几何算法]
-    sat: [HarmonyOS开发, Android开发, 客户端开发, Qt开发, 桌面端开发]
-    sun: [音视频开发, 编解码开发, 计算机视觉, 图像处理, 多媒体开发]
+    mon: [HarmonyOS开发, Android Framework开发, 移动操作系统开发, 终端系统开发, 系统应用开发]
+    tue: [C++开发, 系统软件开发, 基础软件开发, C++客户端开发, C++工具开发]
+    wed: [Python开发, Python工具开发, Python自动化开发, Python应用开发, Python运行时开发]
+    thu: [AI应用开发, 大模型应用开发, LLM应用开发, AI工具开发, AIGC应用开发]
+    fri: [TypeScript开发, React开发, Electron开发, Web前端开发, 浏览器开发]
+    sat: [图形开发, 渲染开发, WebGL开发, Three.js开发, 游戏引擎开发]
+    sun: [多媒体开发, 音视频开发, FFmpeg开发, 媒体工具开发, 播放器开发]
 
   # Fail configuration loading if a search term is added without an executable
   # title/JD rule below.
@@ -32,224 +32,217 @@ search:
   expand_all_keywords_on_shortfall: true
 
   directions:
-    systems:
-      min_score: 4
+    mobile_os:
+      min_score: 5
       require_direction_title: false
-      jd_support_any: [多线程, 网络编程, 性能优化, 进程间通信, 并发, 高可用, CMake, GCC, GDB]
-      deny_any: [桌面运维, 网络运维, 运维值班, 硬件电路, 电气设计, 现场实施, 技术支持]
-    ai:
-      min_score: 4
+      jd_support_any: [ArkTS, ArkUI, C++, Java, Kotlin, ANI, Ability, AMS, FMS, Framework, 系统服务, 系统应用, 系统框架, 组件, IPC, XTS, 调试, 日志, Trace]
+    cpp_system:
+      min_score: 5
       require_direction_title: false
-      jd_support_any: [Python, PyTorch, TensorFlow, CUDA, RAG, Agent, 向量数据库, Docker, Kubernetes, 微服务]
-      deny_any: [数据标注, 电话销售, 课程顾问, 内容运营, 社群运营]
-    automotive:
-      min_score: 4
+      jd_support_any: [C++, C语言, Linux, POSIX, STL, CMake, GCC, Clang, GDB, 多线程, 进程, IPC, 内存管理, 性能优化, 跨语言, Qt, 系统调试]
+    python_engineering:
+      min_score: 5
       require_direction_title: false
-      jd_support_any: [C++, C语言, Linux, QNX, AUTOSAR, CAN, SOME/IP, 车载以太网, 嵌入式软件]
-      deny_any: [汽车销售, 测试驾驶, 整车试验, 标定工程师, 售后服务, 维修技师]
+      jd_support_any: [Python, CPython, C++, HTTP API, SQLite, YAML, CLI, 命令行工具, 自动化, 工作流, 本地服务, 浏览器自动化, 状态持久化, 批处理, 字节码, 解释器, 性能分析]
+    ai_application:
+      min_score: 5
+      require_direction_title: false
+      jd_support_any: [Python, TypeScript, API调用, LLM, 大模型, RAG, Agent, 智能体, 本地模型, 模型接口, 工作流, 结构化输出, 工具调用, ComfyUI, AIGC, 生成式AI]
+    web_client:
+      min_score: 5
+      require_direction_title: false
+      jd_support_any: [React, TypeScript, JavaScript, Electron, HTML, CSS, 组件, 状态管理, HTTP API, IPC, 桌面应用, Web应用, 浏览器, 本地服务, Docusaurus, 构建工具, 性能优化]
     graphics:
-      min_score: 4
+      min_score: 5
       require_direction_title: false
-      jd_support_any: [C++, GLSL, HLSL, Shader, 图形学, 计算机图形, 实时渲染, 性能优化]
-      deny_any: [平面设计, UI设计, 视频剪辑, 美术外包, 广告设计]
-    industrial:
-      min_score: 4
+      jd_support_any: [C++, React, TypeScript, WebGL, Three.js, OpenGL, OpenGL ES, Vulkan, DirectX, GLSL, HLSL, Shader, Canvas, 粒子, 着色器, 纹理, 几何体, 材质, 渲染目标, 实时渲染, 物理模拟, 动画, 交互, Cocos, Unity, Unreal]
+    multimedia_tools:
+      min_score: 5
       require_direction_title: false
-      jd_support_any: [C++, C#, Python, Qt, 数值计算, 科学计算, 几何内核, 求解器, 桌面软件]
-      deny_any: [机械设计, 结构设计, 有限元分析师, 仿真分析师, CAD制图, CAE应用, 实施顾问, 技术支持]
-    client:
-      min_score: 4
-      require_direction_title: false
-      jd_support_any: [C++, Java, Kotlin, Swift, ArkTS, Dart, Flutter, Qt, 客户端架构, 性能优化]
-      deny_any: [手机销售, 门店运营, 客服, UI设计, 产品经理]
-    media_cv:
-      min_score: 4
-      require_direction_title: false
-      jd_support_any: [C++, Python, FFmpeg, OpenCV, CUDA, SIMD, 实时处理, 性能优化, 深度学习]
-      deny_any: [视频剪辑, 摄影师, 后期制作, 内容审核, 数据标注]
+      jd_support_any: [Python, TypeScript, React, C++, FFmpeg, WebRTC, GStreamer, 播放器, 媒体库, 歌词, 音频处理, 音频分析, 视频处理, 视频渲染, 编解码, 流媒体, 自动化, 工作流]
 
   keyword_rules:
-    Linux系统开发:
-      direction: systems
-      query_params: {position: "100102,100802,100806"}
-      title_any: [Linux, 系统软件, 内核, 驱动, BSP, 系统开发]
-      jd_core_any: [Linux, POSIX, 内核, 驱动, BSP, 系统编程]
+    HarmonyOS开发:
+      direction: mobile_os
+      query_params: {position: "100213"}
+      title_any: [HarmonyOS, 鸿蒙, ArkTS, ArkUI]
+      jd_core_any: [HarmonyOS, 鸿蒙, ArkTS, ArkUI]
+    Android Framework开发:
+      direction: mobile_os
+      query_params: {position: "100202,100802"}
+      title_any: [Android Framework, Android系统, Android框架, AOSP]
+      jd_core_any: [Android Framework, Android系统, AOSP, Binder, System Server, 系统服务]
+    移动操作系统开发:
+      direction: mobile_os
+      query_params: {position: "100202,100213,100802"}
+      title_any: [移动操作系统, 移动OS, 终端OS, 系统框架]
+      jd_core_any: [移动操作系统, 移动OS, HarmonyOS, Android Framework, 系统服务, 系统框架]
+    终端系统开发:
+      direction: mobile_os
+      query_params: {position: "100102,100202,100213,100802"}
+      title_any: [终端系统, 终端OS, 终端软件, 系统框架]
+      jd_core_any: [终端系统, 终端OS, 系统应用, 系统服务, 系统框架, HarmonyOS, Android]
+    系统应用开发:
+      direction: mobile_os
+      query_params: {position: "100102,100202,100213"}
+      title_any: [系统应用, 终端应用, HarmonyOS, Android系统]
+      jd_core_any: [系统应用, HarmonyOS, Android系统, ArkTS, ArkUI, Kotlin, Java]
+
     C++开发:
-      direction: systems
+      direction: cpp_system
       query_params: {position: "100102"}
-      title_any: [C++, C语言]
-      jd_core_any: [C++, C语言]
+      title_any: [C++, C语言, C/C++]
+      jd_core_any: [C++, C语言, C/C++]
+    系统软件开发:
+      direction: cpp_system
+      query_params: {position: "100102,100802,100806"}
+      title_any: [系统软件, 系统开发, Linux开发, 基础软件]
+      jd_core_any: [系统软件, Linux, POSIX, 系统编程, C++]
     基础软件开发:
-      direction: systems
+      direction: cpp_system
       query_params: {position: "100102,100802,100806,101313"}
-      title_any: [基础软件, 系统软件, 基础架构, 内核, 运行时]
-      jd_core_any: [基础软件, 系统软件, 操作系统, 运行时, Runtime, 编译器]
-    分布式系统开发:
-      direction: systems
-      query_params: {position: "100101,100102,100109,100116,101313"}
-      title_any: [分布式, 基础架构, 后端开发, 服务端开发]
-      jd_core_any: [分布式, 一致性, 高可用, 服务治理, 微服务]
-    中间件开发:
-      direction: systems
-      query_params: {position: "100101,100102,100109,100116"}
-      title_any: [中间件, 基础架构, 后端开发, 服务端开发]
-      jd_core_any: [中间件, RPC, 消息队列, 服务治理, API网关]
+      title_any: [基础软件, 系统软件, 基础架构, 工具链, 运行时]
+      jd_core_any: [基础软件, 系统软件, 操作系统, 工具链, Runtime, C++]
+    C++客户端开发:
+      direction: cpp_system
+      query_params: {position: "100102,100202,100208"}
+      title_any: [C++客户端, C++开发, 桌面端开发, Qt开发, 客户端开发]
+      jd_core_any: [C++, 客户端, 桌面应用, Qt, QML]
+    C++工具开发:
+      direction: cpp_system
+      query_params: {position: "100102,101313"}
+      title_any: [C++工具, C++开发, 工具开发, 开发工具]
+      jd_core_any: [C++, 工具开发, 开发工具, CLI, SDK]
+
+    Python开发:
+      direction: python_engineering
+      query_params: {position: "100109,101313"}
+      title_any: [Python开发, Python工程师, Python研发, Python]
+      jd_core_any: [Python]
+    Python工具开发:
+      direction: python_engineering
+      query_params: {position: "100109,101313"}
+      title_any: [Python工具, Python开发, 工具开发, 自动化开发]
+      jd_core_any: [Python, 工具开发, 开发工具]
+    Python自动化开发:
+      direction: python_engineering
+      query_params: {position: "100109,101313"}
+      title_any: [Python自动化, 自动化开发, Python工具, Python开发]
+      jd_core_any: [Python, 自动化, 工作流]
+    Python应用开发:
+      direction: python_engineering
+      query_params: {position: "100109,101313"}
+      title_any: [Python应用, Python开发, Python工程师, 工具开发]
+      jd_core_any: [Python, Python应用]
+    Python运行时开发:
+      direction: python_engineering
+      query_params: {position: "100102,100109,101313"}
+      title_any: [Python运行时, CPython, Python内核, 解释器, 运行时开发]
+      jd_core_any: [CPython, Python运行时, Python解释器, Python字节码, Python虚拟机]
 
     AI应用开发:
-      direction: ai
-      query_params: {position: "100109,100120,101301,101302,101310"}
-      title_any: [AI应用, AI工程师, 人工智能, Python开发]
-      jd_core_any: [AI应用, 人工智能应用, 生成式AI, AIGC, 智能体, Agent]
-    大模型应用开发:
-      direction: ai
+      direction: ai_application
       query_params: {position: "100109,100120,101310"}
-      title_any: [大模型应用, 大模型开发, LLM, AI应用]
-      jd_core_any: [大模型, LLM, RAG, 提示词工程, 智能体, Agent]
-    AI平台开发:
-      direction: ai
-      query_params: {position: "100102,100109,100120,101301,101313"}
-      title_any: [AI平台, 机器学习平台, MLOps, 基础架构]
-      jd_core_any: [AI平台, 机器学习平台, MLOps, 训练平台, 特征平台]
-    推理引擎开发:
-      direction: ai
-      query_params: {position: "100102,100120,101302,101313"}
-      title_any: [推理引擎, 模型推理, 引擎开发, AI工程师]
-      jd_core_any: [推理引擎, 模型推理, TensorRT, ONNX Runtime, 算子开发]
-    模型部署工程师:
-      direction: ai
-      query_params: {position: "100109,100120,101301,101302"}
-      title_any: [模型部署, MLOps, AI工程师, 算法工程师]
-      jd_core_any: [模型部署, 模型服务, Serving, MLOps, 推理服务]
+      title_any: [AI应用, AI工具, 人工智能应用, AIGC应用]
+      jd_core_any: [AI应用, 人工智能应用, 生成式AI, AIGC, Agent]
+    大模型应用开发:
+      direction: ai_application
+      query_params: {position: "100109,100120,101310"}
+      title_any: [大模型应用, LLM应用, AI应用, 智能体开发]
+      jd_core_any: [大模型, LLM, RAG, Agent, 智能体, 提示词工程]
+    LLM应用开发:
+      direction: ai_application
+      query_params: {position: "100109,100120,101310"}
+      title_any: [LLM应用, 大模型应用, AI应用, 智能体开发]
+      jd_core_any: [LLM, 大模型, RAG, Agent, 智能体, 生成式AI]
+    AI工具开发:
+      direction: ai_application
+      query_params: {position: "100109,100120,101310,101313"}
+      title_any: [AI工具, AI应用, 大模型应用, AIGC应用]
+      jd_core_any: [AI工具, AI应用, 大模型, LLM, Agent, 生成式AI]
+    AIGC应用开发:
+      direction: ai_application
+      query_params: {position: "100109,100120,101310"}
+      title_any: [AIGC应用, 生成式AI应用, AI应用, 大模型应用]
+      jd_core_any: [AIGC, 生成式AI, 大模型, LLM, Agent]
 
-    汽车软件开发:
-      direction: automotive
-      query_params: {position: "100202,100802,100806,101308"}
-      title_any: [汽车软件, 车载软件, 嵌入式软件, 软件开发]
-      jd_core_any: [汽车软件, 车载软件, 车规, ECU, 域控制器]
-    智能座舱开发:
-      direction: automotive
-      query_params: {position: "100202,100802,100806"}
-      title_any: [智能座舱, 车机, 车载软件, Android]
-      jd_core_any: [智能座舱, 车机, 座舱系统, IVI, 车载Android]
-    车载系统开发:
-      direction: automotive
-      query_params: {position: "100802,100806,101308"}
-      title_any: [车载系统, 车载软件, 车机, 嵌入式软件]
-      jd_core_any: [车载系统, 车载软件, ECU, 域控制器, 车载操作系统]
-    AUTOSAR开发:
-      direction: automotive
-      query_params: {position: "100802,100806,101308"}
-      title_any: [AUTOSAR, 汽车软件, 车载软件, 嵌入式软件]
-      jd_core_any: [AUTOSAR, Adaptive AUTOSAR, Classic AUTOSAR, RTE, BSW]
-    QNX开发:
-      direction: automotive
-      query_params: {position: "100802,100806"}
-      title_any: [QNX, 车载系统, 智能座舱, 嵌入式软件]
-      jd_core_any: [QNX, Neutrino, 车载操作系统, 智能座舱]
+    TypeScript开发:
+      direction: web_client
+      query_params: {position: "100203,100208,101313"}
+      title_any: [TypeScript开发, 前端开发, Web开发, Electron开发]
+      jd_core_any: [TypeScript]
+    React开发:
+      direction: web_client
+      query_params: {position: "100203,100208,101313"}
+      title_any: [React开发, 前端开发, Web开发]
+      jd_core_any: [React]
+    Electron开发:
+      direction: web_client
+      query_params: {position: "100102,100203,100208,101313"}
+      title_any: [Electron开发, 桌面端开发, 桌面应用, 客户端开发]
+      jd_core_any: [Electron]
+    Web前端开发:
+      direction: web_client
+      query_params: {position: "100203,100208,101313"}
+      title_any: [Web前端, 前端开发, Web开发, React开发]
+      jd_core_any: [Web前端, React, TypeScript, JavaScript]
+    浏览器开发:
+      direction: web_client
+      query_params: {position: "100102,100203,100208,101313"}
+      title_any: [浏览器开发, 浏览器内核, Chromium, Web平台]
+      jd_core_any: [浏览器, Chromium, Blink, WebKit, V8, Web平台]
 
     图形开发:
       direction: graphics
       query_params: {position: "100121,101306,101313"}
-      title_any: [图形开发, 图形图像, 计算机图形, 引擎开发]
-      jd_core_any: [计算机图形, 图形学, 图形引擎, 图形渲染]
+      title_any: [图形开发, 图形图像, 计算机图形, 图形引擎]
+      jd_core_any: [计算机图形, 图形学, 图形引擎, 图形渲染, OpenGL, Vulkan, WebGL]
     渲染开发:
       direction: graphics
       query_params: {position: "100121,101313"}
       title_any: [渲染开发, 渲染引擎, 图形开发, 引擎开发]
-      jd_core_any: [渲染引擎, 实时渲染, 光栅化, 光线追踪, PBR]
-    GPU开发:
-      direction: graphics
-      query_params: {position: "100102,100121,100806,101313"}
-      title_any: [GPU, 图形开发, 高性能计算, 算子开发]
-      jd_core_any: [GPU, CUDA, OpenCL, GPU计算, GPU驱动]
-    OpenGL开发:
+      jd_core_any: [渲染引擎, 实时渲染, 光栅化, 光线追踪, PBR, Shader]
+    WebGL开发:
       direction: graphics
       query_params: {position: "100121,101313"}
-      title_any: [OpenGL, 图形开发, 渲染开发]
-      jd_core_any: [OpenGL, OpenGL ES, GLSL]
-    Vulkan开发:
+      title_any: [WebGL开发, Web图形, 图形交互, 前端可视化]
+      jd_core_any: [WebGL, GLSL]
+    Three.js开发:
       direction: graphics
       query_params: {position: "100121,101313"}
-      title_any: [Vulkan, 图形开发, 渲染开发]
-      jd_core_any: [Vulkan, SPIR-V, GLSL]
+      title_any: [Three.js开发, WebGL开发, 图形交互, 前端可视化]
+      jd_core_any: [Three.js, React Three Fiber, WebGL]
+    游戏引擎开发:
+      direction: graphics
+      query_params: {position: "100121,101313"}
+      title_any: [游戏引擎, 引擎开发, 图形开发, 渲染开发, Cocos, Unity, Unreal]
+      jd_core_any: [游戏引擎, 渲染引擎, Cocos, Unity, Unreal, OpenGL, Vulkan, DirectX]
 
-    工业软件开发:
-      direction: industrial
-      query_params: {position: "100102,100109,101313"}
-      title_any: [工业软件, 工程软件, 制造软件, 桌面端开发]
-      jd_core_any: [工业软件, 工程软件, 制造软件, 数字孪生, 工业互联网]
-    CAD开发:
-      direction: industrial
-      query_params: {position: "100102,100121,101313"}
-      title_any: [CAD开发, CAD平台, 几何内核, 图形开发]
-      jd_core_any: [CAD开发, CAD平台, 几何内核, B-Rep, NURBS, OpenCASCADE]
-    CAE开发:
-      direction: industrial
-      query_params: {position: "100102,100109,101313"}
-      title_any: [CAE开发, 求解器, 仿真软件, 科学计算]
-      jd_core_any: [CAE开发, CAE平台, 求解器开发, 有限元软件, 前后处理开发]
-    仿真软件开发:
-      direction: industrial
-      query_params: {position: "100102,100109,101313"}
-      title_any: [仿真软件, 软件开发, 科学计算, 求解器]
-      jd_core_any: [仿真软件, 仿真平台, 求解器, 数值模拟, 多物理场]
-    几何算法:
-      direction: industrial
-      query_params: {position: "100102,100120,100121,101306,101313"}
-      title_any: [几何算法, 几何内核, CAD开发, 算法工程师]
-      jd_core_any: [计算几何, 几何算法, 几何内核, 曲面, 网格算法]
-
-    HarmonyOS开发:
-      direction: client
-      query_params: {position: "100213"}
-      title_any: [HarmonyOS, 鸿蒙, ArkTS, 客户端开发]
-      jd_core_any: [HarmonyOS, 鸿蒙, ArkTS, ArkUI]
-    Android开发:
-      direction: client
-      query_params: {position: "100202"}
-      title_any: [Android, 安卓, Kotlin, 客户端开发]
-      jd_core_any: [Android, 安卓, Kotlin, Jetpack]
-    客户端开发:
-      direction: client
-      query_params: {position: "100202,100203,100208,100213"}
-      title_any: [客户端开发, 移动端开发, iOS, Android, HarmonyOS]
-      jd_core_any: [客户端开发, 移动端, Android, iOS, HarmonyOS, Flutter]
-    Qt开发:
-      direction: client
-      query_params: {position: "100102"}
-      title_any: [Qt, 桌面端开发, 客户端开发]
-      jd_core_any: [Qt, Qt Quick, QML]
-    桌面端开发:
-      direction: client
-      query_params: {position: "100102,100203,100208"}
-      title_any: [桌面端开发, 桌面软件, 客户端开发, Qt]
-      jd_core_any: [桌面软件, 桌面端, Qt, Electron, Windows客户端, macOS客户端]
-
-    音视频开发:
-      direction: media_cv
-      query_params: {position: "100121"}
-      title_any: [音视频开发, 多媒体开发, 编解码, 流媒体]
-      jd_core_any: [音视频, 流媒体, FFmpeg, WebRTC, 音频处理, 视频处理]
-    编解码开发:
-      direction: media_cv
-      query_params: {position: "100121"}
-      title_any: [编解码, 音视频开发, 多媒体开发]
-      jd_core_any: [编解码, H.264, H.265, HEVC, AV1, AAC, FFmpeg]
-    计算机视觉:
-      direction: media_cv
-      query_params: {position: "100120,101302,101306"}
-      title_any: [计算机视觉, 视觉算法, CV算法, 图像算法]
-      jd_core_any: [计算机视觉, 机器视觉, 目标检测, 图像识别, OpenCV]
-    图像处理:
-      direction: media_cv
-      query_params: {position: "100120,100121,101306"}
-      title_any: [图像处理, 图像算法, 视觉算法, 计算机视觉]
-      jd_core_any: [图像处理, 图像增强, 图像算法, OpenCV, 计算成像]
     多媒体开发:
-      direction: media_cv
+      direction: multimedia_tools
       query_params: {position: "100121"}
-      title_any: [多媒体开发, 音视频开发, 编解码, 流媒体]
-      jd_core_any: [多媒体, 音视频, FFmpeg, GStreamer, WebRTC]
+      title_any: [多媒体开发, 多媒体应用, 媒体处理, 音视频开发]
+      jd_core_any: [多媒体, FFmpeg, 媒体处理, 音频处理, 视频处理]
+    音视频开发:
+      direction: multimedia_tools
+      query_params: {position: "100121"}
+      title_any: [音视频开发, 多媒体开发, 流媒体, 音视频工具]
+      jd_core_any: [音视频, FFmpeg, WebRTC, GStreamer, 音频处理, 视频处理]
+    FFmpeg开发:
+      direction: multimedia_tools
+      query_params: {position: "100121"}
+      title_any: [FFmpeg开发, 音视频开发, 多媒体开发, 媒体处理]
+      jd_core_any: [FFmpeg, libavcodec, libavformat, 音视频处理]
+    媒体工具开发:
+      direction: multimedia_tools
+      query_params: {position: "100121,101313"}
+      title_any: [媒体工具, 音视频工具, 多媒体应用, 工具开发]
+      jd_core_any: [FFmpeg, 媒体工具, 媒体处理, 音频处理, 视频处理]
+    播放器开发:
+      direction: multimedia_tools
+      query_params: {position: "100121"}
+      title_any: [播放器开发, 媒体播放器, 多媒体开发, 音视频应用]
+      jd_core_any: [播放器, FFmpeg, 音频处理, 视频处理, 媒体库, 播放内核]
 
   query_params:
     scale: "304,305,306"
@@ -267,11 +260,69 @@ criteria:
     - 开发工程师
     - 研发工程师
     - 程序员
-    - 算法工程师
-    - 后端开发
-    - 服务端开发
+    - HarmonyOS
+    - 鸿蒙
+    - ArkTS
+    - ArkUI
+    - Android
+    - 安卓
+    - iOS
+    - Flutter
+    - 移动端开发
+    - 终端开发
+    - 操作系统
+    - 系统应用
+    - 系统软件
+    - 基础软件
+    - 系统框架
+    - C++
+    - C语言
+    - Linux
+    - Linux内核
+    - 驱动开发
+    - BSP
+    - AUTOSAR
+    - QNX
+    - Qt
+    - Python
+    - 自动化开发
+    - 工具开发
+    - AI应用
+    - 大模型应用
+    - LLM
+    - AIGC
+    - 生成式AI
+    - AI平台
+    - 推理引擎
+    - 模型部署
+    - 数据科学
+    - TypeScript
+    - React
+    - Electron
+    - Web开发
     - 客户端开发
-    - 测试开发
+    - 桌面端开发
+    - 前端开发
+    - 浏览器开发
+    - 图形开发
+    - 渲染开发
+    - GPU
+    - OpenGL
+    - Vulkan
+    - WebGL
+    - Three.js
+    - 游戏引擎
+    - Cocos
+    - 多媒体开发
+    - 音视频开发
+    - 编解码开发
+    - 计算机视觉
+    - 图像算法
+    - 播放器开发
+    - FFmpeg
+    - CAD开发
+    - CAE开发
+    - 算法工程师
 
   title_deny:
     - 销售
